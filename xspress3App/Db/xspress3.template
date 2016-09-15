@@ -16,6 +16,7 @@
 # % macro,  TIMEOUT,     Asyn timeout
 # % macro,  MAX_SPECTRA, The maximum size of each spectra (eg. 4096) in a scan.
 # % macro,  MAX_FRAMES,  The maximum number of frames that can be acquired in one acquisition (eg. 16384)
+# % gui, $(PORT), edmtab, xspress3.edl, P=$(P),R=$(R)
 #
 #######################################################
 
