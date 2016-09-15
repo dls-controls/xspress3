@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<components arch="linux-x86_64">
+	<Xspress3.Xspress3WithPlugins ADDR="0" MAX_FRAMES="16384" MAX_SPECTRA="4096" P="XSPRESS3-TEST-IOC-01" PORT="XSP3" R=":" TIMEOUT="5" num_channels="4" num_rois="4" simulation="0"/>
+</components>
