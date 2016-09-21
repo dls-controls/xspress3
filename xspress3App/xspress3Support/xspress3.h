@@ -26,7 +26,7 @@
 
 
 
-#define XSP3_CONF_SOFTWARE_ROI_LUT  0	//< Enable Region of interest in software event list processing code
+#define XSP3_CONF_SOFTWARE_ROI_LUT  1	//< Enable Region of interest in software event list processing code
 #define XSP3_CONF_ACCUMULATE_RESET_TICKS  0	//< Enable accumulation of reset ticks from each reset width, rathe than using reset ticks at end.
 #define XSP3_CONF_ALL_GOOD_FROM_MCA  0	//< Enable All Good scaler by summming MCA, but note then pileup reject will remove events from AllGood
 #define XSP3_SGX_SOFTWARE			0   //!< Enable SGX processing in software (currently firmware option)
@@ -48,12 +48,16 @@
 #define XSP_SW_SCALER_PILEUP   		7			//!< Number of events detected as pileup.
 #define XSP_SW_SCALER_TOTAL_TICKS	8 			//!< Total time in 80MHz ticks of exposure, even if some packets are dropped.
 
+#define XSP3_SOFT_SCALER_NUM_WINDOWS  2
+
 #if XSP3_CONF_ALL_GOOD_FROM_MCA
+// This code is not supported at the moment and would nedd fixing for use
 #	define XSP3_SOFT_SCALER_TOTAL_TICKS		5 		//!< Total integration time ticks
 #	define XSP3_NUM_SOFT_SCALERS 6
 #else
 #	define XSP3_SOFT_SCALER_TOTAL_TICKS		8 		//!< Total integration time ticks
-#	define XSP3_NUM_SOFT_SCALERS 9
+#	define XSP3_SOFT_SCALER_WINDOW0			9 		//!< First of the In window scalars, used only when Roi Is in use
+#	define XSP3_NUM_SOFT_SCALERS (9+XSP3_SOFT_SCALER_NUM_WINDOWS)
 #endif
 #define XSP3_SOFT_SCALER_LIVE_TICKS		0 		//!< Total integration time in received packets, may may less than total ticks due to dropped packets.
 #define XSP3_SOFT_SCALER_RESET_TICKS	1
@@ -64,7 +68,6 @@
 #define XSP3_SOFT_SCALER_ALL_GOOD_GG   	6		//!< All Good with good grade
 #define XSP3_SOFT_SCALER_ALL_EVENT_GG   7		//!< All event with good Grade
 
-#define XSP3_SOFT_SCALER_NUM_WINDOWS  2
  
 #define XSP3_HW_USED_SCALERS 7
 #define XSP3_HW_DEFINED_SCALERS 8
@@ -218,6 +221,7 @@ typedef struct _Histogram {
 	u_int16_t *tf_ptr;		// Used for saving time frame part of differences mode data into modifed scope mode module.
 	u_int16_t *dig_ptr;		// Used for saving Digital part of differences mode data into modifed scope mode module.
 	int debug_burst;		// Count down a burst of debug messages from withing histogram thread and then stop.
+	pthread_mutex_t mutex;		// Mutex between receive threads and control threads.
 } Histogram;
 
 typedef struct clock_setup_struct
@@ -1197,8 +1201,13 @@ int 	xsp3_set_trig_out_term(int path, int card, int flags);
  */
 
 //! [XSP3_GLOBAL_CLOCK]
-#define XSP3_GLOB_CLK_FROM_ADC		(1<<0)			 // Enable Clock from Spartans (from ADC) for Virtex 5 (0 at reset, write 1 for normal operation after setting up ADC board Clocks).
-#define XSP3_GLOB_CLK_SP_RESET		(1<<1)			 // Software reset of Spartan DCMs after setting up ADC board Clocks.
+#define XSP3_GLOB_CLK_FROM_ADC			(1<<0)			 // Enable Clock from Spartans (from ADC) for Virtex 5 (0 at reset, write 1 for normal operation after setting up ADC board Clocks).
+#define XSP3_GLOB_CLK_SP_RESET			(1<<1)			 // Software reset of Spartan DCMs after setting up ADC board Clocks.
+#define XSP3_GLOB_CLK_IDC_TIMING_DRIVER	(1<<2)			 // 
+#define XSP4_GLOB_CLK_MMCM_RESET		(1<<3)			// Software Reseet ofthe MMCM in XSPRESS4, needed only with DRP actions?
+
+#define XSP4_GLOB_CLK_TSYNC_MODE(x)	(((x)&3)<<6)	// Time Stamp synchronisation mode.
+
 #define XSP3_GLOB_CLK_TP_ENB_SP_TOP	(1<<8)			 // Enable Test pattern from Spartans TOP.
 #define XSP3_GLOB_CLK_RS232_SEL		(1<<31) 		 // Select for RS232 control (temporary).
 //! [XSP3_GLOBAL_CLOCK]
@@ -1458,12 +1467,19 @@ extern char *xsp3_feature_scope_mode[16] ;
 #define XSP3_LM75_ADDR(dev) (0x9<<3|((dev)&7))
 
 //! [XSP3_CLOCK_SRC]
-#define XSP3_CLK_SRC_INT		0		// channel processing clock comes from fpga processor (testing only)
-#define XSP3_CLK_SRC_XTAL		1		// adc and channel processing clock from crystal on the ADC board (normal single board or master operation).
-#define XSP3_CLK_SRC_EXT		2		// adc and channel processing clock from lemo clock connector on ADC board (slave boards)
-#define XSP3_CLK_SRC_FPGA		3		// not implemented, for future expansion
-//! [XSP3_CLOCK_SRC]
+#define XSP3_CLK_SRC_INT				0		//!< channel processing clock comes from fpga processor (testing only)
+#define XSP3_CLK_SRC_XTAL				1		//!< adc and channel processing clock from crystal on the ADC board (normal single board or master operation).
+#define XSP3_CLK_SRC_EXT				2		//!< adc and channel processing clock from lemo clock connector on ADC board (slave boards)
+#define XSP3_CLK_SRC_FPGA				3		//!< not implemented, for future expansion
 
+#define XSP3M_CLK_SRC_CDCM61004			0x10	//!< Xspress3Mini or Xspress4 Clock Source CDCM61004 on ADC board
+#define XSP3M_CLK_SRC_LMK61E2			0x11	//!< Xspress3Mini or Xspress4 Clock Source LMK61E2 on ADC board
+
+#define XSP4_CLK_SRC_MIDPLN_CDCM61004	0x20	//!< Xspress4 Clock Source CDCM61004 on Mid plane board
+#define XSP4_CLK_SRC_MIDPLN_LMK61E2		0x21	//!< Xspress4 Clock Source LMK61E2 on Mid Plane board
+
+
+//! [XSP3_CLOCK_SRC]
 //! [XSP3_CLOCK_FLAGS]
 #define XSP3_CLK_FLAGS_MASTER		(1<<0)		// this clock generate clocks for other boards in the system
 #define XSP3_CLK_FLAGS_NO_DITHER	(1<<1)		// disables dither within the ADC
@@ -1475,6 +1491,14 @@ extern char *xsp3_feature_scope_mode[16] ;
 #define XSP3_CLK_FLAGS_SHUTDOWN123 	(1<<7)		// Shutdown ADC channels 123
 #define XSP3_CLK_FLAGS_SHUTDOWN4 	(1<<8)		// Shutdown ADC channel 4 (middle (unused?))
 #define XSP3_CLK_FLAGS_SHUTDOWN5678 (1<<9)		// Shutdown ADC channel5678 last 4
+#define XSP3_CLK_FLAGS_SHUTDOWN1 	(1<<10)		// Shutdown ADC channel 1  XSPRESS3-Mini and XSPRESS4
+#define XSP3_CLK_FLAGS_SHUTDOWN2 	(1<<11)		// Shutdown ADC channel 2  XSPRESS4 only
+#define XSP3_CLK_FLAGS_SHUTDOWN3 	(1<<12)		// Shutdown ADC channel 3  XSPRESS4 only
+#define XSP3_CLK_FLAGS_SHUTDOWN5 	(1<<13)		// Shutdown ADC channel 5  XSPRESS4 only
+#define XSP3_CLK_FLAGS_SHUTDOWN6 	(1<<14)		// Shutdown ADC channel 6  XSPRESS4 only
+#define XSP3_CLK_FLAGS_SHUTDOWN7 	(1<<15)		// Shutdown ADC channel 7  XSPRESS4 only
+#define XSP3_CLK_FLAGS_SHUTDOWN8 	(1<<16)		// Shutdown ADC channel 8  XSPRESS4 only
+#define XSP3_CLK_FLAGS_SHUTDOWN9 	(1<<17)		// Shutdown ADC channel 9  XSPRESS4 only
 
 //! [XSP3_CLOCK_FLAGS]
 
@@ -2175,6 +2199,10 @@ This data is assembled nibble at a time into the 32 bit hardware registers XSP4_
 
 #define XSP4_SPI_CHAN_BUS 		32766			//!< spidev bus number of ADC board Offset and gain SPI bus in XSPRESS4.
 #define XSP4_SPI_TIMING_BUS 	32764			//!< spidev bus number of Timing SPI bus in XSPRESS4.
+
+#define XSP4_PSU_CONT_IGNORE_OVER_TEMP	(1<<15)			//!<	IGNORE Over temperature on ADC board (for debugging only)
+#define XSP4_PSU_CONT_SHUTDOWN(x)		((x)&0x3FF)		//!<	Bit mask to shutdown ADC for channels 0..9.
+
 /** 
 @}
 */
