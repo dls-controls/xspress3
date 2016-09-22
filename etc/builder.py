@@ -236,6 +236,9 @@ class Xspress3WithPlugins(Xspress3):
 
         def post_ioc_initialise():
             print("dbpf({}{}EnableCallbacks Enable)".format(self.P, prefix_r))
+            print("dbpf({}{}FileTemplate %s%s%d.hdf)".format(self.P, prefix_r))
+            print("dbpf({}{}AutoIncrement Yes)".format(self.P, prefix_r))
+            print("dbpf({}{}FileWriteMode Stream)".format(self.P, prefix_r))
         hdf.PostIocInitialise = post_ioc_initialise
 
     def _create_proc(self):
