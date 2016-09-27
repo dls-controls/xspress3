@@ -66,6 +66,7 @@ class Xspress3(asyn.AsynPort):
                   **self.__dict__))
 
     def PostIocInitialise(self):
+        print("dbpf({}{}NumImages 1)").format(self.P, self.R)
         print("dbpf({}{}CONFIG_PATH '{}')".format(self.P, self.R,
                                                   self.settings_directory))
 
