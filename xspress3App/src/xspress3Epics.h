@@ -72,6 +72,7 @@ using std::string;
 #define xsp3MaxFramesParamString     "XSP3_MAX_FRAMES"
 #define xsp3FrameCountParamString     "XSP3_FRAME_COUNT"
 #define xsp3TriggerModeParamString        "XSP3_TRIGGER_MODE"
+#define xsp3ItfgTrigModeParamString        "XSP3_ITFG_TRIG_MODE"
 #define xsp3FixedTimeParamString        "XSP3_FIXED_TIME"
 #define xsp3NumFramesConfigParamString          "XSP3_NUM_FRAMES_CONFIG"
 #define xsp3NumCardsParamString           "XSP3_NUM_CARDS"
@@ -149,7 +150,7 @@ class Xspress3 : public ADDriver {
   asynStatus readDTCParams(void);
   asynStatus setupITFG(void); 
   asynStatus mapTriggerMode(int mode, int invert_f0, int invert_veto, int debounce, int *apiMode);
-  asynStatus setTriggerMode(int mode, int invert_f0, int invert_veto, int debounce );
+  asynStatus setTriggerMode(int mode, int itfg_trig_mode, int num_frames, double exposure_time, int invert_f0, int invert_veto, int debounce );
   void createInitialParameters();
   bool setInitialParameters(int maxFrames, int numCards, int maxSpectra);
   void pushEvent(const epicsUInt8& message);
@@ -254,6 +255,7 @@ class Xspress3 : public ADDriver {
   int xsp3DtcEnableParam;
   int pointsPerRowParam;
   int readyForNextRowParam;
+  int xsp3ItfgTrigModeParam;
   int xsp3LastParam;
   #define XSP3_LAST_DRIVER_COMMAND xsp3LastParam
 

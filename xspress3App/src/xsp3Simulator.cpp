@@ -105,7 +105,17 @@ int xsp3Simulator::xsp3Api_histogram_clear(int path, int first_chan, int num_cha
     return XSP3_OK;
 }
 
+int xsp3Simulator::xsp3Api_histogram_arm(int path, int card)
+{
+    return XSP3_OK;
+}
+
 int xsp3Simulator::xsp3Api_histogram_continue(int path, int card)
+{
+    return XSP3_OK;
+}
+
+int xsp3Simulator::xsp3Api_histogram_pause(int path, int card)
 {
     return XSP3_OK;
 }

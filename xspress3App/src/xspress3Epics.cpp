@@ -154,6 +154,7 @@ void Xspress3::createInitialParameters()
     createParam(xsp3MaxFramesParamString, asynParamInt32, &xsp3MaxFramesParam);
     createParam(xsp3FrameCountParamString, asynParamInt32, &xsp3FrameCountParam);
     createParam(xsp3TriggerModeParamString, asynParamInt32, &xsp3TriggerModeParam);
+    createParam(xsp3ItfgTrigModeParamString, asynParamInt32, &xsp3ItfgTrigModeParam);
     createParam(xsp3FixedTimeParamString, asynParamInt32, &xsp3FixedTimeParam);
     createParam(xsp3NumFramesConfigParamString, asynParamInt32, &xsp3NumFramesConfigParam);
     createParam(xsp3NumCardsParamString, asynParamInt32, &xsp3NumCardsParam);
@@ -186,6 +187,7 @@ void Xspress3::createInitialParameters()
     createParam(pointsPerRowParamString, asynParamInt32, &pointsPerRowParam);
     createParam(readyForNextRowParamString, asynParamInt32, &readyForNextRowParam);
     createParam(xsp3LastParamString, asynParamInt32, &xsp3LastParam);
+
 }
 
 /** 
@@ -205,6 +207,7 @@ bool Xspress3::setInitialParameters(int maxFrames, int numCards, int maxSpectra)
     paramStatus = ((setIntegerParam(xsp3NumChannelsParam, numChannels_) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(xsp3MaxNumChannelsParam, numChannels_) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(xsp3TriggerModeParam, 0) == asynSuccess) && paramStatus);
+    paramStatus = ((setIntegerParam(xsp3ItfgTrigModeParam, 0) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(xsp3FixedTimeParam, 0) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(ADNumImages, 0) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(xsp3NumFramesConfigParam, maxFrames) == asynSuccess) && paramStatus);
@@ -590,16 +593,6 @@ asynStatus Xspress3::restoreSettings(void)
         status = readSCAParams();
     }
 
-    // Set the trigger mode
-    if (status == asynSuccess) {
-       int trigger_mode, invert_f0, invert_veto, debounce;
-       getIntegerParam(xsp3TriggerModeParam, &trigger_mode);
-       getIntegerParam(xsp3InvertF0Param, &invert_f0);
-       getIntegerParam(xsp3InvertVetoParam, &invert_veto);
-       getIntegerParam(xsp3DebounceParam, &debounce);
-       status = setTriggerMode(trigger_mode, invert_f0, invert_veto, debounce );
-    }
-
     // Read the DTC parameters
     if (status == asynSuccess) {
         status = readDTCParams();
@@ -822,32 +815,6 @@ void Xspress3::report(FILE *fp, int details)
 
 }
 
-asynStatus Xspress3::setupITFG(void)
-{
-    asynStatus status = asynSuccess;
-    const char *functionName = "Xspress3::setupITFG";
-    int num_frames, trigger_mode;
-    double exposureTime;
-    int xsp3_status=XSP3_OK;
-
-    getIntegerParam(xsp3TriggerModeParam, &trigger_mode);
-    if (trigger_mode == XSP3_GTIMA_SRC_INTERNAL  &&
-        xsp3->has_itfg(xsp3_handle_, 0) > 0 ) {
-        getIntegerParam(ADNumImages, &num_frames);
-        getDoubleParam(ADAcquireTime, &exposureTime);
-        xsp3_status = xsp3->itfg_setup( xsp3_handle_, 0, num_frames, 
-                                       (u_int32_t) floor(exposureTime*80E6+0.5),
-                                       XSP3_ITFG_TRIG_MODE_BURST, XSP3_ITFG_GAP_MODE_1US );
-    }
-
-    if (xsp3_status != XSP3_OK) {
-        checkStatus(xsp3_status, " xsp3_itfg_setup", functionName);
-        status = asynError;
-    }
-
-    return status;
-}
-
 /**
  * Function to map the database trigger mode 
  * value to the macros defined by the API.
@@ -902,28 +869,48 @@ asynStatus Xspress3::mapTriggerMode(int mode, int invert_f0, int invert_veto, in
   return status;
 }
 
-asynStatus Xspress3::setTriggerMode(int mode, int invert_f0, int invert_veto, int debounce )
+asynStatus Xspress3::setTriggerMode(int mode, int itfg_trig_mode, int num_frames, double exposure_time, int invert_f0, int invert_veto, int debounce )
 {
     const char *functionName = "Xspress3::setTriggerMode";
     asynStatus status = asynSuccess;
     int xsp3_num_cards;
     int xsp3_trigger_mode = 0;
+	int xsp3_status = XSP3_OK;
 
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Set Trigger Mode.\n", functionName);
     getIntegerParam(xsp3NumCardsParam, &xsp3_num_cards);
+
     for (int card=0; card<xsp3_num_cards && status == asynSuccess; card++) {
-        if ( card == 0 ) { 
+        if ( card == 0 ) {
             status = mapTriggerMode(mode, invert_f0, invert_veto, debounce, &xsp3_trigger_mode);
+            if (mode == XSP3_GTIMA_SRC_INTERNAL) {
+                xsp3_status = xsp3->itfg_setup(xsp3_handle_, card, num_frames, (u_int32_t) floor(exposure_time*80E6 + 0.5), itfg_trig_mode, XSP3_ITFG_GAP_MODE_1US);
+                if (xsp3_status != XSP3_OK) {
+                    checkStatus(xsp3_status, " xsp3_itfg_setup", functionName);
+                    return asynError;
+                }
+            }
         }
         else
         {
+            // Are there multiple xspress3 cards? If so, card 0 will be master and
+            // will send TTL signals to all other cards, defining their time frames.
+            // For each child card, set the time frame source to TTL Veto Only.
             status = mapTriggerMode(mbboTriggerTTLVETO_, invert_f0, 0, debounce, &xsp3_trigger_mode);
         }
 
         int xsp3_status = xsp3->set_glob_timeA(xsp3_handle_, card, xsp3_trigger_mode);
         if (xsp3_status != XSP3_OK) {
             checkStatus(xsp3_status, "xsp3_set_glob_timeA", functionName);
-            status = asynError;
+            return asynError;
+        }
+    }
+
+    if (mode == XSP3_GTIMA_SRC_INTERNAL && itfg_trig_mode == XSP3_ITFG_TRIG_MODE_SOFTWARE) {
+        xsp3_status = xsp3->histogram_arm(xsp3_handle_, 0);
+        if (xsp3_status != XSP3_OK) {
+            checkStatus(xsp3_status, "xsp3_histogram_arm", functionName);
+            return asynError;
         }
     }
 
@@ -937,7 +924,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
   int function = pasynUser->reason;
   int addr = 0;
-  int xsp3_status = 0;
+  int xsp3_status = XSP3_OK;
   int xsp3_sca_lim = 0;
   int xsp3_time_frames = 0;
   int adStatus = 0;
@@ -969,23 +956,62 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
     }
   } 
   else if (function == ADAcquire) {
-    if (value) {
-      if (adStatus != ADStatusAcquire) {
-	  if ((status = checkConnected()) == asynSuccess) {
-	    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Starting Data Collection.\n", functionName);
-            setupITFG();
-	    xsp3_status = xsp3->histogram_start(xsp3_handle_, -1 );
-	    if (xsp3_status != XSP3_OK) {
-		checkStatus(xsp3_status, "xsp3_histogram_start", functionName);
-		status = asynError;
-	    }
-	    if (status == asynSuccess) {
-            this->pushEvent(this->startEvent);
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Started Data Collection.\n", functionName);
-	    }
-	}
+    if (value && adStatus != ADStatusAcquire && (status = checkConnected()) == asynSuccess) {
+      // 1 was written to :Acquire PV, we're not already acquiring, and we are connected to the xspress3.
+      // Start acquisition.
+
+      asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Starting Data Collection.\n", functionName);
+
+      int n_cards;
+      getIntegerParam(xsp3NumCardsParam, &n_cards);
+      for (int card_n = 1; card_n < n_cards; card_n++) {
+        // xsp3_status |= xsp3->set_glob_timeA(xsp3_handle_, card_n, XSP3_GTIMA_SRC_TTL_VETO_ONLY)
+        // Do this in setTriggerMode instead.
+        xsp3_status |= xsp3->histogram_start(xsp3_handle_, card_n);
       }
-    } else {
+
+      // How we start the acquisition will depend on which timeframe source was
+      // requested. Let's find out what was requested.
+      int timeframe_source;
+      getIntegerParam(xsp3TriggerModeParam, &timeframe_source);
+
+      if (timeframe_source == XSP3_GTIMA_SRC_INTERNAL) {
+        // If the internal timeframe generator was requested, we also need to
+        // know how the internal timeframes should be triggered. Let's find
+        // out.
+        int itfg_trig_source;
+        getIntegerParam(xsp3ItfgTrigModeParam, &itfg_trig_source);
+
+        if (itfg_trig_source == XSP3_ITFG_TRIG_MODE_SOFTWARE) {
+          // xsp3_histogram_arm has already been called in setTriggerMode.
+          // Now we just need to trigger a single exposure, like so:
+          xsp3_status |= xsp3->histogram_continue(xsp3_handle_, 0);
+          xsp3_status |= xsp3->histogram_pause(xsp3_handle_, 0);
+          // (The time elapsed between the above two calls does not determine the exposure time, and is unimportant.)
+
+        } else if (itfg_trig_source == XSP3_ITFG_TRIG_MODE_HARDWARE) {
+          // Our only job is to arm the xspress3 so it becomes ready to accept triggers.
+          xsp3_status |= xsp3->histogram_start(xsp3_handle_, 0);
+          // (Called with -1, meaning "all cards".)
+
+        } else if (itfg_trig_source == XSP3_ITFG_TRIG_MODE_BURST) {
+          // Our only job is to set off the burst of exposures.
+          xsp3_status |= xsp3->histogram_start(xsp3_handle_, 0);
+
+        }
+      } else {
+        xsp3_status |= xsp3_histogram_start(xsp3_handle_, 0);
+      }
+
+      if (xsp3_status != XSP3_OK) {
+        checkStatus(xsp3_status, "xsp3_histogram_start", functionName);
+        status = asynError;
+      }
+      if (status == asynSuccess) {
+          this->pushEvent(this->startEvent);
+          asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Started Data Collection.\n", functionName);
+      }
+    } else {  // 0 was written to :Acquire PV. Stop acquisition.
       if (adStatus == ADStatusAcquire) {
 	  if ((status = checkConnected()) == asynSuccess) {
 	    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Stop Data Collection.\n", functionName);
@@ -1009,24 +1035,34 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
       status = asynError;
     }
   }
-  else if (function == xsp3TriggerModeParam ||
-           function == xsp3InvertF0Param    ||
-           function == xsp3InvertVetoParam  ||
-           function == xsp3DebounceParam      ) {
+  else if (function == xsp3TriggerModeParam  ||
+           function == xsp3ItfgTrigModeParam ||
+           function == ADNumImages           ||
+           function == ADAcquireTime         ||
+           function == xsp3InvertF0Param     ||
+           function == xsp3InvertVetoParam   ||
+           function == xsp3DebounceParam       ) {
     if ((status = checkConnected()) == asynSuccess) {
-      int trigger_mode, invert_f0, invert_veto, debounce;
+      int trigger_mode, itfg_trig_mode, num_frames, invert_f0, invert_veto, debounce;
+      double exposure_time;
 
       getIntegerParam(xsp3TriggerModeParam, &trigger_mode);
+      getIntegerParam(xsp3ItfgTrigModeParam, &itfg_trig_mode);
+      getIntegerParam(ADNumImages, &num_frames);
+      getDoubleParam(ADAcquireTime, &exposure_time);
       getIntegerParam(xsp3InvertF0Param, &invert_f0);
       getIntegerParam(xsp3InvertVetoParam, &invert_veto);
       getIntegerParam(xsp3DebounceParam, &debounce);
        
-      if (function == xsp3TriggerModeParam)     trigger_mode=value;
-      else if (function == xsp3InvertF0Param)   invert_f0=value;
-      else if (function == xsp3InvertVetoParam) invert_veto=value;
+      if (function == xsp3TriggerModeParam)       trigger_mode=value;
+      else if (function == xsp3ItfgTrigModeParam) itfg_trig_mode=value;
+      else if (function == ADNumImages)           num_frames=value;
+      else if (function == ADAcquireTime)         exposure_time=value;
+      else if (function == xsp3InvertF0Param)     invert_f0=value;
+      else if (function == xsp3InvertVetoParam)   invert_veto=value;
       else debounce=value;
 
-      status = setTriggerMode(trigger_mode, invert_f0, invert_veto, debounce );
+      status = setTriggerMode(trigger_mode, itfg_trig_mode, num_frames, exposure_time, invert_f0, invert_veto, debounce);
     }
   } 
   else if (function == xsp3FixedTimeParam) {
@@ -1083,6 +1119,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
     }
   } 
   else if (function == xsp3TriggerParam) {
+    // TODO: Deprecate this.
     if ((status = checkConnected()) == asynSuccess && adStatus == ADStatusAcquire && value) {
       asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Triggering Next Frame.\n", functionName);
       xsp3_status = xsp3->histogram_continue(xsp3_handle_, -1);

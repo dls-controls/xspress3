@@ -84,7 +84,7 @@ record(longin, "$(P)$(R)MAX_NUM_CHANNELS_RBV")
 }
 
 # ///
-# /// Select the trigger source (internal or external).
+# /// Select the time frame source (internal or external).
 # ///
 record(mbbo, "$(P)$(R)TriggerMode")
 {
@@ -109,7 +109,7 @@ record(mbbo, "$(P)$(R)TriggerMode")
 }
 
 # ///
-# /// Read the trigger source (internal or external).
+# /// Read the time frame source (internal or external).
 # ///
 record(mbbi, "$(P)$(R)TriggerMode_RBV")
 {
@@ -130,6 +130,43 @@ record(mbbi, "$(P)$(R)TriggerMode_RBV")
    field(SXST, "LVDS Both")
    field(SXVL, "6")
    field(SCAN, "I/O Intr")
+}
+
+# ///
+# /// Select the trigger mode for the internal time frame generator.
+# ///
+record(mbbo, "$(P)$(R)ItfgTrigMode")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_ITFG_TRIG_MODE")
+   field(PINI, "NO")
+   field(VAL,  "0")
+
+   # The assignments here must match the XSP3_ITFG_TRIG_MODE enum of
+   # libxspress3.
+   field(ZRST, "Burst")
+   field(ZRVL, "0")
+   field(ONST, "Software")
+   field(ONVL, "1")
+   field(TWST, "Hardware")
+   field(TWVL, "2")
+}
+
+# ///
+# /// Read the trigger mode for the internal time frame generator.
+# ///
+record(mbbi, "$(P)$(R)ItfgTrigMode_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_ITFG_TRIG_MODE")
+   field(SCAN, "I/O Intr")
+
+   field(ZRST, "Burst")
+   field(ZRVL, "0")
+   field(ONST, "Software")
+   field(ONVL, "1")
+   field(TWST, "Hardware")
+   field(TWVL, "2")
 }
 
 # ///
