@@ -151,6 +151,7 @@ class Xspress3 : public ADDriver {
   asynStatus setupITFG(void); 
   asynStatus mapTriggerMode(int mode, int invert_f0, int invert_veto, int debounce, int *apiMode);
   asynStatus setTriggerMode(int mode, int itfg_trig_mode, int num_frames, double exposure_time, int invert_f0, int invert_veto, int debounce );
+  asynStatus collectParamsAndSetTriggerMode();
   void createInitialParameters();
   bool setInitialParameters(int maxFrames, int numCards, int maxSpectra);
   void pushEvent(const epicsUInt8& message);
