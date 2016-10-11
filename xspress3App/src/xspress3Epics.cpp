@@ -906,14 +906,6 @@ asynStatus Xspress3::setTriggerMode(int mode, int itfg_trig_mode, int num_frames
         }
     }
 
-    if (mode == XSP3_GTIMA_SRC_INTERNAL && itfg_trig_mode == XSP3_ITFG_TRIG_MODE_SOFTWARE) {
-        xsp3_status = xsp3->histogram_arm(xsp3_handle_, 0);
-        if (xsp3_status != XSP3_OK) {
-            checkStatus(xsp3_status, "xsp3_histogram_arm", functionName);
-            return asynError;
-        }
-    }
-
     return status;
 }
 
@@ -973,17 +965,21 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
   } 
   else if (function == ADAcquire) {
     if (value && (status = checkConnected()) == asynSuccess) {
-        int timeframe_source;  getIntegerParam(xsp3TriggerModeParam, &timeframe_source);
-        int itfg_trig_source;  getIntegerParam(xsp3ItfgTrigModeParam, &itfg_trig_source);
+        int timeframe_source, itfg_trig_source;
+        getIntegerParam(xsp3TriggerModeParam, &timeframe_source);
+        getIntegerParam(xsp3ItfgTrigModeParam, &itfg_trig_source);
 
         if (timeframe_source == XSP3_GTIMA_SRC_INTERNAL && itfg_trig_source == XSP3_ITFG_TRIG_MODE_SOFTWARE && adStatus == ADStatusAcquire) {
+            // In this case, we don't want to start acquisition from scratch, just trigger another frame.
             xsp3_status |= xsp3->histogram_continue(xsp3_handle_, 0);
             xsp3_status |= xsp3->histogram_pause(xsp3_handle_, 0);
+            // (The time elapsed between the above two library calls is unimportant.)
 
         } else if (adStatus != ADStatusAcquire) {
             // In all other cases we want to set up the triggering now.
             collectParamsAndSetTriggerMode();
 
+            // Arm the child cards to recieve TTL Veto signals.
             int n_cards;
             getIntegerParam(xsp3NumCardsParam, &n_cards);
             for (int card_n = 1; card_n < n_cards; card_n++) {
@@ -991,6 +987,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
             }
 
             if (timeframe_source == XSP3_GTIMA_SRC_INTERNAL && itfg_trig_source == XSP3_ITFG_TRIG_MODE_SOFTWARE) {
+                xsp3_status |= xsp3->histogram_arm(xsp3_handle_, 0);
                 xsp3_status |= xsp3->histogram_continue(xsp3_handle_, 0);
                 xsp3_status |= xsp3->histogram_pause(xsp3_handle_, 0);
 
