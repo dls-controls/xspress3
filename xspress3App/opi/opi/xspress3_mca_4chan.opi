@@ -1,0 +1,1717 @@
+<?xml version='1.0' encoding='utf-8'?>
+<display typeId="org.csstudio.opibuilder.Display" version="1.0">
+  <x>2416</x>
+  <y>79</y>
+  <width>1000</width>
+  <height>965</height>
+  <font>
+    <fontdata fontName="liberation sans" height="9" style="0" />
+  </font>
+  <boy_version>4.0.0</boy_version>
+  <foreground_color>
+    <color blue="0" green="0" name="Black" red="0" />
+  </foreground_color>
+  <background_color>
+    <color blue="200" green="200" name="Canvas" red="200" />
+  </background_color>
+  <name>Xspress3 MCA Spectra</name>
+  <show_grid>true</show_grid>
+  <grid_space>5</grid_space>
+  <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>0</x>
+    <y>0</y>
+    <width>996</width>
+    <height>26</height>
+    <name>0</name>
+    <lock_children>true</lock_children>
+    <border_style>0</border_style>
+    <show_scrollbar>false</show_scrollbar>
+    <transparent>true</transparent>
+    <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+      <transparent>true</transparent>
+      <x>0</x>
+      <y>2</y>
+      <width>995</width>
+      <height>26</height>
+      <name>EDM Rectangle</name>
+      <line_color>
+        <color blue="230" green="230" name="Grey 90%" red="230" />
+      </line_color>
+      <transparent>true</transparent>
+      <background_color>
+        <color blue="255" green="255" name="White" red="255" />
+      </background_color>
+      <visible>true</visible>
+      <line_width>1</line_width>
+      <line_style>0</line_style>
+    </widget>
+    <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+      <transparent>true</transparent>
+      <x>1</x>
+      <y>3</y>
+      <width>995</width>
+      <height>26</height>
+      <name>EDM Rectangle</name>
+      <line_color>
+        <color blue="102" green="102" name="Grey 40%" red="102" />
+      </line_color>
+      <transparent>true</transparent>
+      <background_color>
+        <color blue="255" green="255" name="White" red="255" />
+      </background_color>
+      <visible>true</visible>
+      <line_width>1</line_width>
+      <line_style>0</line_style>
+    </widget>
+    <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+      <x>1</x>
+      <y>3</y>
+      <width>995</width>
+      <height>25</height>
+      <foreground_color>
+        <color blue="0" green="0" name="Black" red="0" />
+      </foreground_color>
+      <background_color>
+        <color blue="192" green="192" name="Grey 75%" red="192" />
+      </background_color>
+      <font>
+        <fontdata fontName="liberation sans" height="10" style="1" />
+      </font>
+      <transparent>true</transparent>
+      <line_width>0</line_width>
+      <name>EDM related display</name>
+      <actions hook="true" hook_all="false">
+        <action type="OPEN_DISPLAY">
+          <path>generic-tooltip.opi</path>
+          <macros>
+            <include_parent_macros>true</include_parent_macros>
+          </macros>
+          <mode>8</mode>
+          <description />
+        </action>
+      </actions>
+      <text>tooltip</text>
+    </widget>
+    <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+      <x>1</x>
+      <y>3</y>
+      <width>995</width>
+      <height>26</height>
+      <foreground_color>
+        <color blue="0" green="0" name="Text: FG" red="0" />
+      </foreground_color>
+      <background_color>
+        <color blue="135" green="216" name="EA title" red="135" />
+      </background_color>
+      <font>
+        <fontdata fontName="liberation sans" height="12" style="1" />
+      </font>
+      <name>EDM Label</name>
+      <text>Xspress3 $(P) Channels 1-4 MCA Data  </text>
+      <auto_size>false</auto_size>
+      <border_style>0</border_style>
+      <border_color>
+        <color blue="0" green="0" name="Black" red="0" />
+      </border_color>
+      <background_color>
+        <color blue="135" green="216" name="EA title" red="135" />
+      </background_color>
+      <foreground_color>
+        <color blue="0" green="0" name="Text: FG" red="0" />
+      </foreground_color>
+      <transparent>false</transparent>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>895</x>
+    <y>925</y>
+    <width>96</width>
+    <height>31</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Exit: FG" red="192" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="13" style="1" />
+    </font>
+    <name>EDM Exit Button</name>
+    <actions hook="false" hook_all="false">
+      <action type="EXECUTE_JAVASCRIPT">
+        <embedded>true</embedded>
+        <scriptText>importPackage(Packages.org.csstudio.opibuilder.scriptUtil);ScriptUtil.closeAssociatedOPI(widget);</scriptText>
+      </action>
+    </actions>
+    <text>EXIT</text>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <transparent>true</transparent>
+    <x>10</x>
+    <y>35</y>
+    <width>976</width>
+    <height>336</height>
+    <name>EDM Rectangle</name>
+    <line_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </line_color>
+    <transparent>false</transparent>
+    <background_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </background_color>
+    <visible>true</visible>
+    <line_width>1</line_width>
+    <line_style>0</line_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.dawn.xygraph" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>20</x>
+    <y>55</y>
+    <width>956</width>
+    <height>306</height>
+    <foreground_color>
+      <color blue="64" green="64" name="Grey 25%" red="64" />
+    </foreground_color>
+    <background_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </font>
+    <name>EDM xyGraph</name>
+    <show_toolbar>false</show_toolbar>
+    <axis_count>3</axis_count>
+    <axis_0_axis_title />
+    <axis_1_axis_title />
+    <axis_2_axis_title />
+    <axis_2_left_bottom_side>false</axis_2_left_bottom_side>
+    <axis_0_axis_color>
+      <color blue="64" green="64" name="Grey 25%" red="64" />
+    </axis_0_axis_color>
+    <axis_1_axis_color>
+      <color blue="64" green="64" name="Grey 25%" red="64" />
+    </axis_1_axis_color>
+    <axis_2_axis_color>
+      <color blue="64" green="64" name="Grey 25%" red="64" />
+    </axis_2_axis_color>
+    <background_color>
+      <color blue="192" green="192" name="Grey 75%" red="192" />
+    </background_color>
+    <plot_area_background_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </plot_area_background_color>
+    <axis_0_grid_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </axis_0_grid_color>
+    <axis_1_grid_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </axis_1_grid_color>
+    <axis_2_grid_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </axis_2_grid_color>
+    <border_width>1</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <show_plot_area_border>false</show_plot_area_border>
+    <axis_0_visible>true</axis_0_visible>
+    <axis_1_visible>true</axis_1_visible>
+    <axis_2_visible>false</axis_2_visible>
+    <axis_0_minimum>0.0</axis_0_minimum>
+    <axis_1_minimum>0.0</axis_1_minimum>
+    <axis_2_minimum>0.0</axis_2_minimum>
+    <axis_0_maximum>1.0</axis_0_maximum>
+    <axis_1_maximum>1.0</axis_1_maximum>
+    <axis_2_maximum>1.0</axis_2_maximum>
+    <axis_0_show_grid>false</axis_0_show_grid>
+    <axis_1_show_grid>false</axis_1_show_grid>
+    <axis_2_show_grid>false</axis_2_show_grid>
+    <show_legend>false</show_legend>
+    <axis_0_scale_font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </axis_0_scale_font>
+    <axis_0_title_font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </axis_0_title_font>
+    <axis_1_scale_font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </axis_1_scale_font>
+    <axis_1_title_font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </axis_1_title_font>
+    <axis_0_time_format>0</axis_0_time_format>
+    <axis_1_logScale>false</axis_1_logScale>
+    <axis_2_logScale>false</axis_2_logScale>
+    <axis_1_time_format>0</axis_1_time_format>
+    <axis_2_time_format>0</axis_2_time_format>
+    <axis_0_auto_scale>false</axis_0_auto_scale>
+    <axis_0_auto_scale_threshold>0.95</axis_0_auto_scale_threshold>
+    <axis_1_auto_scale>false</axis_1_auto_scale>
+    <axis_1_auto_scale_threshold>0.95</axis_1_auto_scale_threshold>
+    <axis_0_auto_scale>true</axis_0_auto_scale>
+    <axis_1_auto_scale>true</axis_1_auto_scale>
+    <axis_2_auto_scale>true</axis_2_auto_scale>
+    <axis_0_log_scale>false</axis_0_log_scale>
+    <axis_1_log_scale>false</axis_1_log_scale>
+    <trace_count>4</trace_count>
+    <trace_0_update_delay>0</trace_0_update_delay>
+    <trace_0_concatenate_data>false</trace_0_concatenate_data>
+    <trace_0_anti_alias>false</trace_0_anti_alias>
+    <trace_1_update_delay>0</trace_1_update_delay>
+    <trace_1_concatenate_data>false</trace_1_concatenate_data>
+    <trace_1_anti_alias>false</trace_1_anti_alias>
+    <trace_2_update_delay>0</trace_2_update_delay>
+    <trace_2_concatenate_data>false</trace_2_concatenate_data>
+    <trace_2_anti_alias>false</trace_2_anti_alias>
+    <trace_3_update_delay>0</trace_3_update_delay>
+    <trace_3_concatenate_data>false</trace_3_concatenate_data>
+    <trace_3_anti_alias>false</trace_3_anti_alias>
+    <trace_0_y_pv>$(P):ARRSUM1:ArrayData</trace_0_y_pv>
+    <trace_1_y_pv>$(P):ARRSUM2:ArrayData</trace_1_y_pv>
+    <trace_2_y_pv>$(P):ARRSUM3:ArrayData</trace_2_y_pv>
+    <trace_3_y_pv>$(P):ARRSUM4:ArrayData</trace_3_y_pv>
+    <tooltip>$(trace_0_y_pv)
+$(trace_0_y_pv_value)
+$(trace_1_y_pv)
+$(trace_1_y_pv_value)
+$(trace_2_y_pv)
+$(trace_2_y_pv_value)
+$(trace_3_y_pv)
+$(trace_3_y_pv_value)</tooltip>
+    <pv_name>$(trace_0_y_pv)</pv_name>
+    <trace_0_trace_color>
+      <color blue="0" green="255" name="Green" red="0" />
+    </trace_0_trace_color>
+    <trace_1_trace_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </trace_1_trace_color>
+    <trace_2_trace_color>
+      <color blue="0" green="0" name="Red" red="255" />
+    </trace_2_trace_color>
+    <trace_3_trace_color>
+      <color blue="0" green="255" name="Yellow" red="255" />
+    </trace_3_trace_color>
+    <trace_0_buffer_size>65536</trace_0_buffer_size>
+    <trace_2_buffer_size>65536</trace_2_buffer_size>
+    <trace_3_buffer_size>65536</trace_3_buffer_size>
+    <trace_3_trace_type>0</trace_3_trace_type>
+    <trace_2_trace_type>0</trace_2_trace_type>
+    <trace_0_trace_type>0</trace_0_trace_type>
+    <trace_1_buffer_size>65536</trace_1_buffer_size>
+    <trace_1_trace_type>0</trace_1_trace_type>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>10</x>
+    <y>30</y>
+    <width>312</width>
+    <height>17</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="128" green="128" name="Grey 50%" red="128" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>  Channels 1-4 MCA Summed Spectra Data  </text>
+    <auto_size>true</auto_size>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="128" green="128" name="Grey 50%" red="128" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>0</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <transparent>true</transparent>
+    <x>10</x>
+    <y>385</y>
+    <width>976</width>
+    <height>336</height>
+    <name>EDM Rectangle</name>
+    <line_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </line_color>
+    <transparent>false</transparent>
+    <background_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </background_color>
+    <visible>true</visible>
+    <line_width>1</line_width>
+    <line_style>0</line_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.dawn.xygraph" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>20</x>
+    <y>405</y>
+    <width>956</width>
+    <height>306</height>
+    <foreground_color>
+      <color blue="64" green="64" name="Grey 25%" red="64" />
+    </foreground_color>
+    <background_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </font>
+    <name>EDM xyGraph</name>
+    <show_toolbar>false</show_toolbar>
+    <axis_count>3</axis_count>
+    <axis_0_axis_title />
+    <axis_1_axis_title />
+    <axis_2_axis_title />
+    <axis_2_left_bottom_side>false</axis_2_left_bottom_side>
+    <axis_0_axis_color>
+      <color blue="64" green="64" name="Grey 25%" red="64" />
+    </axis_0_axis_color>
+    <axis_1_axis_color>
+      <color blue="64" green="64" name="Grey 25%" red="64" />
+    </axis_1_axis_color>
+    <axis_2_axis_color>
+      <color blue="64" green="64" name="Grey 25%" red="64" />
+    </axis_2_axis_color>
+    <background_color>
+      <color blue="192" green="192" name="Grey 75%" red="192" />
+    </background_color>
+    <plot_area_background_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </plot_area_background_color>
+    <axis_0_grid_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </axis_0_grid_color>
+    <axis_1_grid_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </axis_1_grid_color>
+    <axis_2_grid_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </axis_2_grid_color>
+    <border_width>1</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <show_plot_area_border>false</show_plot_area_border>
+    <axis_0_visible>true</axis_0_visible>
+    <axis_1_visible>true</axis_1_visible>
+    <axis_2_visible>false</axis_2_visible>
+    <axis_0_minimum>0.0</axis_0_minimum>
+    <axis_1_minimum>0.0</axis_1_minimum>
+    <axis_2_minimum>0.0</axis_2_minimum>
+    <axis_0_maximum>1.0</axis_0_maximum>
+    <axis_1_maximum>1.0</axis_1_maximum>
+    <axis_2_maximum>1.0</axis_2_maximum>
+    <axis_0_show_grid>false</axis_0_show_grid>
+    <axis_1_show_grid>false</axis_1_show_grid>
+    <axis_2_show_grid>false</axis_2_show_grid>
+    <show_legend>false</show_legend>
+    <axis_0_scale_font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </axis_0_scale_font>
+    <axis_0_title_font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </axis_0_title_font>
+    <axis_1_scale_font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </axis_1_scale_font>
+    <axis_1_title_font>
+      <fontdata fontName="liberation sans" height="9" style="0" />
+    </axis_1_title_font>
+    <axis_0_time_format>0</axis_0_time_format>
+    <axis_1_logScale>false</axis_1_logScale>
+    <axis_2_logScale>false</axis_2_logScale>
+    <axis_1_time_format>0</axis_1_time_format>
+    <axis_2_time_format>0</axis_2_time_format>
+    <axis_0_auto_scale>false</axis_0_auto_scale>
+    <axis_0_auto_scale_threshold>0.95</axis_0_auto_scale_threshold>
+    <axis_1_auto_scale>false</axis_1_auto_scale>
+    <axis_1_auto_scale_threshold>0.95</axis_1_auto_scale_threshold>
+    <axis_0_auto_scale>true</axis_0_auto_scale>
+    <axis_1_auto_scale>true</axis_1_auto_scale>
+    <axis_2_auto_scale>true</axis_2_auto_scale>
+    <axis_0_log_scale>false</axis_0_log_scale>
+    <axis_1_log_scale>false</axis_1_log_scale>
+    <trace_count>4</trace_count>
+    <trace_0_update_delay>0</trace_0_update_delay>
+    <trace_0_concatenate_data>false</trace_0_concatenate_data>
+    <trace_0_anti_alias>false</trace_0_anti_alias>
+    <trace_1_update_delay>0</trace_1_update_delay>
+    <trace_1_concatenate_data>false</trace_1_concatenate_data>
+    <trace_1_anti_alias>false</trace_1_anti_alias>
+    <trace_2_update_delay>0</trace_2_update_delay>
+    <trace_2_concatenate_data>false</trace_2_concatenate_data>
+    <trace_2_anti_alias>false</trace_2_anti_alias>
+    <trace_3_update_delay>0</trace_3_update_delay>
+    <trace_3_concatenate_data>false</trace_3_concatenate_data>
+    <trace_3_anti_alias>false</trace_3_anti_alias>
+    <trace_0_y_pv>$(P):ARR1:ArrayData</trace_0_y_pv>
+    <trace_1_y_pv>$(P):ARR2:ArrayData</trace_1_y_pv>
+    <trace_2_y_pv>$(P):ARR3:ArrayData</trace_2_y_pv>
+    <trace_3_y_pv>$(P):ARR4:ArrayData</trace_3_y_pv>
+    <tooltip>$(trace_0_y_pv)
+$(trace_0_y_pv_value)
+$(trace_1_y_pv)
+$(trace_1_y_pv_value)
+$(trace_2_y_pv)
+$(trace_2_y_pv_value)
+$(trace_3_y_pv)
+$(trace_3_y_pv_value)</tooltip>
+    <pv_name>$(trace_0_y_pv)</pv_name>
+    <trace_0_trace_color>
+      <color blue="0" green="255" name="Green" red="0" />
+    </trace_0_trace_color>
+    <trace_1_trace_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </trace_1_trace_color>
+    <trace_2_trace_color>
+      <color blue="0" green="0" name="Red" red="255" />
+    </trace_2_trace_color>
+    <trace_3_trace_color>
+      <color blue="0" green="255" name="Yellow" red="255" />
+    </trace_3_trace_color>
+    <trace_0_buffer_size>65536</trace_0_buffer_size>
+    <trace_2_buffer_size>65536</trace_2_buffer_size>
+    <trace_3_buffer_size>65536</trace_3_buffer_size>
+    <trace_3_trace_type>0</trace_3_trace_type>
+    <trace_2_trace_type>0</trace_2_trace_type>
+    <trace_0_trace_type>0</trace_0_trace_type>
+    <trace_1_buffer_size>65536</trace_1_buffer_size>
+    <trace_1_trace_type>0</trace_1_trace_type>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>10</x>
+    <y>380</y>
+    <width>330</width>
+    <height>17</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="128" green="128" name="Grey 50%" red="128" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>  Channels 1-4 MCA Per Frame Spectra Data    </text>
+    <auto_size>true</auto_size>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="128" green="128" name="Grey 50%" red="128" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>0</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <transparent>true</transparent>
+    <x>10</x>
+    <y>740</y>
+    <width>876</width>
+    <height>216</height>
+    <name>EDM Rectangle</name>
+    <line_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </line_color>
+    <transparent>false</transparent>
+    <background_color>
+      <color blue="166" green="166" name="Grey 65%" red="166" />
+    </background_color>
+    <visible>true</visible>
+    <line_width>1</line_width>
+    <line_style>0</line_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>10</x>
+    <y>730</y>
+    <width>285</width>
+    <height>17</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="128" green="128" name="Grey 50%" red="128" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>  Region Of Interest 1 and Visualisation  </text>
+    <auto_size>true</auto_size>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="128" green="128" name="Grey 50%" red="128" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>0</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>360</x>
+    <y>765</y>
+    <width>101</width>
+    <height>31</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>
+High Bin</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>250</x>
+    <y>765</y>
+    <width>101</width>
+    <height>31</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>
+Low Bin</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>455</x>
+    <y>770</y>
+    <width>121</width>
+    <height>21</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>Tot. Count</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>255</x>
+    <y>830</y>
+    <width>91</width>
+    <height>36</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Text Update</name>
+    <pv_name>$(P):C2_MCA_ROI1_LLM</pv_name>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_width>0</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>true</show_units>
+    <format_type>0</format_type>
+    <precision>0</precision>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <name>EDM Text Entry</name>
+    <style>0</style>
+    <border_style>3</border_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>360</x>
+    <y>830</y>
+    <width>91</width>
+    <height>36</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Text Update</name>
+    <pv_name>$(P):C2_MCA_ROI1_HLM</pv_name>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_width>0</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>true</show_units>
+    <format_type>0</format_type>
+    <precision>0</precision>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <name>EDM Text Entry</name>
+    <style>0</style>
+    <border_style>3</border_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>465</x>
+    <y>835</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="96" green="255" name="Monitor: FG" red="96" />
+    </foreground_color>
+    <background_color>
+      <color blue="64" green="64" name="Monitor: BG" red="64" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM TextInput</name>
+    <pv_name>$(P):C2_ROI1:Value_RBV</pv_name>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision>0</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+    <format_type>0</format_type>
+    <border_style>None</border_style>
+    <transparent>false</transparent>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>255</x>
+    <y>865</y>
+    <width>91</width>
+    <height>36</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Text Update</name>
+    <pv_name>$(P):C3_MCA_ROI1_LLM</pv_name>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_width>0</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>true</show_units>
+    <format_type>0</format_type>
+    <precision>0</precision>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <name>EDM Text Entry</name>
+    <style>0</style>
+    <border_style>3</border_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>360</x>
+    <y>865</y>
+    <width>91</width>
+    <height>36</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Text Update</name>
+    <pv_name>$(P):C3_MCA_ROI1_HLM</pv_name>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_width>0</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>true</show_units>
+    <format_type>0</format_type>
+    <precision>0</precision>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <name>EDM Text Entry</name>
+    <style>0</style>
+    <border_style>3</border_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>465</x>
+    <y>870</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="96" green="255" name="Monitor: FG" red="96" />
+    </foreground_color>
+    <background_color>
+      <color blue="64" green="64" name="Monitor: BG" red="64" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM TextInput</name>
+    <pv_name>$(P):C3_ROI1:Value_RBV</pv_name>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision>0</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+    <format_type>0</format_type>
+    <border_style>None</border_style>
+    <transparent>false</transparent>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>255</x>
+    <y>900</y>
+    <width>91</width>
+    <height>36</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Text Update</name>
+    <pv_name>$(P):C4_MCA_ROI1_LLM</pv_name>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_width>0</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>true</show_units>
+    <format_type>0</format_type>
+    <precision>0</precision>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <name>EDM Text Entry</name>
+    <style>0</style>
+    <border_style>3</border_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>360</x>
+    <y>900</y>
+    <width>91</width>
+    <height>36</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Text Update</name>
+    <pv_name>$(P):C4_MCA_ROI1_HLM</pv_name>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_width>0</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>true</show_units>
+    <format_type>0</format_type>
+    <precision>0</precision>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <name>EDM Text Entry</name>
+    <style>0</style>
+    <border_style>3</border_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>465</x>
+    <y>905</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="96" green="255" name="Monitor: FG" red="96" />
+    </foreground_color>
+    <background_color>
+      <color blue="64" green="64" name="Monitor: BG" red="64" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM TextInput</name>
+    <pv_name>$(P):C4_ROI1:Value_RBV</pv_name>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision>0</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+    <format_type>0</format_type>
+    <border_style>None</border_style>
+    <transparent>false</transparent>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>675</x>
+    <y>800</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="32" green="64" name="Related Display: FG" red="128" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM related display</name>
+    <actions hook="false" hook_all="false">
+      <action type="OPEN_DISPLAY">
+        <path>NDAttributePlot.opi</path>
+        <macros>
+          <include_parent_macros>true</include_parent_macros>
+          <R>:C1_ROI1:</R>
+          <ATTR>ROI1</ATTR>
+          <CHAN>1</CHAN>
+        </macros>
+        <mode>8</mode>
+        <description />
+      </action>
+    </actions>
+    <text>Array</text>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>255</x>
+    <y>795</y>
+    <width>91</width>
+    <height>36</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Text Update</name>
+    <pv_name>$(P):C1_MCA_ROI1_LLM</pv_name>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_width>0</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>true</show_units>
+    <format_type>0</format_type>
+    <precision>0</precision>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <name>EDM Text Entry</name>
+    <style>0</style>
+    <border_style>3</border_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>360</x>
+    <y>795</y>
+    <width>91</width>
+    <height>36</height>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Text Update</name>
+    <pv_name>$(P):C1_MCA_ROI1_HLM</pv_name>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_width>0</border_width>
+    <border_style>1</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>true</show_units>
+    <format_type>0</format_type>
+    <precision>0</precision>
+    <foreground_color>
+      <color blue="192" green="0" name="Controller: FG" red="0" />
+    </foreground_color>
+    <name>EDM Text Entry</name>
+    <style>0</style>
+    <border_style>3</border_style>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>465</x>
+    <y>800</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="96" green="255" name="Monitor: FG" red="96" />
+    </foreground_color>
+    <background_color>
+      <color blue="64" green="64" name="Monitor: BG" red="64" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM TextInput</name>
+    <pv_name>$(P):C1_ROI1:Value_RBV</pv_name>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision>0</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+    <format_type>0</format_type>
+    <border_style>None</border_style>
+    <transparent>false</transparent>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>675</x>
+    <y>835</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="32" green="64" name="Related Display: FG" red="128" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM related display</name>
+    <actions hook="false" hook_all="false">
+      <action type="OPEN_DISPLAY">
+        <path>NDAttributePlot.opi</path>
+        <macros>
+          <include_parent_macros>true</include_parent_macros>
+          <R>:C2_ROI1:</R>
+          <ATTR>ROI2</ATTR>
+          <CHAN>2</CHAN>
+        </macros>
+        <mode>8</mode>
+        <description />
+      </action>
+    </actions>
+    <text>Array</text>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>675</x>
+    <y>870</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="32" green="64" name="Related Display: FG" red="128" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM related display</name>
+    <actions hook="false" hook_all="false">
+      <action type="OPEN_DISPLAY">
+        <path>NDAttributePlot.opi</path>
+        <macros>
+          <include_parent_macros>true</include_parent_macros>
+          <R>:C3_ROI1:</R>
+          <ATTR>ROI3</ATTR>
+          <CHAN>3</CHAN>
+        </macros>
+        <mode>8</mode>
+        <description />
+      </action>
+    </actions>
+    <text>Array</text>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>675</x>
+    <y>905</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="32" green="64" name="Related Display: FG" red="128" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM related display</name>
+    <actions hook="false" hook_all="false">
+      <action type="OPEN_DISPLAY">
+        <path>NDAttributePlot.opi</path>
+        <macros>
+          <include_parent_macros>true</include_parent_macros>
+          <R>:C4_ROI1:</R>
+          <ATTR>ROI4</ATTR>
+          <CHAN>4</CHAN>
+        </macros>
+        <mode>8</mode>
+        <description />
+      </action>
+    </actions>
+    <text>Array</text>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>555</x>
+    <y>770</y>
+    <width>121</width>
+    <height>21</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>Integrated</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>570</x>
+    <y>800</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="96" green="255" name="Monitor: FG" red="96" />
+    </foreground_color>
+    <background_color>
+      <color blue="64" green="64" name="Monitor: BG" red="64" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM TextInput</name>
+    <pv_name>$(P):C1_ROI1:ValueSum_RBV</pv_name>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision>0</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+    <format_type>0</format_type>
+    <border_style>None</border_style>
+    <transparent>false</transparent>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>570</x>
+    <y>835</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="96" green="255" name="Monitor: FG" red="96" />
+    </foreground_color>
+    <background_color>
+      <color blue="64" green="64" name="Monitor: BG" red="64" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM TextInput</name>
+    <pv_name>$(P):C2_ROI1:ValueSum_RBV</pv_name>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision>0</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+    <format_type>0</format_type>
+    <border_style>None</border_style>
+    <transparent>false</transparent>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>570</x>
+    <y>870</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="96" green="255" name="Monitor: FG" red="96" />
+    </foreground_color>
+    <background_color>
+      <color blue="64" green="64" name="Monitor: BG" red="64" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM TextInput</name>
+    <pv_name>$(P):C3_ROI1:ValueSum_RBV</pv_name>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision>0</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+    <format_type>0</format_type>
+    <border_style>None</border_style>
+    <transparent>false</transparent>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>570</x>
+    <y>905</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="96" green="255" name="Monitor: FG" red="96" />
+    </foreground_color>
+    <background_color>
+      <color blue="64" green="64" name="Monitor: BG" red="64" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM TextInput</name>
+    <pv_name>$(P):C4_ROI1:ValueSum_RBV</pv_name>
+    <precision_from_pv>true</precision_from_pv>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <precision>0</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+    <format_type>0</format_type>
+    <border_style>None</border_style>
+    <transparent>false</transparent>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>780</x>
+    <y>800</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="1" />
+    </font>
+    <name>EDM menu button</name>
+    <pv_name>$(P):C1_ROI1:EnableCallbacks</pv_name>
+    <actions_from_pv>true</actions_from_pv>
+    <show_down_arrow>true</show_down_arrow>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>780</x>
+    <y>835</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="1" />
+    </font>
+    <name>EDM menu button</name>
+    <pv_name>$(P):C2_ROI1:EnableCallbacks</pv_name>
+    <actions_from_pv>true</actions_from_pv>
+    <show_down_arrow>true</show_down_arrow>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>780</x>
+    <y>870</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="1" />
+    </font>
+    <name>EDM menu button</name>
+    <pv_name>$(P):C3_ROI1:EnableCallbacks</pv_name>
+    <actions_from_pv>true</actions_from_pv>
+    <show_down_arrow>true</show_down_arrow>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>780</x>
+    <y>905</y>
+    <width>91</width>
+    <height>26</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="1" />
+    </font>
+    <name>EDM menu button</name>
+    <pv_name>$(P):C4_ROI1:EnableCallbacks</pv_name>
+    <actions_from_pv>true</actions_from_pv>
+    <show_down_arrow>true</show_down_arrow>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>660</x>
+    <y>770</y>
+    <width>131</width>
+    <height>21</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>ROI Graph</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.choiceButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>145</x>
+    <y>790</y>
+    <width>86</width>
+    <height>31</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="1" />
+    </font>
+    <name>EDM choice  Button</name>
+    <pv_name>$(P):C1_PluginControlVal</pv_name>
+    <items_from_pv>true</items_from_pv>
+    <horizontal>false</horizontal>
+    <selected_color>
+      <color blue="192" green="192" name="Grey 75%" red="192" />
+    </selected_color>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.choiceButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>145</x>
+    <y>828</y>
+    <width>86</width>
+    <height>31</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="1" />
+    </font>
+    <name>EDM choice  Button</name>
+    <pv_name>$(P):C2_PluginControlVal</pv_name>
+    <items_from_pv>true</items_from_pv>
+    <horizontal>false</horizontal>
+    <selected_color>
+      <color blue="192" green="192" name="Grey 75%" red="192" />
+    </selected_color>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.choiceButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>145</x>
+    <y>866</y>
+    <width>86</width>
+    <height>31</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="1" />
+    </font>
+    <name>EDM choice  Button</name>
+    <pv_name>$(P):C3_PluginControlVal</pv_name>
+    <items_from_pv>true</items_from_pv>
+    <horizontal>false</horizontal>
+    <selected_color>
+      <color blue="192" green="192" name="Grey 75%" red="192" />
+    </selected_color>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.choiceButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>145</x>
+    <y>905</y>
+    <width>86</width>
+    <height>31</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="205" green="205" name="Controller: BG" red="205" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="9" style="1" />
+    </font>
+    <name>EDM choice  Button</name>
+    <pv_name>$(P):C4_PluginControlVal</pv_name>
+    <items_from_pv>true</items_from_pv>
+    <horizontal>false</horizontal>
+    <selected_color>
+      <color blue="192" green="192" name="Grey 75%" red="192" />
+    </selected_color>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>125</x>
+    <y>770</y>
+    <width>131</width>
+    <height>21</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>Visualization</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Black" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Text: FG" red="0" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>15</x>
+    <y>795</y>
+    <width>131</width>
+    <height>21</height>
+    <foreground_color>
+      <color blue="0" green="255" name="Green" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>Channel 1</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="255" name="Green" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="255" name="Green" red="0" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>15</x>
+    <y>833</y>
+    <width>131</width>
+    <height>21</height>
+    <foreground_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>Channel 2</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="255" green="0" name="Blue" red="0" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>15</x>
+    <y>910</y>
+    <width>131</width>
+    <height>21</height>
+    <foreground_color>
+      <color blue="0" green="255" name="Yellow" red="255" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>Channel 4</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="255" name="Yellow" red="255" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="255" name="Yellow" red="255" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <x>15</x>
+    <y>871</y>
+    <width>131</width>
+    <height>21</height>
+    <foreground_color>
+      <color blue="0" green="0" name="Red" red="255" />
+    </foreground_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <font>
+      <fontdata fontName="liberation sans" height="10" style="1" />
+    </font>
+    <name>EDM Label</name>
+    <text>Channel 3</text>
+    <auto_size>false</auto_size>
+    <border_style>0</border_style>
+    <border_color>
+      <color blue="0" green="0" name="Red" red="255" />
+    </border_color>
+    <background_color>
+      <color blue="200" green="200" name="Canvas" red="200" />
+    </background_color>
+    <foreground_color>
+      <color blue="0" green="0" name="Red" red="255" />
+    </foreground_color>
+    <transparent>true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+</display>
