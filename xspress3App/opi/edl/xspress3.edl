@@ -325,7 +325,7 @@ x 375
 y 225
 w 195
 h 35
-controlPv "$(P):TriggerMode_RBV"
+controlPv "$(P):TimeFrameSource_RBV"
 font "arial-bold-r-16.0"
 fontAlign "center"
 fgColor index 16
@@ -353,8 +353,8 @@ bgColor index 3
 inconsistentColor index 14
 topShadowColor index 1
 botShadowColor index 11
-controlPv "$(P):TriggerMode"
-indicatorPv "$(P):TriggerMode"
+controlPv "$(P):TimeFrameSource"
+indicatorPv "$(P):TimeFrameSource"
 font "arial-bold-r-14.0"
 endObjectProperties
 
@@ -1628,8 +1628,8 @@ bgColor index 3
 inconsistentColor index 14
 topShadowColor index 1
 botShadowColor index 11
-controlPv "$(P):ItfgTrigMode"
-indicatorPv "$(P):ItfgTrigMode_RBV"
+controlPv "$(P):TriggerMode"
+indicatorPv "$(P):TriggerMode_RBV"
 font "arial-bold-r-14.0"
 endObjectProperties
 
@@ -1643,7 +1643,7 @@ x 400
 y 305
 w 135
 h 35
-controlPv "$(P):ItfgTrigMode_RBV"
+controlPv "$(P):TriggerMode_RBV"
 font "arial-bold-r-16.0"
 fontAlign "center"
 fgColor index 16

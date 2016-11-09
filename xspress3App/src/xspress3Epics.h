@@ -71,7 +71,7 @@ using std::string;
 #define xsp3MaxSpectraParamString     "XSP3_MAX_SPECTRA"
 #define xsp3MaxFramesParamString     "XSP3_MAX_FRAMES"
 #define xsp3FrameCountParamString     "XSP3_FRAME_COUNT"
-#define xsp3TriggerModeParamString        "XSP3_TRIGGER_MODE"
+#define xsp3TimeFrameSourceParamString        "XSP3_TIMEFRAME_SOURCE"
 #define xsp3ItfgTrigModeParamString        "XSP3_ITFG_TRIG_MODE"
 #define xsp3FixedTimeParamString        "XSP3_FIXED_TIME"
 #define xsp3NumFramesConfigParamString          "XSP3_NUM_FRAMES_CONFIG"
@@ -149,7 +149,7 @@ class Xspress3 : public ADDriver {
   asynStatus readSCAParams(void);
   asynStatus readDTCParams(void);
   asynStatus setupITFG(void); 
-  asynStatus mapTriggerMode(int mode, int invert_f0, int invert_veto, int debounce, int *apiMode);
+  asynStatus mapTimeFrameSource(int mode, int invert_f0, int invert_veto, int debounce, int *apiMode);
   asynStatus setTriggerMode(int mode, int itfg_trig_mode, int num_frames, double exposure_time, int invert_f0, int invert_veto, int debounce );
   asynStatus collectParamsAndSetTriggerMode();
   void createInitialParameters();
@@ -186,13 +186,13 @@ class Xspress3 : public ADDriver {
   static const epicsInt32 maxNumRoi_;
   static const epicsInt32 maxStringSize_;
   static const epicsInt32 maxCheckHistPolls_;
-  static const epicsInt32 mbboTriggerFIXED_;
-  static const epicsInt32 mbboTriggerINTERNAL_;
-  static const epicsInt32 mbboTriggerIDC_;
-  static const epicsInt32 mbboTriggerTTLVETO_;
-  static const epicsInt32 mbboTriggerTTLBOTH_;
-  static const epicsInt32 mbboTriggerLVDSVETO_;
-  static const epicsInt32 mbboTriggerLVDSBOTH_;
+  static const epicsInt32 mbboTimeFrameSourceFIXED_;
+  static const epicsInt32 mbboTimeFrameSourceINTERNAL_;
+  static const epicsInt32 mbboTimeFrameSourceIDC_;
+  static const epicsInt32 mbboTimeFrameSourceTTLVETO_;
+  static const epicsInt32 mbboTimeFrameSourceTTLBOTH_;
+  static const epicsInt32 mbboTimeFrameSourceLVDSVETO_;
+  static const epicsInt32 mbboTimeFrameSourceLVDSBOTH_;
   static const epicsInt32 ADAcquireFalse_;
   static const epicsInt32 ADAcquireTrue_;
   static const epicsUInt8 startEvent;
@@ -226,7 +226,7 @@ class Xspress3 : public ADDriver {
   int xsp3MaxSpectraParam;
   int xsp3MaxFramesParam;
   int xsp3FrameCountParam;
-  int xsp3TriggerModeParam;
+  int xsp3TimeFrameSourceParam;
   int xsp3FixedTimeParam;
   int xsp3NumFramesConfigParam;
   int xsp3NumCardsParam;

@@ -86,10 +86,10 @@ record(longin, "$(P)$(R)MAX_NUM_CHANNELS_RBV")
 # ///
 # /// Select the time frame source (internal or external).
 # ///
-record(mbbo, "$(P)$(R)TriggerMode")
+record(mbbo, "$(P)$(R)TimeFrameSource")
 {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_TRIGGER_MODE")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_TIMEFRAME_SOURCE")
    field(ZRST, "Software")
    field(ZRVL, "0")
    field(ONST, "Internal")
@@ -111,10 +111,10 @@ record(mbbo, "$(P)$(R)TriggerMode")
 # ///
 # /// Read the time frame source (internal or external).
 # ///
-record(mbbi, "$(P)$(R)TriggerMode_RBV")
+record(mbbi, "$(P)$(R)TimeFrameSource_RBV")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_TRIGGER_MODE")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_TIMEFRAME_SOURCE")
    field(ZRST, "Software")
    field(ZRVL, "0")
    field(ONST, "Internal")
@@ -135,7 +135,7 @@ record(mbbi, "$(P)$(R)TriggerMode_RBV")
 # ///
 # /// Select the trigger mode for the internal time frame generator.
 # ///
-record(mbbo, "$(P)$(R)ItfgTrigMode")
+record(mbbo, "$(P)$(R)TriggerMode")
 {
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_ITFG_TRIG_MODE")
@@ -144,10 +144,10 @@ record(mbbo, "$(P)$(R)ItfgTrigMode")
 
    # The assignments here must match the XSP3_ITFG_TRIG_MODE enum of
    # libxspress3.
-   field(ZRST, "Burst")
-   field(ZRVL, "0")
-   field(ONST, "Software")
-   field(ONVL, "1")
+   field(ZRST, "Software")
+   field(ZRVL, "1")
+   field(ONST, "Burst")
+   field(ONVL, "0")
    field(TWST, "Hardware")
    field(TWVL, "2")
 }
@@ -155,16 +155,16 @@ record(mbbo, "$(P)$(R)ItfgTrigMode")
 # ///
 # /// Read the trigger mode for the internal time frame generator.
 # ///
-record(mbbi, "$(P)$(R)ItfgTrigMode_RBV")
+record(mbbi, "$(P)$(R)TriggerMode_RBV")
 {
    field(DTYP, "asynInt32")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_ITFG_TRIG_MODE")
    field(SCAN, "I/O Intr")
 
-   field(ZRST, "Burst")
-   field(ZRVL, "0")
-   field(ONST, "Software")
-   field(ONVL, "1")
+   field(ZRST, "Software")
+   field(ZRVL, "1")
+   field(ONST, "Burst")
+   field(ONVL, "0")
    field(TWST, "Hardware")
    field(TWVL, "2")
 }

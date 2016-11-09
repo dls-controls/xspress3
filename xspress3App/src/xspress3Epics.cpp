@@ -57,13 +57,13 @@ const epicsInt32 Xspress3::runFlag_PLAYB_MCA_SPECTRA_ = 1;
 const epicsInt32 Xspress3::maxNumRoi_ = 16;
 const epicsInt32 Xspress3::maxStringSize_ = 256;
 const epicsInt32 Xspress3::maxCheckHistPolls_ = 20;
-const epicsInt32 Xspress3::mbboTriggerFIXED_ = 0;
-const epicsInt32 Xspress3::mbboTriggerINTERNAL_ = 1;
-const epicsInt32 Xspress3::mbboTriggerIDC_ = 2;
-const epicsInt32 Xspress3::mbboTriggerTTLVETO_ = 3;
-const epicsInt32 Xspress3::mbboTriggerTTLBOTH_ = 4;
-const epicsInt32 Xspress3::mbboTriggerLVDSVETO_ = 5;
-const epicsInt32 Xspress3::mbboTriggerLVDSBOTH_ = 6;
+const epicsInt32 Xspress3::mbboTimeFrameSourceFIXED_ = 0;
+const epicsInt32 Xspress3::mbboTimeFrameSourceINTERNAL_ = 1;
+const epicsInt32 Xspress3::mbboTimeFrameSourceIDC_ = 2;
+const epicsInt32 Xspress3::mbboTimeFrameSourceTTLVETO_ = 3;
+const epicsInt32 Xspress3::mbboTimeFrameSourceTTLBOTH_ = 4;
+const epicsInt32 Xspress3::mbboTimeFrameSourceLVDSVETO_ = 5;
+const epicsInt32 Xspress3::mbboTimeFrameSourceLVDSBOTH_ = 6;
 const epicsInt32 Xspress3::ADAcquireFalse_ = 0;
 const epicsInt32 Xspress3::ADAcquireTrue_ = 1;
 const epicsUInt8 Xspress3::startEvent = 1;
@@ -153,7 +153,7 @@ void Xspress3::createInitialParameters()
     createParam(xsp3MaxSpectraParamString, asynParamInt32, &xsp3MaxSpectraParam);
     createParam(xsp3MaxFramesParamString, asynParamInt32, &xsp3MaxFramesParam);
     createParam(xsp3FrameCountParamString, asynParamInt32, &xsp3FrameCountParam);
-    createParam(xsp3TriggerModeParamString, asynParamInt32, &xsp3TriggerModeParam);
+    createParam(xsp3TimeFrameSourceParamString, asynParamInt32, &xsp3TimeFrameSourceParam);
     createParam(xsp3ItfgTrigModeParamString, asynParamInt32, &xsp3ItfgTrigModeParam);
     createParam(xsp3FixedTimeParamString, asynParamInt32, &xsp3FixedTimeParam);
     createParam(xsp3NumFramesConfigParamString, asynParamInt32, &xsp3NumFramesConfigParam);
@@ -206,7 +206,7 @@ bool Xspress3::setInitialParameters(int maxFrames, int numCards, int maxSpectra)
     //Initialise any paramLib parameters that need passing up to device support
     paramStatus = ((setIntegerParam(xsp3NumChannelsParam, numChannels_) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(xsp3MaxNumChannelsParam, numChannels_) == asynSuccess) && paramStatus);
-    paramStatus = ((setIntegerParam(xsp3TriggerModeParam, 0) == asynSuccess) && paramStatus);
+    paramStatus = ((setIntegerParam(xsp3TimeFrameSourceParam, 0) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(xsp3ItfgTrigModeParam, 0) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(xsp3FixedTimeParam, 0) == asynSuccess) && paramStatus);
     paramStatus = ((setIntegerParam(ADNumImages, 0) == asynSuccess) && paramStatus);
@@ -816,48 +816,48 @@ void Xspress3::report(FILE *fp, int details)
 }
 
 /**
- * Function to map the database trigger mode 
+ * Function to map the database timeframe source
  * value to the macros defined by the API.
  * @param mode The database value
  * @param apiMode This returns the correct value for the API
  * @return asynStatus
  */
-asynStatus Xspress3::mapTriggerMode(int mode, int invert_f0, int invert_veto, int debounce, int *apiMode)
+asynStatus Xspress3::mapTimeFrameSource(int mode, int invert_f0, int invert_veto, int debounce, int *apiMode)
 {
   asynStatus status = asynSuccess;
-  const char *functionName = "Xspress3::mapTriggerMode";
+  const char *functionName = "Xspress3::mapTimeFrameSource";
 
-  if (mode == mbboTriggerFIXED_) {
+  if (mode == mbboTimeFrameSourceFIXED_) {
     *apiMode = XSP3_GTIMA_SRC_FIXED;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Trigger Mode XSP3_GTIMA_SRC_FIXED, value: %d\n", 
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Timeframe Source XSP3_GTIMA_SRC_FIXED, value: %d\n", 
 	      functionName, XSP3_GTIMA_SRC_FIXED);
-  } else if (mode == mbboTriggerINTERNAL_) {
+  } else if (mode == mbboTimeFrameSourceINTERNAL_) {
     *apiMode = XSP3_GTIMA_SRC_INTERNAL;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Trigger Mode XSP3_GTIMA_SRC_INTERNAL, value: %d\n", 
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Timeframe Source XSP3_GTIMA_SRC_INTERNAL, value: %d\n", 
 	      functionName, XSP3_GTIMA_SRC_INTERNAL);
-  } else if (mode == mbboTriggerIDC_) {
+  } else if (mode == mbboTimeFrameSourceIDC_) {
     *apiMode = XSP3_GTIMA_SRC_IDC;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Trigger Mode XSP3_GTIMA_SRC_IDC, value: %d\n", 
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Timeframe Source XSP3_GTIMA_SRC_IDC, value: %d\n", 
 	      functionName, XSP3_GTIMA_SRC_IDC);
-  } else if (mode == mbboTriggerTTLVETO_) {
+  } else if (mode == mbboTimeFrameSourceTTLVETO_) {
     *apiMode = XSP3_GTIMA_SRC_TTL_VETO_ONLY;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Trigger Mode XSP3_GTIMA_SRC_TTL_VETO_ONLY, value: %d\n", 
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Timeframe Source XSP3_GTIMA_SRC_TTL_VETO_ONLY, value: %d\n", 
 	      functionName, XSP3_GTIMA_SRC_TTL_VETO_ONLY);
-  } else if (mode == mbboTriggerTTLBOTH_) {
+  } else if (mode == mbboTimeFrameSourceTTLBOTH_) {
     *apiMode = XSP3_GTIMA_SRC_TTL_BOTH;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Trigger Mode XSP3_GTIMA_SRC_TTL_BOTH, value: %d\n", 
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Timeframe Source XSP3_GTIMA_SRC_TTL_BOTH, value: %d\n", 
 	      functionName, XSP3_GTIMA_SRC_TTL_BOTH);
-  } else if (mode == mbboTriggerLVDSVETO_) {
+  } else if (mode == mbboTimeFrameSourceLVDSVETO_) {
     *apiMode = XSP3_GTIMA_SRC_LVDS_VETO_ONLY;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Trigger Mode XSP3_GTIMA_SRC_LVDS_VETO_ONLY, value: %d\n", 
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Timeframe Source XSP3_GTIMA_SRC_LVDS_VETO_ONLY, value: %d\n", 
 	      functionName, XSP3_GTIMA_SRC_LVDS_VETO_ONLY);
-  } else if (mode == mbboTriggerLVDSBOTH_) {
+  } else if (mode == mbboTimeFrameSourceLVDSBOTH_) {
     *apiMode = XSP3_GTIMA_SRC_LVDS_BOTH;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Trigger Mode XSP3_GTIMA_SRC_LVDS_BOTH, value: %d\n", 
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Timeframe Source XSP3_GTIMA_SRC_LVDS_BOTH, value: %d\n", 
 	      functionName, XSP3_GTIMA_SRC_LVDS_BOTH);
   } else {
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s ERROR: Mapping an unknown trigger mode. mode: %d\n", functionName, mode);
-    setStringParam(ADStatusMessage, "ERROR Unknown Trigger Mode");
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s ERROR: Mapping an unknown timeframe source. mode: %d\n", functionName, mode);
+    setStringParam(ADStatusMessage, "ERROR Unknown Timeframe Source");
     setIntegerParam(ADStatus, ADStatusError);
     status = asynError;
   }
@@ -882,7 +882,7 @@ asynStatus Xspress3::setTriggerMode(int mode, int itfg_trig_mode, int num_frames
 
     for (int card=0; card<xsp3_num_cards && status == asynSuccess; card++) {
         if ( card == 0 ) {
-            status = mapTriggerMode(mode, invert_f0, invert_veto, debounce, &xsp3_trigger_mode);
+            status = mapTimeFrameSource(mode, invert_f0, invert_veto, debounce, &xsp3_trigger_mode);
             if (mode == XSP3_GTIMA_SRC_INTERNAL) {
                 xsp3_status = xsp3->itfg_setup(xsp3_handle_, card, num_frames, (u_int32_t) floor(exposure_time*80E6 + 0.5), itfg_trig_mode, XSP3_ITFG_GAP_MODE_1US);
                 if (xsp3_status != XSP3_OK) {
@@ -896,7 +896,7 @@ asynStatus Xspress3::setTriggerMode(int mode, int itfg_trig_mode, int num_frames
             // Are there multiple xspress3 cards? If so, card 0 will be master and
             // will send TTL signals to all other cards, defining their time frames.
             // For each child card, set the time frame source to TTL Veto Only.
-            status = mapTriggerMode(mbboTriggerTTLVETO_, invert_f0, 0, debounce, &xsp3_trigger_mode);
+            status = mapTimeFrameSource(mbboTimeFrameSourceTTLVETO_, invert_f0, 0, debounce, &xsp3_trigger_mode);
         }
 
         int xsp3_status = xsp3->set_glob_timeA(xsp3_handle_, card, xsp3_trigger_mode);
@@ -914,7 +914,7 @@ asynStatus Xspress3::collectParamsAndSetTriggerMode()
     int trigger_mode, itfg_trig_mode, num_frames, invert_f0, invert_veto, debounce;
     double exposure_time;
 
-    getIntegerParam(xsp3TriggerModeParam, &trigger_mode);
+    getIntegerParam(xsp3TimeFrameSourceParam, &trigger_mode);
     getIntegerParam(xsp3ItfgTrigModeParam, &itfg_trig_mode);
     getIntegerParam(ADNumImages, &num_frames);
     getDoubleParam(ADAcquireTime, &exposure_time);
@@ -966,7 +966,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
   else if (function == ADAcquire) {
     if (value && (status = checkConnected()) == asynSuccess) {
         int timeframe_source, itfg_trig_source;
-        getIntegerParam(xsp3TriggerModeParam, &timeframe_source);
+        getIntegerParam(xsp3TimeFrameSourceParam, &timeframe_source);
         getIntegerParam(xsp3ItfgTrigModeParam, &itfg_trig_source);
 
         if (timeframe_source == XSP3_GTIMA_SRC_INTERNAL && itfg_trig_source == XSP3_ITFG_TRIG_MODE_SOFTWARE && adStatus == ADStatusAcquire) {
