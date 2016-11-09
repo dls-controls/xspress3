@@ -1605,7 +1605,9 @@ void Xspress3::grabFrame(int frameNumber, int frameOffset)
         error = true;
     }
     if (!error) {
-        this->setNDArrayAttributes(pMCA, frameOffset + frameNumber);
+        // Set the unique ID of the first frame to 1 (not 0).
+        // This is consistent with other areaDetector drivers.
+        this->setNDArrayAttributes(pMCA, frameOffset + frameNumber + 1);
         this->addScalerAttributes(pMCA);
         this->lock();
         setIntegerParam(NDArrayCounter, frameOffset + frameNumber);
