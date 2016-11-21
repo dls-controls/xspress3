@@ -52,8 +52,6 @@
 
 #include "ADDriver.h"
 
-#include "xsp3Detector.h"
-
 #include <iostream>
 using std::string;
 
@@ -201,8 +199,6 @@ class Xspress3 : public ADDriver {
   int xsp3_handle_;
   int maxSpectra;
   int dtcEnabled;
-
-  xsp3Api* xsp3;
 
   //Constructor parameters.
   const epicsUInt32 debug_; //debug parameter for API
