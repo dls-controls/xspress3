@@ -23,9 +23,6 @@ xspress3_DBD += aCalcoutRecord.dbd
 xspress3Epics_SRCS += xspress3Epics.cpp
 xspress3Epics_SRCS += xsp3Api.cpp
 xspress3Epics_SRCS += xsp3Detector.cpp
-xspress3Epics_SRCS += xsp3Simulator.cpp
-xspress3Epics_SRCS += xsp3SimElement.cpp
-xspress3Epics_SRCS += xsp3TimeRegister.cpp
 
 # We need to link against the EPICS Base libraries
 xspress3Epics_LIBS += $(EPICS_BASE_IOC_LIBS)

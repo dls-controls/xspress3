@@ -53,7 +53,6 @@
 #include "ADDriver.h"
 
 #include "xsp3Detector.h"
-#include "xsp3Simulator.h"
 
 #include <iostream>
 using std::string;

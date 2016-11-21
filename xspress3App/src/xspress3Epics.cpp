@@ -86,7 +86,7 @@ static void xsp3DataTaskC(void *drvPvt);
  * @param debug This debug flag is passed to xsp3_config in the Xspress API (0 or 1)
  * @param simTest 0 or 1. Set to 1 to run up this driver in simulation mode.
  */
-Xspress3::Xspress3(const char *portName, int numChannels, int numCards, const char *baseIP, int maxFrames, int maxSpectra, int maxBuffers, size_t maxMemory, int debug, int simTest)
+Xspress3::Xspress3(const char *portName, int numChannels, int numCards, const char *baseIP, int maxFrames, int maxSpectra, int maxBuffers, size_t maxMemory, int debug, int simTest)  // TODO: Remove simTest arg.
   : ADDriver(portName,
 	     numChannels, /* maxAddr - channels use different param lists*/ 
 	     NUM_DRIVER_PARAMS,
@@ -98,7 +98,7 @@ Xspress3::Xspress3(const char *portName, int numChannels, int numCards, const ch
 	     1, /* Autoconnect */
 	     0, /* default priority */
 	     0), /* Default stack size*/
-    debug_(debug), numChannels_(numChannels), simTest_(simTest), baseIP_(baseIP)
+    debug_(debug), numChannels_(numChannels), baseIP_(baseIP), simTest_(0)
 {
     int status = asynSuccess;
     const char *functionName = "Xspress3::Xspress3";
@@ -120,14 +120,8 @@ Xspress3::Xspress3(const char *portName, int numChannels, int numCards, const ch
     this->unlock();
     paramStatus = ((eraseSCAMCAROI() == asynSuccess) && paramStatus);
     this->lock();
-    if (simTest_) {
-        printf( "Simulation: %d\n", simTest_ );
-        paramStatus = ((setStringParam(ADStatusMessage, "Init. Simulation Mode.") == asynSuccess) && paramStatus);
-        xsp3 = new xsp3Simulator(this->pasynUserSelf,numChannels,maxSpectra);
-    } else {
-        paramStatus = ((setStringParam(ADStatusMessage, "Init. System Disconnected.") == asynSuccess) && paramStatus);
-        xsp3 = new xsp3Detector(this->pasynUserSelf);
-    }
+    paramStatus = ((setStringParam(ADStatusMessage, "Init. System Disconnected.") == asynSuccess) && paramStatus);
+    xsp3 = new xsp3Detector(this->pasynUserSelf);
     callParamCallbacks();
     if (!paramStatus) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s Unable To Set Driver Parameters In Constructor.\n", functionName);
@@ -1799,7 +1793,7 @@ extern "C" {
  */
   int xspress3Config(const char *portName, int numChannels, int numCards,
                      const char *baseIP, int maxFrames, int maxSpectra,
-                     int maxBuffers, size_t maxMemory, int debug, int simTest)
+                     int maxBuffers, size_t maxMemory, int debug, int simTest)  // TODO: Remove simTest arg.
   {
       asynStatus status = asynSuccess;
       try {
