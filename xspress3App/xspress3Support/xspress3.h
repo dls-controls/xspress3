@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pthread.h>
 #include "xspress3_dma_protocol.h"
 #include "xspress3_fem_api.h"
 #include "xspress3_data_mod.h"
@@ -102,6 +103,10 @@
 #define XSP3_RANGE_CHECK		-6
 #define XSP3_INVALID_SCOPE_MOD	-7
 #define XSP3_OUT_OF_MEMORY		-8
+#define XSP3_ERR_DEV_NOT_FOUND	-9
+#define XSP3_CANNOT_OPEN_FILE	-10
+#define XSP3_FILE_READ_FAILED	-11
+#define XSP3_FILE_WRITE_FAILED	-12
 
 #define XSP3_WOULD_BLOCK		-20	
 
@@ -132,6 +137,13 @@ typedef struct _xsp3_feature
 	int max_real_dma_stream;
 	int min_nbits_eng;
 } Xspress3_features;
+
+typedef struct _tf_status
+{
+	int state;		//!< State to detect overruns in circular buffer mode. Should be 0 after call to {@link xsp3_histogram_circ_ack()} on that channel and frame.
+	int64_t time_frame;	//!< Extended time frame in circular buffer mode
+	int markers;		// Marker inputs, circular buffer and normal mode.
+} Xsp3TFStatus;
 
 typedef enum
 {	Xsp3ScopeOpt_DelayStart 		= 1,		//!< Delay starting scope mode until rising edge of CountEnable signal.
@@ -217,6 +229,11 @@ typedef struct _Histogram {
 	} window[XSP3_SOFT_SCALER_NUM_WINDOWS];
 	u_int32_t format_reg;
 	int cur_tf;
+	int prev_hw_time_frame;			//!< Used to kepp track of hardware time frame and detect wrap rounf at 24 bits
+	int64_t cur_tf_ext;				//!< Extended current time from when using the recirulating buffer.
+	int64_t first_circ_overrun; 	//!< First frame to suffer overrun in circular buffer mode. 
+	int64_t num_circ_overrun;		//!< Number of over run frames in circular buffer mode.
+	int64_t tf_top;				//!< Counts number of wrap rounds of firmware Time Frame
 	u_int16_t *diffs_ptr;	// Used for saving differences mode data into modifed scope mode module.
 	u_int16_t *tf_ptr;		// Used for saving time frame part of differences mode data into modifed scope mode module.
 	u_int16_t *dig_ptr;		// Used for saving Digital part of differences mode data into modifed scope mode module.
@@ -263,6 +280,8 @@ typedef struct _XSP3Path {
 	Xspress3_features features;
 	MOD_IMAGE3D *scalers_mod;
 	mh_com *scalers_mod_head;
+	MOD_IMAGE3D *tf_status_mod;
+	mh_com *tf_status_head;
 	int disable_multi_thread;	//!< Disable Thread per card activity speed ups on scope mode, start etc. See {@link XSP3_MT_FLAGS}
 	int chan_of_system;			//!< Used to initial chan of system in histogram (only)
 	char soft_lead_tail;		//!< Enable alternate event list processing for SGX detector.
@@ -307,8 +326,13 @@ typedef enum {
 	Xsp3ErrFlag_HistFramesMissing=8,    //!< Software detected bad or missing frames  from BRAM histogrammer into DRAM (Xspress3 Mini Only)
 	Xsp3ErrFlag_ScalarOverRun=0x10,    	//!< Firmware detected Over run Scalar transfer into DRAM (Xspress3 Mini Only)
 	Xsp3ErrFlag_ScalarMissing=0x20,     //!< Software detected bad or missing frames Scalars into DRAM (Xspress3 Mini Only)
-	Xsp3ErrFlag_DiagHistOverRun=0x40    //!< Firmware detected dropped events on Diag Hist (Xspress3 Mini Only) (Not severe error)
+	Xsp3ErrFlag_DiagHistOverRun=0x40,   //!< Firmware detected dropped events on Diag Hist (Xspress3 Mini Only) (Not severe error)
+	Xsp3ErrFlag_CircBuffOverRun=0x10000 //!< Software detected overrun of circulr buffer.
 } Xsp3ErrFlag;
+
+typedef struct {
+	u_int8_t addr, data;
+} Xsp3I2CAddrData;
 
 #ifdef __cplusplus
 extern "C" {
@@ -570,7 +594,7 @@ int 	xsp3_diag_histogram_read_chan(int path, u_int32_t *buffer, unsigned chan, u
 int 	xsp3_diag_histogram_write_test_pat(int path, int chan);
 int 	xsp3m_read_dma_buff_roi(int path, int card, int stream, int offset, int row_len, int num_rows, int src_stride, int dst_stride, u_int32_t *value);
 int 	xsp3_get_glob_status_a(int path, int card, u_int32_t *status) ;
-int 	xsp3_scaler_check_progress_details(int path, Xsp3ErrFlag *flagsP, int quiet);
+int64_t xsp3_scaler_check_progress_details(int path, Xsp3ErrFlag *flagsP, int quiet, int64_t *furthest_frame);
 
 int 	xsp4_get_adc_brd_status(int path, int card, u_int32_t *status); 
 int 	xsp4_get_aurora_status(int path, int card, u_int16_t *aurora_status);
@@ -594,6 +618,33 @@ int 	xsp3_get_gain(int path, int first, int num, int *stage1, int *stage2);
 
 int 	xsp3_set_trig_in_term(int path, int card, int flags);
 int 	xsp3_set_trig_out_term(int path, int card, int flags);
+
+int 	xsp3_write_i2c_reg(int path, int card, int bus, int addr, int size, u_int8_t* value);
+int 	xsp3_read_i2c_reg(int path, int card, int bus, int addr, int size, u_int8_t* value);
+
+int 	xsp3_read_i2c_reg_addr(int path, int card, int bus, int addr, int reg_addr, int size, u_int8_t* value);
+int 	xsp3_write_i2c_reg_addr(int path, int card, int bus, int addr, int reg_addr, int size, u_int8_t* value);
+
+int 	xsp3_i2c_read_fem_temp(int path, int card, float *temp);
+
+int 	xsp3_lmk61e2_write_from_file(int path, int card, int mid_plane, char *fname);
+int 	xsp3_lmk61e2_write(int path, int card, int mid_plane, int num, Xsp3I2CAddrData *reg);
+int 	xsp3_lmk61e2_save_to_eeprom(int path, int card, int mid_plane);
+int 	xsp3_lmk61e2_read(int path, int card, int mid_plane, int reg_addr, int num, u_int8_t *reg);
+
+int 	xsp3m_write_fan_speed(int path, int card, int speed);
+int 	xsp3m_read_fan_speed(int path, int card, int *speed);
+
+int 	xsp3_read_xadc(int path, int card, int first, int num, u_int32_t *data);
+
+int 	xsp3_i2c_read_adc_temp_int(int path, int card, int *temp); 
+int 	xsp3_histogram_circ_ack(int path, unsigned chan, unsigned tf, unsigned num_chan, unsigned num_tf) ;
+int 	xsp3_set_rst_xtk(int path, int chan, u_int32_t rst_xtk);
+int 	xsp3_get_rst_xtk(int path, int chan, u_int32_t *rst_xtk);
+int 	xsp3_config_tf_status(int path, int num_tf);
+int64_t xsp3_histogram_get_circ_overrun(int path, int chan, int64_t *firstP);
+int64_t xsp3_histogram_get_tf_status(int path, int chan, unsigned tf, Xsp3TFStatus *tf_status);
+
 
 #ifdef __cplusplus
 }
@@ -1232,15 +1283,28 @@ int 	xsp3_set_trig_out_term(int path, int card, int flags);
 #define XSP3_GLOB_TIMA_ENB_HIST			(1<<6)		//!< Enables histogramming.
 #define XSP3_GLOB_TIMA_LOOP_IO			(1<<7)		//!< Loop TTL_IN(0..3) to TTL_OUT(0..3) for hardware testing (only).
 #define XSP3_GLOB_TIMA_NUM_SCAL_CHAN(x) (((x)&0xF)<<8)	//!< Sets the number of channels of scalers to be transfered to memory by the DMA per time frame.
+#define XSP3_GLOB_TIMA_SW_MARKERS(x)	(((x)&3)<<12)	//!< Set Software markers for use (testing) in circular buffer mode.
+#define XSP3_GLOB_TIMA_FRAME_CAPTURE	(1<<14)			//!< Enable Frame CApture mode in circular buffer mode.
+#define XSP3_GLOB_TIMA_FROM_RADIAL		(1<<15)			//!< Enable from Radial trigger signals for XSPRESS4 with backplane builds.
 #define XSP3_GLOB_TIMA_DEBOUNCE(x)		(((x)&0xFF)<<16)	//!< Set debounce time in 80 MHz cycles to ignore glitches or ringing on Frame0 or Framign signal from any source.
 #define XSP3_GLOB_TIMA_ALT_TTL(x)		(((x)&0xF)<<24)		//!< Alternate uses of the TTL Outputs (including channel in windows signals etc).
 #define XSP3_GLOB_TIMA_RUN				(1<<31)		//!< Overall Run enable signal, set after all DMA channels have been configured.
 #define XSP3_GLOB_TIMA_PB_RST			(1<<30)		//!< Resets Playback FIFO as part of clean start.
 #define XSP3_GLOB_TIMA_COUNT_ENB		(1<<29)		//!< In software timing (XSP3_GTIMA_SRC_FIXED) mode enable counting when high. Transfers scalers on falling edge. After first frame, increments time frame on risign edge.
-#define XSP3_GLOB_TIMA_ITFG_RUN			(1<<28)		//!< From versions 11/8/2014 onwards this is a separate Run signal to the internal time frame generator, which could be used to crsh stop the ITFG before stopping the rest.
+#define XSP3_GLOB_TIMA_ITFG_RUN			(1<<28)		//!< From versions 11/8/2014 onwards this is a separate Run signal to the internal time frame generator, which could be used to crash stop the ITFG before stopping the rest.
 
 //! [XSP3_GLOBAL_TIMEA_REGISTER]
 
+//! [XSP3_GLOBAL_TIMEB_REGISTER]
+
+
+#define XSP3_GLOB_TIMB_FIXED(x)		((x)&0xFFFFFF)		//!< Sets Fixed (starting) Time frame
+#define XSP3_GLOB_TIMB_ITFG_MARK(x)	(((x)&3)<<30)		//!< Set Marker mode when using Internal TFG
+
+//! [XSP3_GLOBAL_TIMEB_REGISTER]
+#define XSP3_GTIMB_IMRK_TTL			0					//!< Use TTL Inputs TTL(0) => Capture, TTL(2)=>Marker(1), TTL(3)=>Marker(2)
+#define XSP3_GTIMB_IMRK_SW			1					//!< Use Software Markers {@link XSP3_GLOB_TIMA_SW_MARKERS} SW Bit 0 => Capture, SW Bit 1 => Marker(1).
+#define XSP3_GTIMB_IMRK_ITFG		2					//!< Use ITFG generated marked (when coded).
 //! [XSP3_GLOBAL_TIMEA_ALT_TTL]
 #define XSP3_ALT_TTL_TIMING_VETO			0		//!< Output the currently selected Count Enable Signal from Internal TFG or other inputs and replicate 4 times on TTL_OUT 0...3 Rev 1.22 onwards
 #define XSP3_ALT_TTL_TIMING_ALL				1		//!< Output TTL_OUT(0)= Veto, (1)=Veto (2) = Running, (3) = Paused from Internal TFG (when present)
@@ -1395,7 +1459,8 @@ extern char *xsp3_feature_data_mux[16] ;
 extern char *xsp3_feature_inl_corr[16] ;
 extern char *xsp3_feature_reset_detector[16] ;
 extern char *xsp3_feature_reset_corr[16];
-extern char *xsp3_feature_glitch_detect[16] ;
+extern char *xsp3_feature_glitch_detect02[8] ;
+extern char *xsp3_feature_glitch_detect3[2] ;
 extern char *xsp3_feature_glitch_pad[16] ;
 extern char *xsp3_feature_trigger_b_l[4] ;
 extern char *xsp3_feature_trigger_b_m[4] ;
@@ -1405,7 +1470,8 @@ extern char *xsp3_feature_trigger_extra1[2] ;
 extern char *xsp3_feature_trigger_extra2[2] ;
 extern char *xsp3_feature_trigger_extra3[2] ;
 extern char *xsp3_feature_calibrator[16] ;
-extern char *xsp3_feature_neighbour_events[16] ;
+extern char *xsp3_feature_neighbour_events0[2] ;
+extern char *xsp3_feature_neighbour_events32[4] ;
 extern char *xsp3_feature_servo_base[16] ;
 extern char *xsp3_feature_run_ave3[2] ;
 extern char *xsp3_feature_lead_tail0[2];
@@ -1418,11 +1484,13 @@ extern char *xsp3_feature_timing_generator[16] ;
 extern char *xsp3_feature_scope_mode[16] ;
 
 //! [XSP3_RUN_FLAGS]
-#define XSP3_RUN_FLAGS_PLAYBACK 1
-#define XSP3_RUN_FLAGS_SCOPE 	2
+#define XSP3_RUN_FLAGS_PLAYBACK 1		//!< Enable build of descriptors and start of DMA for Playback DMA
+#define XSP3_RUN_FLAGS_SCOPE 	2		//!< Enable build of descriptors and start of DMA for Scope Mode DMA(s)
 #define XSP3_RUN_FLAGS_SCALERS 	4
 #define XSP3_RUN_FLAGS_HIST 	8
 #define XSP3_RUN_FLAGS_DIAG_HIST 0x10
+
+#define XSP3_RUN_FLAGS_CIRCULAR_BUFFER 0x100	//!< Enable recircualting buffer mode.
 //! [XSP3_RUN_FLAGS]
 
 /** @defgroup XSP3_MT_FLAGS Flags to disable Thread per card options 
@@ -1463,8 +1531,22 @@ extern char *xsp3_feature_scope_mode[16] ;
 #define XSP3_SPI_CLK_SHUTDOWN5678	(1<<13)
 //! [XSP3_SPI_REGISTER]
 
+#define XSP3_NUM_LM75	4		//!< Number of LM75 devices on Xspress3
+#define XSP3M_NUM_LM75	4		//!< Number of LM75 devices on Xspress3-Mini
+#define XSP4_NUM_LM75	5		//!< Number of LM75 devices on Xspress4
+
+//! [XSP3_I2C_REGISTERS]
 #define XSP3_I2C_BUS_ADC	3
 #define XSP3_LM75_ADDR(dev) (0x9<<3|((dev)&7))
+#define XSP3M_LM75_ADDR(dev) (0x9<<3|(((dev)+1)&7))
+#define XSP3_I2C_USE_REG_ADDR 0x80000000
+#define XSP3M_LMK61E2_ADDR 88
+#define XSP3M_FAN_DAC_ADDR 44
+
+#define XSP3_I2C_BUS_LM82	0
+#define XSP3_I2C_LM82_ADDR	0x18
+
+//! [XSP3_I2C_REGISTERS]
 
 //! [XSP3_CLOCK_SRC]
 #define XSP3_CLK_SRC_INT				0		//!< channel processing clock comes from fpga processor (testing only)
@@ -1590,6 +1672,13 @@ typedef struct _fan_log {
 	int16_t temp; 	// Signed int in 0.5 deg C units
 	int16_t speed; // 0 = off, 4000 = full speed
 } FanLog;
+
+typedef struct _xs3m_fan_log {
+	int16_t temp; 	// Signed int in 0.5 deg C units
+	int16_t zynq_temp; 	// Signed int in 0.5 deg C units
+	int16_t speed; // 0 = off, 4000 = full speed
+} X3mFanLog;
+
 #define XSP3_FAN_LOG_POINTS 10000
 #define XSP3_FAN_MODE_OFF				0
 #define XSP3_FAN_MODE_MONITOR_LOOP 		1
@@ -1609,6 +1698,16 @@ typedef struct _fan_cont
 	int32_t cur_point;
 	FanLog log[XSP3_FAN_LOG_POINTS];
 } FanControl;
+typedef struct _x3m_fan_cont
+{
+	int32_t mode;
+	int32_t start_run;
+	int32_t cur_temp[4];
+	int32_t cur_max;
+	int32_t target, p_const, i_const;
+	int32_t cur_point;
+	X3mFanLog log[XSP3_FAN_LOG_POINTS];
+} X3mFanControl;
 
 #define XSP3_FAN_OFFSET_MODE 		0
 #define XSP3_FAN_OFFSET_START 		1
@@ -1788,7 +1887,7 @@ typedef struct _fan_cont
 
 #define XSP3_FEATURE_FORMAT_B_NO_ROI 			(1<<3)	//!< Output does not have Roi function.
 
-#define XSP3_HGT64_SOF_GET_FRAME(x)				(((x)>>0)&0xFFFFFF)	//!< Get time frmae from first (header) word
+#define XSP3_HGT64_SOF_GET_FRAME(x)				(((x)>>0)&0xFFFFFF)	//!< Get time frame from first (header) word
 #define XSP3_HGT64_SOF_GET_PREV_TIME(x)				(((x)>>24)&0xFFFFFFFF)	//!< Get total integration time from previous time frame from first (header) word
 #define XSP3_HGT64_SOF_GET_CHAN(x)				(((x)>>60)&0xF)		//!< Get channel number from first (header) word
 
@@ -1812,6 +1911,13 @@ typedef struct _fan_cont
 #define XSP3_HGT64_MASK_RESET					(1L<<15)				//!< Mask for real or reset
 #define XSP3_HGT64_MASK_GOOD_GRADE				(1L<<16)				//!< Mask for good resolution grade
 #define XSP3_HGT64_MASK_RESET_DUMMY				(1L<<45)				//!< Mask for dummy reset.
+
+#define XSP3_HGT64_MASK_TF_DELETE				(1L<<56)				//!< Mask for Time Frame Delete (clear) previous frame data.
+#define XSP3_HGT64_MASK_TF_MARKER1				(1L<<57)				//!< Mask for Time Frame Status Marker 1
+#define XSP3_HGT64_MASK_TF_MARKER2				(1L<<58)				//!< Mask for Time Frame Status Marker 2
+
+#define XSP3_HGT64_MASK_END_OF_FRAME			(1L<<59)				//!< Mask for End of Frame Marker.
+
 
 #define XSP3_DIFFS_CODE_DIFFS					0						//!< Differences mode : Differences data
 #define XSP3_DIFFS_CODE_TIME_FRAME				1						//!< Differences mode : Time frame first or change
@@ -2218,6 +2324,30 @@ int xsp4_write_glob_reg(int path, int card, int offset, int size, u_int32_t* val
 int xsp4_read_glob_reg(int path, int card, int offset, int size, u_int32_t *value);
 int xsp4_setup_10g_tpg(int path, int card, int enable, int nqwords, int nframes);
 int xsp4_system_start_count_enb(int path, int card, int count_enb, int pb_num_t, int scope_num_t);
+
+
+/**
+@defgroup XSP4_XADC_OFFSETS Logical numbering of XADC system monitor fucntions for Xspress3Mini adn Xspress4 
+@ingroup XSP3_MACROS
+@{
+*/
+#define XSP3_XADC_ZYNQ_TEMP			0
+#define XSP3_XADC_VIRTEX7_TEMP		1
+#define XSP3_XADC_ZYNQ_VCC_INT		2
+#define XSP3_XADC_ZYNQ_VCC_AUX		3
+#define XSP3_XADC_ZYNQ_VCC_BRAM		4
+#define XSP3_XADC_ZYNQ_VCC_PINT		5
+#define XSP3_XADC_ZYNQ_VCC_PAUX		6
+#define XSP3_XADC_ZYNQ_VCCO_DDR		7
+#define XSP3_XADC_VIRTEX7_VCC_INT	8
+#define XSP3_XADC_VIRTEX7_VCC_AUX	9
+#define XSP3_XADC_VIRTEX7_VCC_BRAM	10
+
+#define XSP3_XADC_MAX				10
+#define XSP3_XADC_NUM      			(XSP3_XADC_MAX+1)
+/**
+@}
+*/
 
 #endif /* XSPRESS3_H_ */
 
