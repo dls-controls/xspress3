@@ -1563,14 +1563,15 @@ void Xspress3::pushEvent(const epicsUInt8& message)
 
 int Xspress3::getNumFramesRead()
 {
-    int numFrames = 0;
-    int xsp3Status = xsp3_scaler_check_progress(this->xsp3_handle_);
+    int64_t numFrames, furthest_frame;
+    Xsp3ErrFlag* flagsP;
+    int xsp3Status = xsp3_scaler_check_progress_details(this->xsp3_handle_, flagsP, 0, &furthest_frame);
     if (xsp3Status < XSP3_OK) {
-        this->checkStatus(xsp3Status, "xsp3_dma_check_desc", "getNumFrameRead");
+        this->checkStatus(xsp3Status, "xsp3_dma_check_desc", "getNumFramesRead");
     } else {
         numFrames = xsp3Status;
     }
-    return numFrames;
+    return furthest_frame;
 }
 
 /** 
@@ -1578,32 +1579,31 @@ int Xspress3::getNumFramesRead()
  * changes.
  *
  * @param frameNumber The number of the frame in this acquisition
- * @param frameOffset The offset due to reseting the RAM buffer
  */
-void Xspress3::grabFrame(int frameNumber, int frameOffset)
+void Xspress3::grabFrame(int frameNumber, int bufLen)
 {
     NDArray *pMCA;
     size_t dims[2];
     bool error;
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
-              "grabFrame: number %d; offset %d\n", frameNumber, frameOffset);
+              "grabFrame: number %d\n", frameNumber);
     this->getDims(dims);
     if (this->dtcEnabled && this->createMCAArray(dims, pMCA, NDFloat64)) {
         error = this->readFrame(pSCAd, static_cast<double*>(pMCA->pData),
-                                frameNumber, this->maxSpectra);
+                                frameNumber%bufLen, this->maxSpectra);
     } else if (this->createMCAArray(dims, pMCA, NDUInt32)) {
         error = this->readFrame(pSCAui, static_cast<u_int32_t*>(pMCA->pData),
-                                frameNumber, this->maxSpectra);
+                                frameNumber%bufLen, this->maxSpectra);
     } else {
         error = true;
     }
     if (!error) {
         // Set the unique ID of the first frame to 1 (not 0).
         // This is consistent with other areaDetector drivers.
-        this->setNDArrayAttributes(pMCA, frameOffset + frameNumber + 1);
+        this->setNDArrayAttributes(pMCA, frameNumber + 1);
         this->addScalerAttributes(pMCA);
         this->lock();
-        setIntegerParam(NDArrayCounter, frameOffset + frameNumber);
+        setIntegerParam(NDArrayCounter, frameNumber);
         this->doNDCallbacksIfRequired(pMCA);
         this->unlock();
         pMCA->release();
@@ -1642,105 +1642,50 @@ bool Xspress3::checkQueue(const epicsUInt8 request, bool block)
 }
 
 /** 
- * Read numToAcquire frames in chunks of chunkSize
- *
- * A lap is either the total number of frames to acquire or a multiple
- * of chunkSize that fits into the Xspress3 buffer. The chunkSize is
- * typically the number of points in a row of a map so that resetting of
- * the Xspress3 buffers can happen between rows.
- *
- * @param chunkSize number of points between readyForNextRow
- * @param numToAcquire number of frames to collect this lap
- * @param startFrame number of the last frame or zero
+ * Read numToAcquire frames
  */
-void Xspress3::doALap(int chunkSize, int numToAcquire, int startFrame)
+int Xspress3::acquireNFrames(int numToAcquire)
 {
-    // If histogram_start takes too long this could drop frames but GDA
-    // should wait for the readyForNextParam signal. It should be
-    // possible to reset the time frames with an Frame0 signal on the
-    // TTL0 input of the Xspress3 boxes according to William Helsby but
-    // this is currently untested.
-    int xsp3Status, xsp3NChannels, totalFrames = startFrame;
-    const char *functionName = "Xspress3::doALap";
-    getIntegerParam(xsp3NumChannelsParam, &xsp3NChannels);
-    if (this->getNumFramesRead() >= numToAcquire) {
-        xsp3Status = xsp3_histogram_start(this->xsp3_handle_, -1);
-        if (xsp3Status != XSP3_OK) {
-            this->checkStatus(xsp3Status, "histogram_start", functionName);
-        }
-    }
-    for (int i=0; i<numToAcquire; i+=chunkSize) {
+    int bufferSize, nFramesReadByXsp3;
+    getIntegerParam(xsp3MaxFramesParam, &bufferSize);
+    for (int i=0; i < numToAcquire; i++) {
+        // Wait for libxspress3 to tell us that we can read more frames.
+        do {
+            if (this->checkQueue(this->stopEvent, false)) {
+                asynPrint(this->pasynUserSelf, ASYN_TRACE_WARNING,
+                          "Stop event so throw\n");
+                xsp3_histogram_stop(this->xsp3_handle_, -1);
+                this->setAcqStopParameters(true);
+                xsp3_histogram_clear(this->xsp3_handle_, 0,
+                                     this->numChannels_, 0, bufferSize);
+                return 0;
+            }
+            nFramesReadByXsp3 = this->getNumFramesRead();
+        } while (nFramesReadByXsp3 < i+1);
+
+        if (nFramesReadByXsp3 > i + bufferSize) return 1;
+
+        this->grabFrame(i, i%bufferSize);
+
         this->lock();
-        this->setIntegerParam(this->readyForNextRowParam, 1);
+        this->setIntegerParam(this->NDArrayCounter, i+1);
+        this->setIntegerParam(this->xsp3FrameCountParam, i+1);
         this->callParamCallbacks();
         this->unlock();
-        for (int j=0; j<chunkSize; j++) {
-            do {
-                if (this->checkQueue(this->stopEvent, false)) {
-                    asynPrint(this->pasynUserSelf, ASYN_TRACE_WARNING,
-                              "Stop event so throw\n");
-                    throw 0;
-                }                
-            } while (this->getNumFramesRead() <= (i + j));
-            this->grabFrame(i + j, startFrame);
-            totalFrames++;
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "doALap lock %d\n", totalFrames);
-            this->lock();
-            if (j == 0)
-                this->setIntegerParam(this->readyForNextRowParam, 0);
-            this->setIntegerParam(this->NDArrayCounter, totalFrames);
-            this->setIntegerParam(this->xsp3FrameCountParam, totalFrames);
-            this->callParamCallbacks();
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "doALap unlock %d\n", totalFrames);
-            this->unlock();
-        }
-        asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "Clear histogram\n");
-        xsp3Status = xsp3_histogram_clear(this->xsp3_handle_, 0,
-                                                 xsp3NChannels, i,
-                                                 chunkSize);
-        this->checkStatus(xsp3Status, "histogram_clear", functionName);
     }
+    return 0;
 }
 
 void Xspress3::startAcquisition()
 {
     int numToAcquire, maxFrames, xsp3Status, lapLength, frameNum=0;
-    int chunkSize;
     this->setStartingParameters();
     this->getIntegerParam(this->xsp3MaxFramesParam, &maxFrames);
     this->getIntegerParam(this->xsp3MaxSpectraParam, &this->maxSpectra);
     this->getIntegerParam(this->xsp3DtcEnableParam, &this->dtcEnabled);
     numToAcquire = this->getNumFramesToAcquire();
-    this->getIntegerParam(this->pointsPerRowParam, &chunkSize);
-    chunkSize = chunkSize <= numToAcquire ? chunkSize : numToAcquire;
-    // The lap should take a round number of chunks so take off
-    // the modulo if required
-    lapLength = numToAcquire > maxFrames ?
-        maxFrames - maxFrames%chunkSize : numToAcquire;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "Collect %d frames; %d per lap\n",
-              numToAcquire, lapLength);
-    this->getIntegerParam(this->xsp3MaxFramesParam, &maxFrames);
-    while (numToAcquire > 0) {
-        try {
-            this->doALap(chunkSize < numToAcquire ? chunkSize : numToAcquire,
-                         lapLength < numToAcquire ? lapLength : numToAcquire,
-                         frameNum);
-            numToAcquire -= lapLength;
-            frameNum += lapLength;
-            if (numToAcquire <= 0) {
-                xsp3_histogram_stop(this->xsp3_handle_, -1);
-                this->setAcqStopParameters(false);
-                this->callParamCallbacks();
-            }
-        } catch (int error) {
-            xsp3_histogram_stop(this->xsp3_handle_, -1);
-            this->setAcqStopParameters(true);
-            xsp3_histogram_clear(this->xsp3_handle_, 0,
-                                        this->numChannels_, 0, maxFrames);
-            numToAcquire = 0;
-        }
-    }
-
+    int status = this->acquireNFrames(numToAcquire);
+    if (status == 1) this->adReportError("libxspress3 lapped EPICS in the circular buffer!");
 }
 
 void Xspress3::mainLoop()

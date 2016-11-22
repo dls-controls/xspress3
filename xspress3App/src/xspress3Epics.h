@@ -170,7 +170,7 @@ class Xspress3 : public ADDriver {
   void doNDCallbacksIfRequired(NDArray *pMCA);
   int getNumFramesRead();
   void grabFrame(int frameNumber, int frameOffset);
-  void doALap(int chunkSize, int xspBufferSize, int startFrame);
+  int acquireNFrames(int numToAcquire);
   void startAcquisition();
   bool checkQueue(const epicsUInt8 request, bool block);
   void addScalerAttributes(NDArray *&pMCA);
