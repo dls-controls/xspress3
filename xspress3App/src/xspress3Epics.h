@@ -169,7 +169,7 @@ class Xspress3 : public ADDriver {
   int getNumFramesToAcquire();
   void doNDCallbacksIfRequired(NDArray *pMCA);
   int getNumFramesRead();
-  void grabFrame(int frameNumber, int frameOffset);
+  void grabFrame(int frameNumber);
   int acquireNFrames(int numToAcquire);
   void startAcquisition();
   bool checkQueue(const epicsUInt8 request, bool block);

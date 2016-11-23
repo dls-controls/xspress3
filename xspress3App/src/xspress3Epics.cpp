@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <syscall.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 //Epics headers
 #include <epicsTime.h>
@@ -1580,7 +1581,7 @@ int Xspress3::getNumFramesRead()
  *
  * @param frameNumber The number of the frame in this acquisition
  */
-void Xspress3::grabFrame(int frameNumber, int bufLen)
+void Xspress3::grabFrame(int frameNumber)
 {
     NDArray *pMCA;
     size_t dims[2];
@@ -1590,10 +1591,10 @@ void Xspress3::grabFrame(int frameNumber, int bufLen)
     this->getDims(dims);
     if (this->dtcEnabled && this->createMCAArray(dims, pMCA, NDFloat64)) {
         error = this->readFrame(pSCAd, static_cast<double*>(pMCA->pData),
-                                frameNumber%bufLen, this->maxSpectra);
+                                frameNumber, this->maxSpectra);
     } else if (this->createMCAArray(dims, pMCA, NDUInt32)) {
         error = this->readFrame(pSCAui, static_cast<u_int32_t*>(pMCA->pData),
-                                frameNumber%bufLen, this->maxSpectra);
+                                frameNumber, this->maxSpectra);
     } else {
         error = true;
     }
@@ -1651,6 +1652,10 @@ int Xspress3::acquireNFrames(int numToAcquire)
     for (int i=0; i < numToAcquire; i++) {
         // Wait for libxspress3 to tell us that we can read more frames.
         do {
+
+            // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "iteration of 'do' clause\n");
+            printf("iteration of 'do' clause\n"); fflush;
+
             if (this->checkQueue(this->stopEvent, false)) {
                 asynPrint(this->pasynUserSelf, ASYN_TRACE_WARNING,
                           "Stop event so throw\n");
@@ -1661,11 +1666,20 @@ int Xspress3::acquireNFrames(int numToAcquire)
                 return 0;
             }
             nFramesReadByXsp3 = this->getNumFramesRead();
+
+            // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "nFramesReadByXsp3 = %d\n", nFramesReadByXsp3);
+            printf("nFramesReadByXsp3 = %d\n", nFramesReadByXsp3); fflush;
+
+            sleep(1);
+
         } while (nFramesReadByXsp3 < i+1);
+
+        // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "exited do..while loop\n");
+        printf("exited do..while loop\n"); fflush;
 
         if (nFramesReadByXsp3 > i + bufferSize) return 1;
 
-        this->grabFrame(i, i%bufferSize);
+        this->grabFrame(i);
 
         this->lock();
         this->setIntegerParam(this->NDArrayCounter, i+1);
@@ -1673,7 +1687,14 @@ int Xspress3::acquireNFrames(int numToAcquire)
         this->callParamCallbacks();
         this->unlock();
     }
+
+    xsp3_histogram_stop(xsp3_handle_, -1);
+    this->lock();
+    this->setAcqStopParameters(false);
+    this->callParamCallbacks();
+    this->unlock();
     return 0;
+
 }
 
 void Xspress3::startAcquisition()
