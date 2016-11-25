@@ -25,5 +25,6 @@ xspress3Epics_SRCS += xspress3Epics.cpp
 # We need to link against the EPICS Base libraries
 xspress3Epics_LIBS += $(EPICS_BASE_IOC_LIBS)
 
+HOST_OPT=NO
 
 include $(TOP)/configure/RULES
