@@ -83,90 +83,55 @@ record(longin, "$(P)$(R)MAX_NUM_CHANNELS_RBV")
    field(SCAN, "I/O Intr")
 }
 
-# ///
-# /// Select the time frame source (internal or external).
-# ///
-record(mbbo, "$(P)$(R)TimeFrameSource")
+record(mbbo, "$(P)$(R)TriggerMode")
 {
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_TIMEFRAME_SOURCE")
    field(ZRST, "Software")
    field(ZRVL, "0")
-   field(ONST, "Internal")
+   field(ONST, "Hardware")
    field(ONVL, "1")
-   field(TWST, "IDC")
+   field(TWST, "Burst")
    field(TWVL, "2")
-   field(THST, "TTL Veto Only")
+   field(THST, "Software Start/Stop")
    field(THVL, "3")
-   field(FRST, "TTL Both")
+   field(FRST, "IDC")
    field(FRVL, "4")
-   field(FVST, "LVDS Veto Only")
+   field(FVST, "TTL Veto Only")
    field(FVVL, "5")
-   field(SXST, "LVDS Both")
+   field(SXST, "TTL Both")
    field(SXVL, "6")
+   field(SXST, "LVDS Veto Only")
+   field(SXVL, "7")
+   field(SXST, "LVDS Both")
+   field(SXVL, "8")
    field(VAL,  "0")
    field(PINI, "NO")
 }
 
-# ///
-# /// Read the time frame source (internal or external).
-# ///
-record(mbbi, "$(P)$(R)TimeFrameSource_RBV")
+record(mbbi, "$(P)$(R)TriggerMode_RBV")
 {
    field(DTYP, "asynInt32")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_TIMEFRAME_SOURCE")
    field(ZRST, "Software")
    field(ZRVL, "0")
-   field(ONST, "Internal")
+   field(ONST, "Hardware")
    field(ONVL, "1")
-   field(TWST, "IDC")
+   field(TWST, "Burst")
    field(TWVL, "2")
-   field(THST, "TTL Veto Only")
+   field(THST, "Software Start/Stop")
    field(THVL, "3")
-   field(FRST, "TTL Both")
+   field(FRST, "IDC")
    field(FRVL, "4")
-   field(FVST, "LVDS Veto Only")
+   field(FVST, "TTL Veto Only")
    field(FVVL, "5")
-   field(SXST, "LVDS Both")
+   field(SXST, "TTL Both")
    field(SXVL, "6")
+   field(SXST, "LVDS Veto Only")
+   field(SXVL, "7")
+   field(SXST, "LVDS Both")
+   field(SXVL, "8")
    field(SCAN, "I/O Intr")
-}
-
-# ///
-# /// Select the trigger mode for the internal time frame generator.
-# ///
-record(mbbo, "$(P)$(R)TriggerMode")
-{
-   field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_ITFG_TRIG_MODE")
-   field(PINI, "NO")
-   field(VAL,  "0")
-
-   # The assignments here must match the XSP3_ITFG_TRIG_MODE enum of
-   # libxspress3.
-   field(ZRST, "Software")
-   field(ZRVL, "1")
-   field(ONST, "Burst")
-   field(ONVL, "0")
-   field(TWST, "Hardware")
-   field(TWVL, "2")
-}
-
-# ///
-# /// Read the trigger mode for the internal time frame generator.
-# ///
-record(mbbi, "$(P)$(R)TriggerMode_RBV")
-{
-   field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XSP3_ITFG_TRIG_MODE")
-   field(SCAN, "I/O Intr")
-
-   field(ZRST, "Software")
-   field(ZRVL, "1")
-   field(ONST, "Burst")
-   field(ONVL, "0")
-   field(TWST, "Hardware")
-   field(TWVL, "2")
 }
 
 # ///
