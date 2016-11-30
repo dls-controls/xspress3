@@ -20,7 +20,7 @@ record(calc, "$(P)$(R)C$(CHAN):AverageId")
     field(INPD, "$(P)$(R)ARR$(CHAN):EnableCallbacks_RBV CPP")
     field(INPE, "$(P)$(R)ARRSUM$(CHAN):UniqueId_RBV CPP")
     field(INPF, "$(P)$(R)ARRSUM$(CHAN):EnableCallbacks_RBV CPP")
-    field(CALC, "((B?A:0)+(D?C:0)+(F?E:0))/(B+D+F)")
+    field(CALC, "((B?(A-1):0)+(D?(C-1):0)+(F?(E-1):0))/(B+D+F)")
 }
 
 # If B is -2 return the mean uniqueId for enabled plugins
