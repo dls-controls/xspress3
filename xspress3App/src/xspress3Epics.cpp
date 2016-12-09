@@ -1516,7 +1516,6 @@ void Xspress3::setAcqStopParameters(bool aborted)
 {
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "setAcqStopParameters\n");
     this->lock();
-    this->setIntegerParam(ADAcquire, ADAcquireFalse_);
     if (aborted) {
         this->setIntegerParam(ADStatus, ADStatusAborted);
         this->setStringParam(ADStatusMessage, "Stopped Acquiring");
@@ -1524,6 +1523,8 @@ void Xspress3::setAcqStopParameters(bool aborted)
         this->setIntegerParam(ADStatus, ADStatusIdle);
         this->setStringParam(ADStatusMessage, "Completed Acquisition");
     }
+    this->callParamCallbacks();
+    this->setIntegerParam(ADAcquire, ADAcquireFalse_);
     this->callParamCallbacks();
     this->unlock();
 }
