@@ -780,7 +780,6 @@ asynStatus Xspress3::eraseSCAMCAROI(void)
   getIntegerParam(xsp3NumChannelsParam, &xsp3_num_channels);
 
   bool paramStatus = true;
-  paramStatus = ((setIntegerParam(NDArrayCounter, 0) == asynSuccess) && paramStatus);
   paramStatus = ((setIntegerParam(xsp3FrameCountParam, 0) == asynSuccess) && paramStatus);
 
   if (!paramStatus) {
@@ -1415,7 +1414,6 @@ bool Xspress3::readFrame(u_int32_t* pSCA, u_int32_t* pMCAData, int frameNumber, 
 void Xspress3::setStartingParameters()
 {
     this->lock();
-    this->setIntegerParam(this->NDArrayCounter, 0);
     this->setIntegerParam(this->xsp3FrameCountParam, 0);
     this->setIntegerParam(this->ADStatus, ADStatusAcquire);
     this->setStringParam(this->ADStatusMessage, "Acquiring Data");
@@ -1602,6 +1600,8 @@ void Xspress3::grabFrame(int frameNumber, int frameOffset)
     NDArray *pMCA;
     size_t dims[2];
     bool error;
+    int prevNDArrayCounter;
+    int thisNDArrayCounter;
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
               "grabFrame: number %d; offset %d\n", frameNumber, frameOffset);
     this->getDims(dims);
@@ -1617,10 +1617,12 @@ void Xspress3::grabFrame(int frameNumber, int frameOffset)
     if (!error) {
         // Set the unique ID of the first frame to 1 (not 0).
         // This is consistent with other areaDetector drivers.
-        this->setNDArrayAttributes(pMCA, frameOffset + frameNumber + 1);
+        getIntegerParam(NDArrayCounter, &prevNDArrayCounter);
+        thisNDArrayCounter = prevNDArrayCounter + 1;
+        this->setNDArrayAttributes(pMCA, thisNDArrayCounter);
         this->addScalerAttributes(pMCA);
         this->lock();
-        setIntegerParam(NDArrayCounter, frameOffset + frameNumber);
+        setIntegerParam(NDArrayCounter, thisNDArrayCounter);
         this->doNDCallbacksIfRequired(pMCA);
         this->unlock();
         pMCA->release();
@@ -1705,7 +1707,6 @@ void Xspress3::doALap(int chunkSize, int numToAcquire, int startFrame)
             this->lock();
             if (j == 0)
                 this->setIntegerParam(this->readyForNextRowParam, 0);
-            this->setIntegerParam(this->NDArrayCounter, totalFrames);
             this->setIntegerParam(this->xsp3FrameCountParam, totalFrames);
             this->callParamCallbacks();
             asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "doALap unlock %d\n", totalFrames);
