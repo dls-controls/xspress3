@@ -1138,6 +1138,8 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
   } 
   else if (function == xsp3RunFlagsParam) {
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Set The Run Flags.\n", functionName);
+  } else if (function == NDArrayCounter) {
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Set the counter value.\n", functionName);
   }
   else {
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s No Matching Parameter In Xspress3 Driver.\n", functionName);
@@ -1600,7 +1602,6 @@ void Xspress3::grabFrame(int frameNumber, int frameOffset)
     NDArray *pMCA;
     size_t dims[2];
     bool error;
-    int prevNDArrayCounter;
     int thisNDArrayCounter;
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
               "grabFrame: number %d; offset %d\n", frameNumber, frameOffset);
@@ -1617,11 +1618,11 @@ void Xspress3::grabFrame(int frameNumber, int frameOffset)
     if (!error) {
         // Set the unique ID of the first frame to 1 (not 0).
         // This is consistent with other areaDetector drivers.
-        getIntegerParam(NDArrayCounter, &prevNDArrayCounter);
-        thisNDArrayCounter = prevNDArrayCounter + 1;
+        this->lock();
+        getIntegerParam(NDArrayCounter, &thisNDArrayCounter);
+        thisNDArrayCounter += 1;
         this->setNDArrayAttributes(pMCA, thisNDArrayCounter);
         this->addScalerAttributes(pMCA);
-        this->lock();
         setIntegerParam(NDArrayCounter, thisNDArrayCounter);
         this->doNDCallbacksIfRequired(pMCA);
         this->unlock();
