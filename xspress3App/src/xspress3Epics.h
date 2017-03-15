@@ -52,9 +52,6 @@
 
 #include "ADDriver.h"
 
-#include "xsp3Detector.h"
-#include "xsp3Simulator.h"
-
 #include <iostream>
 using std::string;
 
@@ -172,8 +169,8 @@ class Xspress3 : public ADDriver {
   int getNumFramesToAcquire();
   void doNDCallbacksIfRequired(NDArray *pMCA);
   int getNumFramesRead();
-  void grabFrame(int frameNumber, int frameOffset);
-  void doALap(int chunkSize, int xspBufferSize, int startFrame);
+  void grabFrame(int frameNumber);
+  int acquireNFrames(int numToAcquire);
   void startAcquisition();
   bool checkQueue(const epicsUInt8 request, bool block);
   void addScalerAttributes(NDArray *&pMCA);
@@ -195,8 +192,6 @@ class Xspress3 : public ADDriver {
   int xsp3_handle_;
   int maxSpectra;
   int dtcEnabled;
-
-  xsp3Api* xsp3;
 
   //Constructor parameters.
   const epicsUInt32 debug_; //debug parameter for API

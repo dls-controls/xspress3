@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <syscall.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 //Epics headers
 #include <epicsTime.h>
@@ -91,7 +92,7 @@ static void xsp3DataTaskC(void *drvPvt);
  * @param debug This debug flag is passed to xsp3_config in the Xspress API (0 or 1)
  * @param simTest 0 or 1. Set to 1 to run up this driver in simulation mode.
  */
-Xspress3::Xspress3(const char *portName, int numChannels, int numCards, const char *baseIP, int maxFrames, int maxSpectra, int maxBuffers, size_t maxMemory, int debug, int simTest)
+Xspress3::Xspress3(const char *portName, int numChannels, int numCards, const char *baseIP, int maxFrames, int maxSpectra, int maxBuffers, size_t maxMemory, int debug, int simTest)  // TODO: Remove simTest arg.
   : ADDriver(portName,
 	     numChannels, /* maxAddr - channels use different param lists*/ 
 	     NUM_DRIVER_PARAMS,
@@ -103,7 +104,7 @@ Xspress3::Xspress3(const char *portName, int numChannels, int numCards, const ch
 	     1, /* Autoconnect */
 	     0, /* default priority */
 	     0), /* Default stack size*/
-    debug_(debug), numChannels_(numChannels), simTest_(simTest), baseIP_(baseIP)
+    debug_(debug), numChannels_(numChannels), baseIP_(baseIP), simTest_(0)
 {
     int status = asynSuccess;
     const char *functionName = "Xspress3::Xspress3";
@@ -125,14 +126,7 @@ Xspress3::Xspress3(const char *portName, int numChannels, int numCards, const ch
     this->unlock();
     paramStatus = ((eraseSCAMCAROI() == asynSuccess) && paramStatus);
     this->lock();
-    if (simTest_) {
-        printf( "Simulation: %d\n", simTest_ );
-        paramStatus = ((setStringParam(ADStatusMessage, "Init. Simulation Mode.") == asynSuccess) && paramStatus);
-        xsp3 = new xsp3Simulator(this->pasynUserSelf,numChannels,maxSpectra);
-    } else {
-        paramStatus = ((setStringParam(ADStatusMessage, "Init. System Disconnected.") == asynSuccess) && paramStatus);
-        xsp3 = new xsp3Detector(this->pasynUserSelf);
-    }
+    paramStatus = ((setStringParam(ADStatusMessage, "Init. System Disconnected.") == asynSuccess) && paramStatus);
     callParamCallbacks();
     if (!paramStatus) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s Unable To Set Driver Parameters In Constructor.\n", functionName);
@@ -292,7 +286,7 @@ asynStatus Xspress3::connect(void)
   asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Config path is: %s\n", functionName, configPath);
   asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Config save path is: %s\n", functionName, configSavePath);
 
-  xsp3_handle_ = xsp3->config(xsp3_num_cards, xsp3_num_tf, const_cast<char *>(baseIP_.c_str()), -1, NULL, xsp3_num_channels, 1, NULL, debug_, 0);
+  xsp3_handle_ = xsp3_config(xsp3_num_cards, xsp3_num_tf, const_cast<char *>(baseIP_.c_str()), -1, NULL, xsp3_num_channels, 1, NULL, debug_, 0);
   if (xsp3_handle_ < 0) {
     checkStatus(xsp3_handle_, "xsp3_config", functionName);
     status = asynError;
@@ -301,7 +295,7 @@ asynStatus Xspress3::connect(void)
 
     //Set up clocks on each card
     for (int i=0; i<xsp3_num_cards && status == asynSuccess; i++) {
-      xsp3_status = xsp3->clocks_setup(xsp3_handle_, i, XSP3_CLK_SRC_XTAL,
+      xsp3_status = xsp3_clocks_setup(xsp3_handle_, i, XSP3_CLK_SRC_XTAL,
                                       XSP3_CLK_FLAGS_MASTER | XSP3_CLK_FLAGS_NO_DITHER, 0);
       if (xsp3_status != XSP3_OK) {
 	checkStatus(xsp3_status, "xsp3_clocks_setup", functionName);
@@ -346,7 +340,7 @@ asynStatus Xspress3::readSCAParams(void)
 
   for (int chan=0; chan<xsp3_num_channels; chan++) {
     //SCA 5 window limits
-    xsp3_status = xsp3->get_window(xsp3_handle_, chan, 0, &xsp3_sca_param1, &xsp3_sca_param2);
+    xsp3_status = xsp3_get_window(xsp3_handle_, chan, 0, &xsp3_sca_param1, &xsp3_sca_param2);
     if (xsp3_status < XSP3_OK) {
       checkStatus(xsp3_status, "xsp3_get_window", functionName);
       status = asynError;
@@ -357,7 +351,7 @@ asynStatus Xspress3::readSCAParams(void)
       setIntegerParam(chan, xsp3ChanSca5HlmParam, xsp3_sca_param2);
     }
     //SCA 6 window limits
-    xsp3_status = xsp3->get_window(xsp3_handle_, chan, 1, &xsp3_sca_param1, &xsp3_sca_param2);
+    xsp3_status = xsp3_get_window(xsp3_handle_, chan, 1, &xsp3_sca_param1, &xsp3_sca_param2);
     if (xsp3_status < XSP3_OK) {
       checkStatus(xsp3_status, "xsp3_get_window", functionName);
       status = asynError;
@@ -368,7 +362,7 @@ asynStatus Xspress3::readSCAParams(void)
 		functionName, chan, xsp3_sca_param1, xsp3_sca_param2);
     }
     //SCA 4 threshold limit
-    xsp3_status = xsp3->get_good_thres(xsp3_handle_, chan, &xsp3_sca_param1);
+    xsp3_status = xsp3_get_good_thres(xsp3_handle_, chan, &xsp3_sca_param1);
     if (xsp3_status < XSP3_OK) {
       checkStatus(xsp3_status, "xsp3_get_good_thres", functionName);
       status = asynError;
@@ -402,7 +396,7 @@ asynStatus Xspress3::readDTCParams(void)
   getIntegerParam(xsp3NumChannelsParam, &xsp3_num_channels);
 
   for (int chan=0; chan<xsp3_num_channels; chan++) {
-    xsp3_status = xsp3->getDeadtimeCorrectionParameters(xsp3_handle_, 
+    xsp3_status = xsp3_getDeadtimeCorrectionParameters(xsp3_handle_, 
 						       chan, 
 						       &xsp3_dtc_flags, 
 						       &xsp3_dtc_all_event_grad,
@@ -445,7 +439,7 @@ asynStatus Xspress3::disconnect(void)
   asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Calling disconnect. This calls xsp3_close().\n", functionName);
 
   if ((status = checkConnected()) == asynSuccess) {
-    xsp3_status = xsp3->close(xsp3_handle_);
+    xsp3_status = xsp3_close(xsp3_handle_);
     if (xsp3_status != XSP3_OK) {
       checkStatus(xsp3_status, "xsp3_close", functionName);
       status = asynError;
@@ -502,7 +496,7 @@ asynStatus Xspress3::saveSettings(void)
     setIntegerParam(ADStatus, ADStatusError);
     status = asynError;
   } else {
-    xsp3_status = xsp3->save_settings(xsp3_handle_, configSavePath);
+    xsp3_status = xsp3_save_settings(xsp3_handle_, configSavePath);
     if (xsp3_status != XSP3_OK) {
       checkStatus(xsp3_status, "xsp3_save_settings", functionName);
       setStringParam(ADStatusMessage, "Error Saving Configuration.");
@@ -538,7 +532,7 @@ asynStatus Xspress3::restoreSettings(void)
     setIntegerParam(ADStatus, ADStatusError);
     status = asynError;
   } else {
-    xsp3_status = xsp3->restore_settings(xsp3_handle_, configPath, 0);
+    xsp3_status = xsp3_restore_settings(xsp3_handle_, configPath, 0);
     if (xsp3_status != XSP3_OK) {
       checkStatus(xsp3_status, "xsp3_restore_settings", functionName);
       setStringParam(ADStatusMessage, "Error Restoring Configuration.");
@@ -553,7 +547,7 @@ asynStatus Xspress3::restoreSettings(void)
   int xsp3_num_channels;
   getIntegerParam(xsp3NumChannelsParam, &xsp3_num_channels);
   for (int chan=0; chan<xsp3_num_channels; chan++) {
-    xsp3_status = xsp3->format_run(xsp3_handle_, chan, 0, 0, 0, 0, 0, 12);
+    xsp3_status = xsp3_format_run(xsp3_handle_, chan, 0, 0, 0, 0, 0, 12);
     if (xsp3_status < XSP3_OK) {
       checkStatus(xsp3_status, "xsp3_format_run", functionName);
       status = asynError;
@@ -566,9 +560,9 @@ asynStatus Xspress3::restoreSettings(void)
   int xsp3_run_flags;
   getIntegerParam(xsp3RunFlagsParam, &xsp3_run_flags);
   if (xsp3_run_flags == runFlag_MCA_SPECTRA_) {
-    xsp3_status = xsp3->set_run_flags(xsp3_handle_, XSP3_RUN_FLAGS_SCALERS | XSP3_RUN_FLAGS_HIST);
+    xsp3_status = xsp3_set_run_flags(xsp3_handle_, XSP3_RUN_FLAGS_SCALERS | XSP3_RUN_FLAGS_HIST | XSP3_RUN_FLAGS_CIRCULAR_BUFFER);
   } else if (xsp3_run_flags == runFlag_PLAYB_MCA_SPECTRA_) {
-    xsp3_status = xsp3->set_run_flags(xsp3_handle_, XSP3_RUN_FLAGS_PLAYBACK | XSP3_RUN_FLAGS_SCALERS | XSP3_RUN_FLAGS_HIST);
+    xsp3_status = xsp3_set_run_flags(xsp3_handle_, XSP3_RUN_FLAGS_PLAYBACK | XSP3_RUN_FLAGS_SCALERS | XSP3_RUN_FLAGS_HIST | XSP3_RUN_FLAGS_CIRCULAR_BUFFER);
   } else {
     asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s Invalid run flag option when trying to set xsp3_set_run_flags.\n", functionName);
     status = asynError;
@@ -638,7 +632,7 @@ void Xspress3::checkStatus(int status, const char *function, const char *parentF
   }
 
   if (status != XSP3_OK) {
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "API Error Message: %s.\n", xsp3->get_error_message());
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "API Error Message: %s.\n", xsp3_get_error_message());
     asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "EPICS Driver Calling Function: %s.\n", parentFunction);
   }
  
@@ -665,7 +659,7 @@ asynStatus Xspress3::setWindow(int channel, int sca, int llm, int hlm)
       setIntegerParam(ADStatus, ADStatusError);
       status = asynError;
     } else {
-      xsp3_status = xsp3->set_window(xsp3_handle_, channel, sca, llm, hlm); 
+      xsp3_status = xsp3_set_window(xsp3_handle_, channel, sca, llm, hlm); 
       if (xsp3_status != XSP3_OK) {
 	checkStatus(xsp3_status, "xsp3_set_window", functionName);
 	setStringParam(ADStatusMessage, "Error Setting SCA Window.");
@@ -748,7 +742,7 @@ asynStatus Xspress3::erase(void)
     getIntegerParam(xsp3NumFramesConfigParam, &xsp3_time_frames);
     getIntegerParam(xsp3NumChannelsParam, &xsp3_num_channels);
 
-    xsp3_status = xsp3->histogram_clear(xsp3_handle_, 0, xsp3_num_channels, 0, xsp3_time_frames);
+    xsp3_status = xsp3_histogram_clear(xsp3_handle_, 0, xsp3_num_channels, 0, xsp3_time_frames);
     if (xsp3_status != XSP3_OK) {
       checkStatus(xsp3_status, "xsp3_histogram_clear", functionName);
       setIntegerParam(ADStatus, ADStatusError);
@@ -893,7 +887,7 @@ asynStatus Xspress3::setTriggerMode(int mode, int num_frames, double exposure_ti
         if ( card == 0 ) {
             status = mapTimeFrameSource(mode, invert_f0, invert_veto, debounce, &xsp3_trigger_mode, &itfg_trig_mode);
             if (xsp3_trigger_mode == XSP3_GTIMA_SRC_INTERNAL) {
-                xsp3_status = xsp3->itfg_setup(xsp3_handle_, card, num_frames, (u_int32_t) floor(exposure_time*80E6 + 0.5), itfg_trig_mode, XSP3_ITFG_GAP_MODE_1US);
+                xsp3_status = xsp3_itfg_setup(xsp3_handle_, card, num_frames, (u_int32_t) floor(exposure_time*80E6 + 0.5), itfg_trig_mode, XSP3_ITFG_GAP_MODE_1US);
                 if (xsp3_status != XSP3_OK) {
                     checkStatus(xsp3_status, " xsp3_itfg_setup", functionName);
                     return asynError;
@@ -909,7 +903,7 @@ asynStatus Xspress3::setTriggerMode(int mode, int num_frames, double exposure_ti
             // (Last argument is unimportant.)
         }
 
-        int xsp3_status = xsp3->set_glob_timeA(xsp3_handle_, card, xsp3_trigger_mode);
+        int xsp3_status = xsp3_set_glob_timeA(xsp3_handle_, card, xsp3_trigger_mode);
         if (xsp3_status != XSP3_OK) {
             checkStatus(xsp3_status, "xsp3_set_glob_timeA", functionName);
             return asynError;
@@ -979,8 +973,8 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
 
         if (triggerMode == TM_SOFTWARE && adStatus == ADStatusAcquire) {
             // In this case, we don't want to start acquisition from scratch, just trigger another frame.
-            xsp3_status |= xsp3->histogram_continue(xsp3_handle_, 0);
-            xsp3_status |= xsp3->histogram_pause(xsp3_handle_, 0);
+            xsp3_status |= xsp3_histogram_continue(xsp3_handle_, 0);
+            xsp3_status |= xsp3_histogram_pause(xsp3_handle_, 0);
             // (The time elapsed between the above two library calls is unimportant.)
 
         } else if (adStatus != ADStatusAcquire) {
@@ -991,22 +985,22 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
             int n_cards;
             getIntegerParam(xsp3NumCardsParam, &n_cards);
             for (int card_n = 1; card_n < n_cards; card_n++) {
-              xsp3_status |= xsp3->histogram_start(xsp3_handle_, card_n);
+              xsp3_status |= xsp3_histogram_start(xsp3_handle_, card_n);
             }
 
             if (triggerMode == TM_SOFTWARE) {
-                xsp3_status |= xsp3->histogram_arm(xsp3_handle_, 0);
-                xsp3_status |= xsp3->histogram_continue(xsp3_handle_, 0);
-                xsp3_status |= xsp3->histogram_pause(xsp3_handle_, 0);
+                xsp3_status |= xsp3_histogram_arm(xsp3_handle_, 0);
+                xsp3_status |= xsp3_histogram_continue(xsp3_handle_, 0);
+                xsp3_status |= xsp3_histogram_pause(xsp3_handle_, 0);
 
             } else if (triggerMode == TM_TTL_RISING_EDGE) {
-                xsp3_status |= xsp3->histogram_start(xsp3_handle_, 0);
+                xsp3_status |= xsp3_histogram_start(xsp3_handle_, 0);
 
             } else if (triggerMode == TM_BURST) {
-                xsp3_status |= xsp3->histogram_start(xsp3_handle_, 0);
+                xsp3_status |= xsp3_histogram_start(xsp3_handle_, 0);
 
             } else {
-                xsp3_status |= xsp3->histogram_start(xsp3_handle_, 0);
+                xsp3_status |= xsp3_histogram_start(xsp3_handle_, 0);
 
             }
 
@@ -1024,7 +1018,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
       if (adStatus == ADStatusAcquire) {
 	  if ((status = checkConnected()) == asynSuccess) {
 	    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Stop Data Collection.\n", functionName);
-	    xsp3_status = xsp3->histogram_stop(xsp3_handle_, -1);
+	    xsp3_status = xsp3_histogram_stop(xsp3_handle_, -1);
 	    if (xsp3_status != XSP3_OK) {
 		checkStatus(xsp3_status, "xsp3_histogram_stop", functionName);
 		status = asynError;
@@ -1046,7 +1040,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
   }
   else if (function == xsp3FixedTimeParam) {
       if ((status = checkConnected()) == asynSuccess) {
-	  xsp3_status = xsp3->set_glob_timeFixed(xsp3_handle_, -1, value);
+	  xsp3_status = xsp3_set_glob_timeFixed(xsp3_handle_, -1, value);
 	  if (xsp3_status != XSP3_OK) {
 	    checkStatus(xsp3_status, "xsp3_set_glob_timeFixed", functionName);
 	    status = asynError;
@@ -1090,7 +1084,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
   else if (function == xsp3ChanSca4ThresholdParam) {
     if ((status = checkConnected()) == asynSuccess) {
       asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Set The SCA4 Threshold Register.\n", functionName);
-      xsp3_status = xsp3->set_good_thres(xsp3_handle_, addr, value);
+      xsp3_status = xsp3_set_good_thres(xsp3_handle_, addr, value);
       if (xsp3_status != XSP3_OK) {
 	checkStatus(xsp3_status, "xsp3_set_good_thres", functionName);
 	status = asynError;
@@ -1101,7 +1095,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
     // TODO: Deprecate this.
     if ((status = checkConnected()) == asynSuccess && adStatus == ADStatusAcquire && value) {
       asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Triggering Next Frame.\n", functionName);
-      xsp3_status = xsp3->histogram_continue(xsp3_handle_, -1);
+      xsp3_status = xsp3_histogram_continue(xsp3_handle_, -1);
       if (xsp3_status != XSP3_OK) {
           checkStatus(xsp3_status, "xsp3_histogram_continue", functionName);
           status = asynError;
@@ -1308,7 +1302,7 @@ asynStatus Xspress3::checkHistBusy(int checkTimes)
  
   while (notBusyCount<2) {
     for (int chan=0; chan<numChannels; chan++) {
-      if ((xsp3->histogram_is_any_busy(xsp3_handle_)) == 0) {
+      if ((xsp3_histogram_is_any_busy(xsp3_handle_)) == 0) {
 	++notBusyChan;
       }
     }
@@ -1382,7 +1376,7 @@ bool Xspress3::readFrame(double* pSCA, double* pMCAData, int frameNumber, int ma
     bool error = false;
     int xsp3Status = 0;
     const char* functionName = "Xspress3::readFrame";
-    xsp3Status = xsp3->hist_dtc_read4d(this->xsp3_handle_, pMCAData, pSCA, 0, 0, 0, frameNumber, maxSpectra, 1, this->numChannels_, 1);
+    xsp3Status = xsp3_hist_dtc_read4d(this->xsp3_handle_, pMCAData, pSCA, 0, 0, 0, frameNumber, maxSpectra, 1, this->numChannels_, 1);
     if (xsp3Status != XSP3_OK) {
         checkStatus(xsp3Status, "xsp3_hist_dtc_read4d", functionName);
         error = true;
@@ -1395,12 +1389,12 @@ bool Xspress3::readFrame(u_int32_t* pSCA, u_int32_t* pMCAData, int frameNumber, 
     bool error = false;
     int xsp3Status = 0;
     const char* functionName = "Xspress3::readFrame";
-    xsp3Status = xsp3->histogram_read4d(this->xsp3_handle_, pMCAData, 0, 0, 0, frameNumber, maxSpectra, 1, this->numChannels_, 1);
+    xsp3Status = xsp3_histogram_read4d(this->xsp3_handle_, pMCAData, 0, 0, 0, frameNumber, maxSpectra, 1, this->numChannels_, 1);
     if (xsp3Status != XSP3_OK) {
         checkStatus(xsp3Status, "xsp3_histogram_read4d", functionName);
         error = true;
     } else {
-        xsp3Status = xsp3->scaler_read(this->xsp3_handle_, pSCA, 0, 0, frameNumber, XSP3_SW_NUM_SCALERS, this->numChannels_, 1);
+        xsp3Status = xsp3_scaler_read(this->xsp3_handle_, pSCA, 0, 0, frameNumber, XSP3_SW_NUM_SCALERS, this->numChannels_, 1);
         if (xsp3Status != XSP3_OK) {
             checkStatus(xsp3Status, "xsp3_scaler_read", functionName);
             error = true;
@@ -1580,14 +1574,15 @@ void Xspress3::pushEvent(const epicsUInt8& message)
 
 int Xspress3::getNumFramesRead()
 {
-    int numFrames = 0;
-    int xsp3Status = xsp3->scaler_check_progress(this->xsp3_handle_);
+    int64_t numFrames, furthest_frame;
+    Xsp3ErrFlag* flagsP;
+    int xsp3Status = xsp3_scaler_check_progress_details(this->xsp3_handle_, flagsP, 0, &furthest_frame);
     if (xsp3Status < XSP3_OK) {
-        this->checkStatus(xsp3Status, "xsp3_dma_check_desc", "getNumFrameRead");
+        this->checkStatus(xsp3Status, "xsp3_dma_check_desc", "getNumFramesRead");
     } else {
         numFrames = xsp3Status;
     }
-    return numFrames;
+    return furthest_frame;
 }
 
 /** 
@@ -1595,16 +1590,15 @@ int Xspress3::getNumFramesRead()
  * changes.
  *
  * @param frameNumber The number of the frame in this acquisition
- * @param frameOffset The offset due to reseting the RAM buffer
  */
-void Xspress3::grabFrame(int frameNumber, int frameOffset)
+void Xspress3::grabFrame(int frameNumber)
 {
     NDArray *pMCA;
     size_t dims[2];
     bool error;
     int thisNDArrayCounter;
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
-              "grabFrame: number %d; offset %d\n", frameNumber, frameOffset);
+              "grabFrame: number %d\n", frameNumber);
     this->getDims(dims);
     if (this->dtcEnabled && this->createMCAArray(dims, pMCA, NDFloat64)) {
         error = this->readFrame(pSCAd, static_cast<double*>(pMCA->pData),
@@ -1662,104 +1656,70 @@ bool Xspress3::checkQueue(const epicsUInt8 request, bool block)
 }
 
 /** 
- * Read numToAcquire frames in chunks of chunkSize
- *
- * A lap is either the total number of frames to acquire or a multiple
- * of chunkSize that fits into the Xspress3 buffer. The chunkSize is
- * typically the number of points in a row of a map so that resetting of
- * the Xspress3 buffers can happen between rows.
- *
- * @param chunkSize number of points between readyForNextRow
- * @param numToAcquire number of frames to collect this lap
- * @param startFrame number of the last frame or zero
+ * Read numToAcquire frames
  */
-void Xspress3::doALap(int chunkSize, int numToAcquire, int startFrame)
+int Xspress3::acquireNFrames(int numToAcquire)
 {
-    // If histogram_start takes too long this could drop frames but GDA
-    // should wait for the readyForNextParam signal. It should be
-    // possible to reset the time frames with an Frame0 signal on the
-    // TTL0 input of the Xspress3 boxes according to William Helsby but
-    // this is currently untested.
-    int xsp3Status, xsp3NChannels, totalFrames = startFrame;
-    const char *functionName = "Xspress3::doALap";
-    getIntegerParam(xsp3NumChannelsParam, &xsp3NChannels);
-    if (this->getNumFramesRead() >= numToAcquire) {
-        xsp3Status = this->xsp3->histogram_start(this->xsp3_handle_, -1);
-        if (xsp3Status != XSP3_OK) {
-            this->checkStatus(xsp3Status, "histogram_start", functionName);
-        }
-    }
-    for (int i=0; i<numToAcquire; i+=chunkSize) {
+    int bufferSize, nFramesReadByXsp3;
+    getIntegerParam(xsp3MaxFramesParam, &bufferSize);
+    for (int i=0; i < numToAcquire; i++) {
+        // Wait for libxspress3 to tell us that we can read more frames.
+        do {
+
+            // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "iteration of 'do' clause\n");
+            printf("iteration of 'do' clause\n"); fflush;
+
+            if (this->checkQueue(this->stopEvent, false)) {
+                asynPrint(this->pasynUserSelf, ASYN_TRACE_WARNING,
+                          "Stop event so throw\n");
+                xsp3_histogram_stop(this->xsp3_handle_, -1);
+                this->setAcqStopParameters(true);
+                xsp3_histogram_clear(this->xsp3_handle_, 0,
+                                     this->numChannels_, 0, bufferSize);
+                return 0;
+            }
+            nFramesReadByXsp3 = this->getNumFramesRead();
+
+            // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "nFramesReadByXsp3 = %d\n", nFramesReadByXsp3);
+            printf("nFramesReadByXsp3 = %d\n", nFramesReadByXsp3); fflush;
+
+            sleep(1);
+
+        } while (nFramesReadByXsp3 < i+1);
+
+        // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "exited do..while loop\n");
+        printf("exited do..while loop\n"); fflush;
+
+        if (nFramesReadByXsp3 > i + bufferSize) return 1;
+
+        this->grabFrame(i);
+
         this->lock();
-        this->setIntegerParam(this->readyForNextRowParam, 1);
+        this->setIntegerParam(this->NDArrayCounter, i+1);
+        this->setIntegerParam(this->xsp3FrameCountParam, i+1);
         this->callParamCallbacks();
         this->unlock();
-        for (int j=0; j<chunkSize; j++) {
-            do {
-                if (this->checkQueue(this->stopEvent, false)) {
-                    asynPrint(this->pasynUserSelf, ASYN_TRACE_WARNING,
-                              "Stop event so throw\n");
-                    throw 0;
-                }                
-            } while (this->getNumFramesRead() <= (i + j));
-            this->grabFrame(i + j, startFrame);
-            totalFrames++;
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "doALap lock %d\n", totalFrames);
-            this->lock();
-            if (j == 0)
-                this->setIntegerParam(this->readyForNextRowParam, 0);
-            this->setIntegerParam(this->xsp3FrameCountParam, totalFrames);
-            this->callParamCallbacks();
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "doALap unlock %d\n", totalFrames);
-            this->unlock();
-        }
-        asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "Clear histogram\n");
-        xsp3Status = this->xsp3->histogram_clear(this->xsp3_handle_, 0,
-                                                 xsp3NChannels, i,
-                                                 chunkSize);
-        this->checkStatus(xsp3Status, "histogram_clear", functionName);
     }
+
+    xsp3_histogram_stop(xsp3_handle_, -1);
+    this->lock();
+    this->setAcqStopParameters(false);
+    this->callParamCallbacks();
+    this->unlock();
+    return 0;
+
 }
 
 void Xspress3::startAcquisition()
 {
     int numToAcquire, maxFrames, xsp3Status, lapLength, frameNum=0;
-    int chunkSize;
     this->setStartingParameters();
     this->getIntegerParam(this->xsp3MaxFramesParam, &maxFrames);
     this->getIntegerParam(this->xsp3MaxSpectraParam, &this->maxSpectra);
     this->getIntegerParam(this->xsp3DtcEnableParam, &this->dtcEnabled);
     numToAcquire = this->getNumFramesToAcquire();
-    this->getIntegerParam(this->pointsPerRowParam, &chunkSize);
-    chunkSize = chunkSize <= numToAcquire ? chunkSize : numToAcquire;
-    // The lap should take a round number of chunks so take off
-    // the modulo if required
-    lapLength = numToAcquire > maxFrames ?
-        maxFrames - maxFrames%chunkSize : numToAcquire;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "Collect %d frames; %d per lap\n",
-              numToAcquire, lapLength);
-    this->getIntegerParam(this->xsp3MaxFramesParam, &maxFrames);
-    while (numToAcquire > 0) {
-        try {
-            this->doALap(chunkSize < numToAcquire ? chunkSize : numToAcquire,
-                         lapLength < numToAcquire ? lapLength : numToAcquire,
-                         frameNum);
-            numToAcquire -= lapLength;
-            frameNum += lapLength;
-            if (numToAcquire <= 0) {
-                this->xsp3->histogram_stop(this->xsp3_handle_, -1);
-                this->setAcqStopParameters(false);
-                this->callParamCallbacks();
-            }
-        } catch (int error) {
-            this->xsp3->histogram_stop(this->xsp3_handle_, -1);
-            this->setAcqStopParameters(true);
-            this->xsp3->histogram_clear(this->xsp3_handle_, 0,
-                                        this->numChannels_, 0, maxFrames);
-            numToAcquire = 0;
-        }
-    }
-
+    int status = this->acquireNFrames(numToAcquire);
+    if (status == 1) this->adReportError("libxspress3 lapped EPICS in the circular buffer!");
 }
 
 void Xspress3::mainLoop()
@@ -1811,7 +1771,7 @@ extern "C" {
  */
   int xspress3Config(const char *portName, int numChannels, int numCards,
                      const char *baseIP, int maxFrames, int maxSpectra,
-                     int maxBuffers, size_t maxMemory, int debug, int simTest)
+                     int maxBuffers, size_t maxMemory, int debug, int simTest)  // TODO: Remove simTest arg.
   {
       asynStatus status = asynSuccess;
       try {
