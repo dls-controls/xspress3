@@ -1371,6 +1371,7 @@ bool Xspress3::readFrame(double* pSCA, double* pMCAData, int frameNumber, int ma
         checkStatus(xsp3Status, "xsp3_hist_dtc_read4d", functionName);
         error = true;
     }
+    xsp3_histogram_circ_ack(this->xsp3_handle_, 0, frameNumber, this->numChannels_, 1);
     return error;
 }
 
@@ -1390,6 +1391,7 @@ bool Xspress3::readFrame(u_int32_t* pSCA, u_int32_t* pMCAData, int frameNumber, 
             error = true;
         }
     }
+    xsp3_histogram_circ_ack(this->xsp3_handle_, 0, frameNumber, this->numChannels_, 1);
     return error;
 }
 
@@ -1565,8 +1567,8 @@ void Xspress3::pushEvent(const epicsUInt8& message)
 int Xspress3::getNumFramesRead()
 {
     int64_t numFrames, furthest_frame;
-    Xsp3ErrFlag* flagsP;
-    int xsp3Status = xsp3_scaler_check_progress_details(this->xsp3_handle_, flagsP, 0, &furthest_frame);
+    Xsp3ErrFlag flags;
+    int xsp3Status = xsp3_scaler_check_progress_details(this->xsp3_handle_, &flags, 0, &furthest_frame);
     if (xsp3Status < XSP3_OK) {
         this->checkStatus(xsp3Status, "xsp3_dma_check_desc", "getNumFramesRead");
     } else {
@@ -1669,8 +1671,6 @@ int Xspress3::acquireNFrames(int numToAcquire)
 
             // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "nFramesReadByXsp3 = %d\n", nFramesReadByXsp3);
             printf("nFramesReadByXsp3 = %d\n", nFramesReadByXsp3); fflush;
-
-            sleep(1);
 
         } while (nFramesReadByXsp3 < i+1);
 
