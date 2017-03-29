@@ -11,7 +11,7 @@
 #define XSPRESS3_DMA_PROTOCOL_H_
 
 /**
-	@defgroup XSP3_DMA   Macros to control the DMA engined in the FPGA.
+	@defgroup XSP3_DMA   Macros to control the DMA engines in the FPGA.
 	@ingroup XSP3_MACROS
 */
 
@@ -121,6 +121,7 @@
     @ingroup XSP3_DMA
     @{
 */
+//! [XSP3_DMA_LAYOUT_CODE]
 #define XSP3_CONF_MEM_OVERALL(x)			((x)&0xFF)
 #define XSP3_CONF_MEM_GET_OVERALL(x)		((x)&0xFF)
 
@@ -139,6 +140,7 @@
 
 #define XSP3_CONF_MEM_NUM_CHAN(x)			(((x)&0x3F)<<24)
 #define XSP3_CONF_MEM_GET_NUM_CHAN(x)		(((x)>>24)&0x3F)
+//! [XSP3_DMA_LAYOUT_CODE]
 
 
 /** @} */

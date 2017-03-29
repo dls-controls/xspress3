@@ -79,6 +79,9 @@ int xspress3FemI2CWriteRegAddr(void* femHandle, u_int32_t fem_i2c_bus, u_int32_t
 int xspress3FemI2CReadRegAddr(void* femHandle, u_int32_t fem_i2c_bus, u_int32_t address, u_int32_t reg_addr, size_t size, u_int8_t *value);
 int xspress3FemXADCRead(void* femHandle, u_int32_t address, size_t size, u_int32_t *value);
 
+int xspress3FemWriteDMAorClk(void* femHandle, int offset, size_t num_writes, u_int32_t* value);
+int xspress3FemReadDMAorClk(void* femHandle, int offset, size_t num_reads, u_int32_t* value);
+
 
 #ifdef __cplusplus
 }  /* Closing brace for extern "C" */

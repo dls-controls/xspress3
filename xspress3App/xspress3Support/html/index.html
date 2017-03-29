@@ -45,6 +45,7 @@
 <li class="level3"><a href="#software_user_setup">User Settings</a></li>
 <li class="level3"><a href="#Data">Collection</a></li>
 <li class="level3"><a href="#software_data_access">Data Access</a></li>
+<li class="level3"><a href="#circular_buffer_mode">Circular Buffer Mode</a></li>
 </ul>
 </li>
 <li class="level2"><a href="#registers">Register Layout</a></li>
@@ -52,35 +53,59 @@
 <li class="level2"><a href="#errors">Error Codes</a></li>
 </ul>
 </li>
-<li class="level1"><a href="#revisions">"Revison History"</a></li>
+<li class="level1"><a href="#examples">Example Programs</a><ul><li class="level2"><a href="#circ_buff_example">Circular Buffer Example Program</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#revisions">"Revision History"</a></li>
 </ul>
 </div>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>W.I.Helsby </dd>
 <dd>
 G.R.Mant </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>2.0.0 </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>8/5/2014</dd></dl>
+<dl class="section version"><dt>Version</dt><dd>2.1.0 </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>17/1/2017</dd></dl>
 <h1><a class="anchor" id="intro"></a>
 "Introduction"</h1>
 <div class="image">
 <img src="xspress3_drawing.png" alt="xspress3_drawing.png"/>
 </div>
-<p> The XSPRESS3 system contains a Xilinx Virtex-5 FPGA with two embedded PowerPC processors. PPC1 manages the DMA engines. PPC1 runs the Xilinx micro kernel and communicates to the Intel 64 bit Linux server PC by 1 GBit Ethernet, TCP sockets. Bulk data and event lists to be histogrammed are sent from the firmware to the Server PC by 10G Ethernet, UDP.</p>
+<p> The XSPRESS3 system contains a Xilinx Virtex-5 FPGA with two embedded PowerPC processors. PPC1 manages the DMA engines. PPC1 runs the Xilinx micro kernel and communicates to the Intel 64 bit Linux server PC by 1 GBit Ethernet, TCP sockets. Bulk data and event lists to be histogrammed are sent from the firmware to the Server PC by 10G Ethernet, UDP. <br/>
+ The XSPRSSS3Mini system contains a Xilinx ZYNQ with dual ARM processors. The dual cores run Linux with a SMP kernel. The ZYNQ Programmable System (PS) DRAM is shared between the OS and the XSPRSSS3Mini firmware. Again the DMA engines are provided for playback and Scope mode. Full rate data is histogrammed in to a BRAM in the FPGA and transfer to the DRAM by DMA. These spectra are limited to 4096 pixels. Additionally there is a diagnostic histogram route which DMAs lists of events to a software histogram. <br/>
+ XSPRESS4 is implemented in a Virtex-7 with control via a ZYNQ. The Zynq runs Linux and controls registers and a window on to the DRAM via an AXI Chip to Chip link. This allows control via a 1 G Ethernet Link. Playback and Scope mode DMAs are provided to the 4 GBytes of SDAM connected to the Virtex-7, along with routes to allow bulk data to be transferred by 10 GEthernet. As with XSPRSS3, the list of output events are sent to the X86_64 server by 10 GEthernet UDP. <br/>
+ The library will work will all 3 generations. By default the control port for XSPRESS3 is 30123. For XSPRESS3Mini and XSPRESS4 the port is 30124. The software tries ports 30123 and then 30124 to detector whether it is the PPC or ZYNQ its is talking to. It then reads the revision register to determine which generation it is controlling. The library tries to provide a common API to all three generations where possible.</p>
 <h2><a class="anchor" id="software_overview"></a>
 Software Overview</h2>
 <p>The software API is via the libxspress3.a which provides C calling functions with names xsp3_*. </p>
 <h3><a class="anchor" id="software_setup"></a>
 Setup procedure</h3>
-<p>The library supports running 1 or more XSPRESS3 systems. Each system can consists of 1 or more FEM cards. To connect to a system of 1 or more boards use the command <a class="el" href="group__toplevel.html#gabbdb522cdcc0230ab9d2e06c63c4cf03">xsp3_config</a> This returns a handle which should be used to identify the system to all subsequent calls. Next setup the clock source. For normal operation the ADC and data processing clock is set to use the Crystal Oscillator module on the ADC board using xsp3_clocks_setup(path, -1, XSP3_CLK_SRC_XTAL, XSP3_CLK_FLAGS_MASTER | XSP3_CLK_FLAGS_NO_DITHER, 0) For digital only testing it is possible to generate the processing clock from the FEM card on board clocks. For multi board systems, the master board will be set to use the crystal and all the others will use a clock looped from this board. See <a class="el" href="group__toplevel.html#ga025c83ac0730f5860d3257cbf1263957">xsp3_clocks_setup</a> The processing register settings and BRAM contents are then loaded using <a class="el" href="group__toplevel.html#ga922527587ac747570235681e0d547e58">xsp3_restore_settings</a> The overall run flags should then be set to specify if whether playback data is to be used, whether scope mode debug data should be stored and whether scalers should be recorded. See <a class="el" href="group__toplevel.html#ga922527587ac747570235681e0d547e58">xsp3_restore_settings</a> The timing control register allows the acquisition enable/disable and time frame number to come from either software control (typically for a quick test) or from hardware (for accurately timed multi-frame experiments) See <a class="el" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25">xsp3_set_glob_timeA</a> and <a class="el" href="group__toplevel.html#ga6efddbcfd9d2ae04b68c6237f60ff7f4">xsp3_set_glob_timeFixed</a> </p>
+<p>The library supports running 1 or more XSPRESS3 systems. Each system can consists of 1 or more FEM cards. To connect to a system of 1 or more boards use the command <a class="el" href="group__toplevel.html#gabbdb522cdcc0230ab9d2e06c63c4cf03">xsp3_config</a> This returns a handle which should be used to identify the system to all subsequent calls. Next setup the clock source. For XSPRESS3 normal operation the ADC and data processing clock is set to use the Crystal Oscillator module on the ADC board using xsp3_clocks_setup(path, -1, XSP3_CLK_SRC_XTAL, XSP3_CLK_FLAGS_MASTER | XSP3_CLK_FLAGS_NO_DITHER, 0) For multi-box XSPRESS3 systems there is provision for a master XSPRESS3 box to supply clocks to the other boxes, but this has not been used yet. The master board will be set to use the crystal and all the others will use a clock looped from this board with clk_src=XSP3_CLK_SRC_EXT. <br/>
+ For XSPRESS3Mini there are two choices of ADC board clocks: CDCM61004 or LMK61E2. These are set using: xsp3_clocks_setup(path, -1, XSP3M_CLK_SRC_CDCM61004, XSP3_CLK_FLAGS_NO_DITHER, 0) or xsp3_clocks_setup(path, -1, XSP3M_CLK_SRC_LMK61E2, XSP3_CLK_FLAGS_NO_DITHER, 0) respectively. <br/>
+ For a single card XSPRESS4 there are two choices of ADC board clocks. These are currently selected by changing resistors, but the library does differential the two for future expansion. xsp3_clocks_setup(path, -1, XSP3M_CLK_SRC_CDCM61004, XSP3_CLK_FLAGS_NO_DITHER, 0) or xsp3_clocks_setup(path, -1, XSP3M_CLK_SRC_LMK61E2, XSP3_CLK_FLAGS_NO_DITHER, 0) respectively. For a multi-card XSPRESS4 system it will be usual to use the mid-plane clock source. Currently both CDCM61004 and LMK61E2 are proposed xsp3_clocks_setup(path, -1, XSP4_CLK_SRC_MIDPLN_CDCM61004, XSP3_CLK_FLAGS_NO_DITHER, 0) or xsp3_clocks_setup(path, -1, XSP4_CLK_SRC_MIDPLN_LMK61E2, XSP3_CLK_FLAGS_NO_DITHER, 0)</p>
+<p>For all generations to allow digital only testing it is possible to generate the processing clock from the FPGA on board clocks using: xsp3_clocks_setup(path, -1, XSP3_CLK_SRC_INT, XSP3_CLK_FLAGS_NO_DITHER, 0) See <a class="el" href="group__toplevel.html#ga025c83ac0730f5860d3257cbf1263957">xsp3_clocks_setup</a> <br/>
+ The processing register settings and BRAM contents can then loaded using <a class="el" href="group__toplevel.html#ga922527587ac747570235681e0d547e58">xsp3_restore_settings</a>. To hide the complexity of the clock setup, the library will now save the clock configuration in the settings directory. The settings and clock setup can be restored using <a class="el" href="group__toplevel.html#ga4e73347344d1491aed50a90d40489a7c">xsp3_restore_settings_and_clock()</a>. This is now the preferred solution as it will work across all generations. <br/>
+ The overall run flags should then be set to specify if whether playback data is to be used, whether scope mode debug data should be stored and whether scalers should be recorded. See <a class="el" href="group__toplevel.html#ga922527587ac747570235681e0d547e58">xsp3_restore_settings</a> The timing control register allows the acquisition enable/disable and time frame number to come from either software control, the internal time frame generator or from external hardware - for accurately timed multi-frame experiments. See <a class="el" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25">xsp3_set_glob_timeA</a> and <a class="el" href="group__toplevel.html#ga6efddbcfd9d2ae04b68c6237f60ff7f4">xsp3_set_glob_timeFixed</a> </p>
 <h3><a class="anchor" id="software_user_setup"></a>
 User Settings</h3>
-<p>The system now needs to need set up to match user specifiable values. In particular the energy windows and RoI positions need to be set to match the energy of the element(s) of interest. Two in windows scalers are provided per channel, typically used to measure the counts in the main characteristic peak of 1 or 2 elements See <a class="el" href="group__toplevel.html#ga370b5f701a5ee1825f83968f4304719f">xsp3_set_window</a> The Histogram data is usually set to collect the full spectrum in 4096 energy bins. Various debug modes are available, but not required for user data. To reduce the data volume, it is also possible to collect regions of interest around the peaks of interest. In this case the total size of each spectrum is reduced from 12 bits = 4096 bins to 11..1 bits =&gt; 2048 .. 2 bins. First the Spectra size is set using <a class="el" href="group__toplevel.html#gaf0857c343325d92e949074f510511544">xsp3_format_run</a> and then if required RoI are set using <a class="el" href="group__toplevel.html#gabc8cf6682f5430f6ae5461e5a234896f">xsp3_set_roi</a> </p>
+<p>The system now needs to need set up to match user specifiable values. In particular the energy windows and RoI positions need to be set to match the energy of the element(s) of interest. Two in window scalers are provided per channel, typically used to measure the counts in the main characteristic peak of 1 or 2 elements See <a class="el" href="group__toplevel.html#ga370b5f701a5ee1825f83968f4304719f">xsp3_set_window</a> The Histogram data is usually set to collect the full spectrum in 4096 energy bins. Various debug modes are available, but not required for user data. To reduce the data volume, it is also possible to collect regions of interest around the peaks of interest. In this case the total size of each spectrum is reduced from 12 bits = 4096 bins to 11..1 bits =&gt; 2048 .. 2 bins. This feature was not used and so was configured out of some builds. Test with <a class="el" href="group__firmware__features.html#gaf88c0d09fcd20c73a536c0bb61960baf">xsp3_has_roi()</a>. First the Spectra size is set using <a class="el" href="group__toplevel.html#gaf0857c343325d92e949074f510511544">xsp3_format_run</a> and then if required RoI are set using <a class="el" href="group__toplevel.html#gabc8cf6682f5430f6ae5461e5a234896f">xsp3_set_roi</a> </p>
 <h3><a class="anchor" id="Data"></a>
 Collection</h3>
-<p>Once setup the histogramming memory is cleared using <a class="el" href="group__toplevel.html#gaf818e75dbb4e6a52192705c70dfac1fd">xsp3_histogram_clear</a>. Then the system is started using <a class="el" href="group__toplevel.html#gaf3b1a4949881a95c76bad27b1b3f5783">xsp3_histogram_start</a> If the timing control has been set to a fixed frame from software control, counting then starts. If the timing control has been set to use the external timing inputs, counting is armed, but will occur only when the timing veto input is asserted. If the acqusition is to be software timed, wait for the desired time and then counting disabled using <a class="el" href="group__toplevel.html#ga6611bffd6c764d6dc971ac0f3c13cf75">xsp3_histogram_stop</a> If timing if being controlled by hardware, the external timing generator must determine when the exposure is finished. After this call <a class="el" href="group__toplevel.html#ga6611bffd6c764d6dc971ac0f3c13cf75">xsp3_histogram_stop</a> to flush remaining data. </p>
+<p>If the internal time frame generator is being used, this is setup using <a class="el" href="group__toplevel.html#ga45a3b1bdca5df51717f98d00fdd200d3">xsp3_itfg_setup()</a>. Once setup the histogramming memory is cleared using <a class="el" href="group__toplevel.html#gaf818e75dbb4e6a52192705c70dfac1fd">xsp3_histogram_clear</a>. Then the system is started using <a class="el" href="group__toplevel.html#gaf3b1a4949881a95c76bad27b1b3f5783">xsp3_histogram_start</a> If the timing control has been set to a fixed frame from software control, counting then starts. Wait for the desired time and then counting disabled using <a class="el" href="group__toplevel.html#ga6611bffd6c764d6dc971ac0f3c13cf75">xsp3_histogram_stop</a> It is possible to get the system to an armed start using <a class="el" href="group__toplevel.html#gade395791d70335b40677571a82584919">xsp3_histogram_arm</a> and then start counting with <a class="el" href="group__toplevel.html#gaeed745920deb1aaca2ec8dbf2919136e">xsp3_histogram_continue</a>. With software timing it is possible to stop the current frame and then start counting into the next frame using <a class="el" href="group__toplevel.html#gace2c23d40d2690671901f4c683a58c3c">xsp3_histogram_pause()</a> and <a class="el" href="group__toplevel.html#gaeed745920deb1aaca2ec8dbf2919136e">xsp3_histogram_continue()</a>. <br/>
+ If the Internal time frame generator is used the system starts and the ITFG controls counting. It will start immediately unless trig_mode <a class="el" href="group___x_s_p3___i_t_f_g___t_r_i_g___m_o_d_e.html">XSP3_ITFG_TRIG_MODE</a> has been set to make it wait for an internal or external trigger. The ITFG will take a burst of frames, waiting for software or hardware triggers between frames if specified by the trig_mode. <br/>
+ If the timing control has been set to use the external timing inputs, counting is armed, but will occur only when the timing veto input is asserted. If the external trigger is negated and then asserted again then acquisition moves onto the next frame. Progress of the current input time frame can be monitored using <a class="el" href="group__toplevel.html#gafe1ccb6540d1e49d920d8b97d241f57e">xsp3_get_glob_time_statA()</a>. However, acquisition into memory will lag this slightly. If the internal time frame generator is being used, the progress is monitored using <a class="el" href="group__toplevel.html#gafe1ccb6540d1e49d920d8b97d241f57e">xsp3_get_glob_time_statA()</a> and the status of the ITFG can be extracted from the upper bits using <a class="el" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html">XSP3_GLOBAL_TIME_STATUS_A</a>. If timing if being controlled by hardware, the external timing generator must determine when the exposure is finished. After this call <a class="el" href="group__toplevel.html#ga6611bffd6c764d6dc971ac0f3c13cf75">xsp3_histogram_stop</a> to flush remaining data.</p>
 <h3><a class="anchor" id="software_data_access"></a>
 Data Access</h3>
-<p>The histogram data is stored in /dev/shm shared memory on the Linux server. It can be read at any time, accepting that data read will be slightly stale while histogramming is running. At the end of the experiment, after calling <a class="el" href="group__toplevel.html#ga6611bffd6c764d6dc971ac0f3c13cf75">xsp3_histogram_stop</a>, poll <a class="el" href="group__internal.html#gab4379e74d2774df62d86f22328049ed9">xsp3_histogram_is_busy</a> twice to check that the histogramming threads have flushed any network stack buffers. The histogram data can then read read using any of <a class="el" href="group__toplevel.html#ga48dac2327cda3dd127ff6f36d177a403">xsp3_histogram_read4d</a>, <a class="el" href="group__toplevel.html#ga75a51e96d7ad2e2f3d4be4b787f66d9d">xsp3_histogram_read3d</a> or <a class="el" href="group__toplevel.html#ga88697faf20c618ef49135fc935e4b016">xsp3_histogram_read_chan</a> The scaler data is stored in a hardware counter during an acquistion and then transfered to DRAM on the FEM at the end of each frame. For multi-frame experiments, data can be read from the previous frame while the next is counting. To check the DMA channel has written data to memory use <a class="el" href="group__fullcontrol.html#ga5b46ff9baf93c4a7e3839c0eba6c4cd7">xsp3_dma_check_desc</a> The raw scaler data is then read using <a class="el" href="group__toplevel.html#ga6e31a5956682ff9886ed317965c512a3">xsp3_scaler_read</a></p>
+<p>For XSPRESS3 and XSPRESS4 the histogram data is stored in /dev/shm shared memory on the Linux server. It can be read at any time, accepting that data read will be slightly stale while histogramming is running. For early versions of XSPRESS3 the scalers are counted in VHDL scalars and transferred to DRAM in the FEM by DMA at the end of the frame. For current XSPRESS3 and XSPRESS4 versions, the scalars are accumulated into /dev/shm shared memory or calculated from the spectra as necessary. In XSPRESS3Mini the normal spectra are collected into BRAM and transferred to ZYNQ PS DRAM by DMA at the end of the frame. The scalars are counted in VHDL scalars and transferred to DRAM by DMA. To provide a common API to these implementations, user code should call <a class="el" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7">xsp3_scaler_check_progress_details()</a> or its simplified interface <a class="el" href="group__toplevel.html#gac087294ee7be16def702c5e44b901f41">xsp3_scaler_check_progress()</a>. This will report the number of completed frames and it is safe to read data up to that point. <br/>
+ Note that with the original XSPRESS3 version the intention was that while the experiment was running, realtime display data would be read out, accepting that it may be slightly stale. The intention was that at the end of the experiment <a class="el" href="group__toplevel.html#ga6611bffd6c764d6dc971ac0f3c13cf75">xsp3_histogram_stop</a> would be called to start flushing of the UDP data. After calling <a class="el" href="group__toplevel.html#ga6611bffd6c764d6dc971ac0f3c13cf75">xsp3_histogram_stop</a>, <a class="el" href="group__internal.html#gab4379e74d2774df62d86f22328049ed9">xsp3_histogram_is_busy</a> or for a compatible interface for a multi-box system <a class="el" href="group__toplevel.html#gac86da3c2d625a6a872847d2b6edca84a">xsp3_histogram_is_any_busy()</a> was to be polled until two consecutive calls returned not busy to check that the histogramming threads had flushed any network stack buffers. These functions are still supported for XSPRESS3 and XSPRRESS4, but have no meaning for XSPRESS3Mini. They are largely superseded by <a class="el" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7">xsp3_scaler_check_progress_details()</a>. <br/>
+ However, to save time at the end of a many frame experiment, the EPICS and TANGO/LIAM implementations start reading early frames once the experiment has finished them. For current XSPRSS3/XSPRESS4 and XSPRESS3Mini <a class="el" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7">xsp3_scaler_check_progress_details()</a> provides the information as to how far the system has got. Completed frames can safely be read. For the original XSPRESS3 (scalar in FEM DRAM), <a class="el" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7">xsp3_scaler_check_progress_details()</a> measures progress by seeing how many time frames of scalars have been written to FEM-1 DRAM. The scalars can safely be read out up to this frame. However, they may be some lag in the processing of the UDP data. Currently there is no way to verify when this has finished. <br/>
+ The histogram data can then read read using any of <a class="el" href="group__toplevel.html#ga48dac2327cda3dd127ff6f36d177a403">xsp3_histogram_read4d</a>, <a class="el" href="group__toplevel.html#ga75a51e96d7ad2e2f3d4be4b787f66d9d">xsp3_histogram_read3d</a> or <a class="el" href="group__toplevel.html#ga88697faf20c618ef49135fc935e4b016">xsp3_histogram_read_chan</a> The raw scaler data is then read using <a class="el" href="group__toplevel.html#ga6e31a5956682ff9886ed317965c512a3">xsp3_scaler_read</a></p>
+<h3><a class="anchor" id="circular_buffer_mode"></a>
+Circular Buffer Mode</h3>
+<p>To allow for experiments requiring very large numbers of time frames, the system can be operated in circular buffer mode. Normally the maximum number of time frames in an experiment is set when calling <a class="el" href="group__toplevel.html#gabbdb522cdcc0230ab9d2e06c63c4cf03">xsp3_config()</a> With a typical 16384 frames used in conventional 4096 bin spectra mode, this requires 256 MBytes of DRAM per channel. This can be increased significantly by installing more memory in the server and increasing the value passed to to <a class="el" href="group__toplevel.html#gabbdb522cdcc0230ab9d2e06c63c4cf03">xsp3_config()</a>. There are limits in the library at 1 Meg frames, 16 GBytes per frame. <br/>
+ However the system can be used in circular buffer mode. The user software has to read the the data keeping up with incoming frame rate. It can lag, but only to the size of the number of frames in the circular buffer, typically 16384, and has to save the data to (networked) disk. This is enabled by calling <a class="el" href="group__toplevel.html#ga678235d44f81d7cf0bcbc24e2d3a0d5a">xsp3_set_run_flags()</a> including the flag XSP3_RUN_FLAGS_CIRCULAR_BUFFER <br/>
+ The receive threads clear each time frame before they histograms into them. The receive threads also software extends the 24 bit firmware time frame to currently 64 bits. The bottom 32 bits of the extended time frame are used to address the histogram and scalar read functions. They are wrapped to read from the circular buffer. <br/>
+ There is also a time frames status buffer. This is an area in /dev/shm. It stores 4 off 32 bit unsigned integers per channel per circular buffer time frame. One row per channel stores a used count which is incremented whenever a receive thread starts histogramming into a given frame. If when the receive thread wraps round to use that frame again, the used count has not been cleared by a call to <a class="el" href="group__toplevel.html#gac7a59a1989371d8f2584ad858e9278d9">xsp3_histogram_circ_ack()</a>, the system detects wrap round. The new frame is collected and the old frame is over written. If this happens, it is recorded in various error status bits, which can be seen by <a class="el" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7">xsp3_scaler_check_progress_details()</a> setting Xsp3ErrFlag_CircBuffOverRun in the error flags. <br/>
+ The extended time frame stored in each circular buffer frame is stored in 2 rows of the time frame status module. The full status information for a frame/channel can be read using <a class="el" href="group__toplevel.html#gab29e2dd328d63d5316a94aedc2478cec">xsp3_histogram_get_tf_status()</a>. For use in particularly long raster scan experiments, there is an option to use TTL_IN(2..3) to give 2 markers in the data. These are saved in the 3rd row of the time frame status module and can be read back by <a class="el" href="group__toplevel.html#ga573418cf13a339116880110f330dba60">xsp3_histogram_get_tf_markers()</a>. This feature also exists in normal (single pass) buffer mode. <br/>
+ Currently circular buffer mode is not available in XSPRESS3Mini.</p>
 <h2><a class="anchor" id="registers"></a>
 Register Layout</h2>
 <p>XSPRESS3 register space memory is mapped at 0xA0000000 on a 16 MByte boundary. It is split into 16 “channels” using the top 4 bits of my address space. Channel 0..7(8) will be physical channels and channel 15 is the global register. The remaining channels 10..14 are reserved for future use.<br/>
@@ -105,10 +130,13 @@ Register Layout</h2>
  * 19..16   Region (BRAM sel or Regs)
  * 15..2    BRAM addresses
  * 7 ..2    Register select
- * </pre><h2><a class="anchor" id="network_config"></a>
+ * </pre><p> The register layout of the channel registers is very similar in the XSPRESS3Mini and XSPRESS4 generations. The physical base address is 0x90000000 and the addressing scheme allows for up to 32 channels. However, due to the virtual addresses in the Linux environment, the driver is passed a register offset rather than physical address. The differences are accounted for in the API layer e.g. <a class="el" href="group__internal.html#gaa1e2f80b0bc0671cc5b9ab2ac98c3811">xspress3FemSetInt()</a> so the functions <a class="el" href="group__internal.html#gae52e0e475600ca3248ed22f00f961287">xsp3_read_reg()</a>and <a class="el" href="group__internal.html#ga45afdce5a53b9c007d8c1576a1fce269">xsp3_write_reg()</a> work for all generations. <br/>
+ The global register layout is different between XSPRESS3 and XSPRESS3Mini/XSPRESS4. User code should not access these registers directly via <a class="el" href="group__internal.html#ga562fe433b8c75c1fef5095afa4903e98">xsp3_read_glob_reg()</a> and <a class="el" href="group__internal.html#gac3a849604e2f273d8390a9809f4aa472">xsp3_write_glob_reg()</a>. Instead the names accessors such as <a class="el" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25">xsp3_set_glob_timeA()</a> should be used.</p>
+<h2><a class="anchor" id="network_config"></a>
 Network Configuration</h2>
 <p>The default network setup is (excluding the site network connection):</p>
-<pre class="fragment"> * 1GBit Copper network for conbtrol communinication between the PC and the XSPRESS3 box. With more thean 1 XSPRESS3 box connected this netwrok uses a ethernt switch
+<pre class="fragment"> * 1GBit Copper network for control communication between the PC and the XSPRESS3/XSPRESS3Mini/XSPRESS4 box. 
+ * With more than 1 XSPRESS3 box connected this network uses an Ethernet switch or bonded network interface cards.
  * A private network with 64 addresses allocated:
  * eth1      Link encap:Ethernet  HWaddr d4:ae:52:7d:5f:84
  *          inet addr:192.168.0.1  Bcast:192.168.0.63  Mask:255.255.255.192
@@ -120,7 +148,8 @@ Network Configuration</h2>
  *          RX bytes:173937 (169.8 KiB)  TX bytes:37252 (36.3 KiB)
  *          Interrupt:48 Memory:da000000-da012800
  *
- * A 10GBit Fibre network for data transfer, point to point with 4 addresses allocated. With more that 1 XSPRESS3 box there would be multiple 10G Ports on the PC with multiple 4 address range subnets
+ * A 10GBit Fibre network for data transfer, point to point with 4 addresses allocated. 
+ * With more that 1 XSPRESS3/XSPRESS4 box there would be multiple 10G Ports on the PC with multiple 4 address range subnets
  *
  * ifconfig eth2
  * eth2      Link encap:Ethernet  HWaddr 00:07:43:05:7c:65
@@ -170,13 +199,1023 @@ Error Codes</h2>
 <div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_RANGE_CHECK        -6</span></div>
 <div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_INVALID_SCOPE_MOD  -7</span></div>
 <div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_OUT_OF_MEMORY      -8</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_ERR_DEV_NOT_FOUND  -9</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_CANNOT_OPEN_FILE   -10</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_FILE_READ_FAILED   -11</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_FILE_WRITE_FAILED  -12</span></div>
+<div class="line"><span class="preprocessor"></span></div>
+<div class="line"><span class="preprocessor">#define XSP3_WOULD_BLOCK        -20 </span></div>
+<div class="line"><span class="preprocessor"></span></div>
+</div><!-- fragment --> <h1><a class="anchor" id="examples"></a>
+Example Programs</h1>
+<p>A demonstration/example program has been written which uses <a class="el" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7">xsp3_scaler_check_progress_details()</a> to monitor progress and follow the experiment read data as completed frames become available. It can work with an external timing generator or the Internal TFG. </p>
+<div class="fragment"><div class="line"> * Program to demonstrate how to setup and readout scaler data <span class="keywordflow">for</span> Xspress3.</div>
+<div class="line"> *</div>
+<div class="line"> * Matthew Pearson, Nov 2012.</div>
+<div class="line"> */</div>
+<div class="line"></div>
+<div class="line"><span class="preprocessor">#include &quot;stdio.h&quot;</span></div>
+<div class="line"></div>
+<div class="line"><span class="preprocessor">#include &quot;<a class="code" href="xspress3_8h.html">xspress3.h</a>&quot;</span></div>
+<div class="line"></div>
+<div class="line"><span class="preprocessor">#define XSP3_MAXFRAMES 16384</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_MAXSPECTRA 4096</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_CONFIGPATH &quot;/home/xspress3/xspress3.4chan/settings/&quot;</span></div>
+<div class="line"><span class="preprocessor"></span><span class="comment">// #define XSP3_CONFIGPATH &quot;./settings/&quot;</span></div>
+<div class="line"><span class="preprocessor">#define MAX_CHECKDESC_POLLS 1000</span></div>
+<div class="line"><span class="preprocessor"></span></div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> poll = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> chan = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> sca = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> energy = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> frame = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> xsp3_handle = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> xsp3_status = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> num_frames = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> num_frames_to_read = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> last_num_frames = 0;</div>
+<div class="line">    <a class="code" href="xspress3_8h.html#a658af7e4f97507135cf5a100008d1569">Xsp3ErrFlag</a> error_flags;</div>
+<div class="line"></div>
+<div class="line">    u_int32_t *pRAW = NULL;</div>
+<div class="line">    u_int32_t *pRAW_OFFSET = NULL;</div>
+<div class="line">    u_int64_t cur_frame;</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordtype">double</span> *pSCA = NULL;</div>
+<div class="line">    <span class="keywordtype">double</span> *pSCA_OFFSET = NULL;</div>
+<div class="line">    <span class="keywordtype">double</span> *pDUMP = NULL;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dump_offset = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dump_offset_mca = 0;</div>
+<div class="line">    <span class="keywordtype">double</span> *pMCA = NULL, *pMCA_OFFSET;</div>
+<div class="line">    u_int32_t *pMCA_RAW = NULL;</div>
+<div class="line">    u_int32_t *pMCA_RAW_OFFSET;</div>
+<div class="line">    <span class="keywordtype">int</span> i;</div>
+<div class="line">    <span class="keywordtype">int</span> first_card=0, num_cards=1;</div>
+<div class="line">    <span class="keywordtype">int</span> debug=1;</div>
+<div class="line">    <span class="keywordtype">int</span> num_chan;</div>
+<div class="line">    <span class="keywordtype">int</span> use_dtc = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> use_itfg=0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nframes = 0;</div>
+<div class="line">    <span class="keywordtype">double</span> frame_len = 1.0;</div>
+<div class="line">    u_int32_t tstat;</div>
+<div class="line">    <span class="keywordtype">int</span> running, counting, paused, finished=0;</div>
+<div class="line">    <span class="keywordtype">int</span> prev_frame = -1;</div>
+<div class="line">    <span class="keywordtype">int</span> prev_paused = -1;</div>
+<div class="line">    <span class="keywordtype">int</span> prev_finished = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> show_progress=0;</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">for</span> (i=1; i&lt;argc; i++)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-card=&quot;</span>, 6) == 0)</div>
+<div class="line">            first_card = strtol(argv[i]+6, NULL, 0);</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-num-cards=&quot;</span>, 11) == 0)</div>
+<div class="line">            num_cards = strtol(argv[i]+11, NULL, 0);</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-quiet&quot;</span>) == 0)</div>
+<div class="line">            debug = 0;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-debug&quot;</span>) == 0)</div>
+<div class="line">            debug = 1;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-verbose&quot;</span>) == 0)</div>
+<div class="line">            debug = 2;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-dtc&quot;</span>) == 0)</div>
+<div class="line">            use_dtc = 1;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-progress&quot;</span>) == 0)</div>
+<div class="line">            show_progress = 1;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-nframes=&quot;</span>, 9) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = 1;</div>
+<div class="line">            nframes = strtol(argv[i]+9, NULL, 0);</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-len=&quot;</span>, 5) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = 1;</div>
+<div class="line">            frame_len = strtod(argv[i]+5, NULL);</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span></div>
+<div class="line">        {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;Unknown option %s\n&quot;</span>, argv[i]);</div>
+<div class="line">            printf(<span class="stringliteral">&quot;USAGE: %s [-card=&lt;first_card&gt; -num-cards=&lt;num cards&gt; -quiet -debug -verbose -nframes=&lt;nn&gt; -len=&lt;seconds&gt; -progress]\n&quot;</span>);</div>
+<div class="line">            exit(1);</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Connect to the Xspress3...\n&quot;</span>);</div>
+<div class="line"></div>
+<div class="line">    xsp3_handle = <a class="code" href="group__toplevel.html#gabbdb522cdcc0230ab9d2e06c63c4cf03" title="Configure and initialise the complete xspress3 system.">xsp3_config</a>(num_cards, XSP3_MAXFRAMES, NULL, -1, NULL, -1, 1, NULL, 1, first_card);</div>
+<div class="line">    <span class="keywordflow">if</span> (xsp3_handle &lt; 0) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;ERROR calling xsp3_config. Return code: %d\n&quot;</span>, xsp3_handle);</div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
+<div class="line">    num_chan = <a class="code" href="group__toplevel.html#ga8d0027b9ea7ab15bfe691face4bd45c5" title="Get the number of channels currently configured in the system.">xsp3_get_num_chan</a>(xsp3_handle);</div>
+<div class="line"></div>
+<div class="line">    pRAW = (u_int32_t*)(calloc(<a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a>*XSP3_MAXFRAMES*num_chan, <span class="keyword">sizeof</span>(u_int32_t)));</div>
+<div class="line">    pSCA = (<span class="keywordtype">double</span>*)(calloc(<a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a>*XSP3_MAXFRAMES*num_chan, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)));</div>
+<div class="line">    pMCA = (<span class="keywordtype">double</span>*)(calloc(XSP3_MAXFRAMES*num_chan*XSP3_MAXSPECTRA, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)));</div>
+<div class="line">    pMCA_RAW = (u_int32_t*)(calloc(XSP3_MAXFRAMES*num_chan*XSP3_MAXSPECTRA, <span class="keyword">sizeof</span>(u_int32_t)));</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">    <span class="comment">/*</span></div>
+<div class="line"><span class="comment">    printf(&quot;Set up clocks register to use ADC clock...\n&quot;);</span></div>
+<div class="line"><span class="comment">    xsp3_status = xsp3_clocks_setup(xsp3_handle, 0, XSP3_CLK_SRC_XTAL, XSP3_CLK_FLAGS_MASTER, 0);</span></div>
+<div class="line"><span class="comment">    if (xsp3_status != XSP3_OK) {</span></div>
+<div class="line"><span class="comment">    printf(&quot;ERROR calling xsp3_clocks_setup. Return code: %d\n&quot;, xsp3_status);</span></div>
+<div class="line"><span class="comment">    return EXIT_FAILURE;</span></div>
+<div class="line"><span class="comment">    }</span></div>
+<div class="line"><span class="comment">    */</span></div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Restoring the settings from the configuration files...\n&quot;</span>);</div>
+<div class="line">    xsp3_status = <a class="code" href="group__toplevel.html#ga4e73347344d1491aed50a90d40489a7c" title="Restore all xspress3 settings from series of files including configuring the clocks.">xsp3_restore_settings_and_clock</a>(xsp3_handle, XSP3_CONFIGPATH, 0);</div>
+<div class="line">    <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;ERROR calling xsp3_restore_settings. Return code: %d\n&quot;</span>, xsp3_status);</div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Calling xsp3_format_run...\n&quot;</span>);</div>
+<div class="line">    <span class="keywordflow">for</span> (chan=0; chan&lt;num_chan; ++chan) {</div>
+<div class="line">        xsp3_status = <a class="code" href="group__toplevel.html#gaf0857c343325d92e949074f510511544" title="Set format of the data to be histogrammed.">xsp3_format_run</a>(xsp3_handle, chan, 0, 0, 0, 0, 0, 12);</div>
+<div class="line">        <span class="keywordflow">if</span> (xsp3_status &lt; <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;ERROR calling xsp3_restore_settings. channel: %d, Return code: %d\n&quot;</span>, chan, xsp3_status);</div>
+<div class="line">            <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;  Channel: %d, Number of time frames configured: %d\n&quot;</span>, chan, xsp3_status);</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Set up playback data output...\n&quot;</span>);</div>
+<div class="line">    xsp3_status = <a class="code" href="group__toplevel.html#ga678235d44f81d7cf0bcbc24e2d3a0d5a" title="Set the run mode flags.">xsp3_set_run_flags</a>(xsp3_handle, <a class="code" href="xspress3_8h.html#af70edf2ffb8b05d87153abf538cc1201" title="[XSP3_RUN_FLAGS]">XSP3_RUN_FLAGS_PLAYBACK</a> | <a class="code" href="xspress3_8h.html#a7d765164fcd2cbe5ecd1e1cf8658acad">XSP3_RUN_FLAGS_SCALERS</a> | <a class="code" href="xspress3_8h.html#a61cdd3e28d864eac5c5483257af5bf0c">XSP3_RUN_FLAGS_HIST</a>);</div>
+<div class="line">    <span class="keywordflow">if</span> (xsp3_status &lt; <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;ERROR calling xsp3_set_run_flags. Return code: %d\n&quot;</span>, xsp3_status);</div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">if</span> (use_itfg == 0)</div>
+<div class="line">    {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;Set up trigger source to use external veto input...\n&quot;</span>);</div>
+<div class="line">        xsp3_status = <a class="code" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25" title="Set-up the triggering or time framing control register.">xsp3_set_glob_timeA</a>(xsp3_handle, 0, <a class="code" href="xspress3_8h.html#acf372b91c4daa58365450f98013e6e5a" title="[XSP3_GLOBAL_TIMEA_BITS 0..2]">XSP3_GLOB_TIMA_TF_SRC</a>(<a class="code" href="xspress3_8h.html#a5ceba49498824982538d4172f6b099fa" title="Time frame incremented by TTL Input 1.">XSP3_GTIMA_SRC_TTL_VETO_ONLY</a>));</div>
+<div class="line">        <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;ERROR calling xsp3_set_glob_timeA. Return code: %d\n&quot;</span>, xsp3_status);</div>
+<div class="line">            <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">else</span></div>
+<div class="line">    {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;Set up trigger source to use Internal TFG for %d frames of %g s...\n&quot;</span>, nframes, frame_len);</div>
+<div class="line">        xsp3_status = <a class="code" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25" title="Set-up the triggering or time framing control register.">xsp3_set_glob_timeA</a>(xsp3_handle, 0, <a class="code" href="xspress3_8h.html#acf372b91c4daa58365450f98013e6e5a" title="[XSP3_GLOBAL_TIMEA_BITS 0..2]">XSP3_GLOB_TIMA_TF_SRC</a>(<a class="code" href="xspress3_8h.html#a0ea97ed44f245fc59ff8fab110a352c1" title="Time frame from internal timing generator (for future expansion).">XSP3_GTIMA_SRC_INTERNAL</a>));</div>
+<div class="line">        <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;ERROR calling xsp3_set_glob_timeA. Return error %s: code: %d\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">            <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">        }</div>
+<div class="line">        xsp3_status = <a class="code" href="group__toplevel.html#ga45a3b1bdca5df51717f98d00fdd200d3" title="Setup Internal time frame generator (ITFG) for a series of equal length frames.">xsp3_itfg_setup</a>(xsp3_handle, 0, nframes, (u_int32_t)(80000000*frame_len), <a class="code" href="group___x_s_p3___i_t_f_g___t_r_i_g___m_o_d_e.html#ga90687bb2ea048071813f8fb5b609b76b" title="Run burst of back to back frames.">XSP3_ITFG_TRIG_MODE_BURST</a>, <a class="code" href="group___x_s_p3___i_t_f_g___g_a_p___m_o_d_e.html#ga6ed65b1fb8ad7f20bef2d134b7c3e630" title="Minimal gap between frames. Care when using multiple boxes. Short cables and/or termination. 0 debounce time.">XSP3_ITFG_GAP_MODE_25NS</a>);</div>
+<div class="line">        <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>)</div>
+<div class="line">        {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;ERROR calling xsp3_itfg_setup. Return error %s: code: %d\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">            <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">        }</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Starting histogramming...\n&quot;</span>);</div>
+<div class="line">    xsp3_status = <a class="code" href="group__toplevel.html#gaf3b1a4949881a95c76bad27b1b3f5783" title="Start system and enable counting.">xsp3_histogram_start</a>(xsp3_handle, -1);        <span class="comment">// Start all cards.</span></div>
+<div class="line">    <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;ERROR calling xsp3_histogram_start. Return code: %d\n&quot;</span>, xsp3_status);</div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Now polling xsp3_scaler_check_progress_details and printing out any scaler data...\n&quot;</span>);</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">for</span> (poll=0; poll&lt;MAX_CHECKDESC_POLLS ; )</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordflow">if</span> ((use_itfg &amp;&amp; nframes != 0) || show_progress)</div>
+<div class="line">        {</div>
+<div class="line">            <span class="keywordflow">if</span> ((xsp3_status = <a class="code" href="group__toplevel.html#gafe1ccb6540d1e49d920d8b97d241f57e" title="Get the timing status register A.">xsp3_get_glob_time_statA</a>(xsp3_handle, 0, &amp;tstat)) &lt; 0)</div>
+<div class="line">            {</div>
+<div class="line">                printf(<span class="stringliteral">&quot;ERROR: Cannot read timing status: %s\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>());</div>
+<div class="line">                <span class="keywordflow">return</span> xsp3_status;</div>
+<div class="line">            }</div>
+<div class="line"></div>
+<div class="line">            frame = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#ga6f327b3d5e262a29d1f52ede2520ab9d" title="[XSP3_GLOBAL_TIME_STATUS_A_CODE]">XSP3_GLOB_TSTAT_A_FRAME</a>(tstat);</div>
+<div class="line">            running = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#gac35d693a247da3c96f4ecbc54af28357" title="Read whether the ITFG is currently running.">XSP3_GLOB_TSTAT_A_ITFG_RUNNING</a>(tstat);</div>
+<div class="line">            counting = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#ga53fc2a4ad67b4b0b62e77ac6106eb2d5" title="Read whether the ITFG is currently enabling counting.">XSP3_GLOB_TSTAT_A_ITFG_COUNTING</a>(tstat);</div>
+<div class="line">            paused = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#ga361561e49ed4db51c89448b1df5634a7" title="Read whether the ITFG is paused wait for software or hardware trigger.">XSP3_GLOB_TSTAT_A_ITFG_PAUSED</a>(tstat);</div>
+<div class="line">            finished = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#ga555e6308aeefe34b3f443b8479219de0" title="Read whether the ITFG has finished a run.">XSP3_GLOB_TSTAT_A_ITFG_FINISHED</a>(tstat);</div>
+<div class="line"></div>
+<div class="line">            <span class="keywordflow">if</span> (show_progress)</div>
+<div class="line">            {</div>
+<div class="line">                <span class="keywordflow">if</span> (frame != prev_frame || paused != prev_paused || prev_finished != finished)</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;ITFG Frame = %d, running=%d, counting=%d, paused=%d, finished=%d\n&quot;</span>, frame, running, counting, paused, finished);</div>
+<div class="line">                prev_frame  = frame;</div>
+<div class="line">                prev_paused = paused;</div>
+<div class="line">                prev_finished = finished;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line">        cur_frame = <a class="code" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7" title="This function checks how many time frames have been processed.">xsp3_scaler_check_progress_details</a>(xsp3_handle,&amp;error_flags, 0, NULL);</div>
+<div class="line">        <span class="keywordflow">if</span> (cur_frame &lt; 0) {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;ERROR calling xsp3_scaler_check_progress_details. poll number: %d, Return Message: %s, code: %d\n&quot;</span>, poll, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">            <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">        }</div>
+<div class="line"></div>
+<div class="line">        printf(<span class="stringliteral">&quot;  Check_desc poll: %d, Current frame=%d\r&quot;</span>, poll, cur_frame); </div>
+<div class="line">        fflush(stdout);</div>
+<div class="line"></div>
+<div class="line">        <span class="keywordflow">if</span> (cur_frame &gt; last_num_frames) {</div>
+<div class="line"></div>
+<div class="line">            num_frames = cur_frame;</div>
+<div class="line">            num_frames_to_read = num_frames - last_num_frames;</div>
+<div class="line">            printf(<span class="stringliteral">&quot;\n.... last_num_frames: %d, reading out %d\n&quot;</span>, last_num_frames, num_frames_to_read);</div>
+<div class="line">            pRAW_OFFSET = pRAW+last_num_frames*(<a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a> * num_chan);</div>
+<div class="line">            pSCA_OFFSET = pSCA+last_num_frames*(<a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a> * num_chan);</div>
+<div class="line">            pMCA_OFFSET = pMCA+last_num_frames*(XSP3_MAXSPECTRA * num_chan);</div>
+<div class="line">            pMCA_RAW_OFFSET = pMCA_RAW+last_num_frames*(XSP3_MAXSPECTRA * num_chan);</div>
+<div class="line">            <span class="keywordflow">if</span> (use_dtc)</div>
+<div class="line">            {</div>
+<div class="line">                xsp3_status = <a class="code" href="group__dtc.html#gaed10703918be9fd1491bb583e361b27a" title="Read a 4 dimensional block of dead time corrected histogram data and optionally return the dead time ...">xsp3_hist_dtc_read4d</a>(xsp3_handle, pMCA_OFFSET, NULL, 0, 0, 0, last_num_frames, XSP3_MAXSPECTRA, 1, num_chan, num_frames_to_read);</div>
+<div class="line"><span class="comment">//              xsp3_status = xsp3_scaler_dtc_read(xsp3_handle, pSCA_OFFSET, 0, 0, last_num_frames, XSP3_SW_NUM_SCALERS, num_chan, num_frames_to_read);</span></div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">else</span></div>
+<div class="line">            {</div>
+<div class="line">    </div>
+<div class="line">                xsp3_status = <a class="code" href="group__toplevel.html#ga6e31a5956682ff9886ed317965c512a3" title="Read a block of scaler data.">xsp3_scaler_read</a>(xsp3_handle, pRAW_OFFSET, 0, 0, last_num_frames, <a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a>, num_chan, num_frames_to_read);</div>
+<div class="line">                xsp3_status = <a class="code" href="group__toplevel.html#ga48dac2327cda3dd127ff6f36d177a403" title="Read a 4 dimensional block of histogram data.">xsp3_histogram_read4d</a>(xsp3_handle, pMCA_RAW_OFFSET, 0, 0, 0, last_num_frames, XSP3_MAXSPECTRA, 1, num_chan, num_frames_to_read);</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">if</span> (xsp3_status &lt; <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">                printf(<span class="stringliteral">&quot;ERROR calling xsp3_scaler_read. Return code: %d\n&quot;</span>, xsp3_status);</div>
+<div class="line">                <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">            }</div>
+<div class="line"></div>
+<div class="line">            <span class="comment">/*printf(&quot;  Printing %d frames of scaler data...\n&quot;, num_frames_to_read);</span></div>
+<div class="line"><span class="comment">            pDUMP = pSCA;</span></div>
+<div class="line"><span class="comment">            for (frame=last_num_frames; frame&lt;(num_frames_to_read+last_num_frames); frame++) {</span></div>
+<div class="line"><span class="comment">            for (chan=0; chan&lt;num_chan; chan++) {</span></div>
+<div class="line"><span class="comment">              for (sca=0; sca&lt;XSP3_SW_NUM_SCALERS; sca++) {</span></div>
+<div class="line"><span class="comment">                //printf(&quot;  frame: %d, chan: %d, sca: %d, data[%d]: %d\n&quot;,</span></div>
+<div class="line"><span class="comment">                //   frame, chan, sca, dump_offset, *(pSCA_DUMP+dump_offset));</span></div>
+<div class="line"><span class="comment">                printf(&quot;  frame: %d, chan: %d, sca: %d, data[%d]: %f\n&quot;,</span></div>
+<div class="line"><span class="comment">                   frame, chan, sca, dump_offset, *(pDUMP+dump_offset));</span></div>
+<div class="line"><span class="comment">                dump_offset++;</span></div>
+<div class="line"><span class="comment">              }</span></div>
+<div class="line"><span class="comment">            }</span></div>
+<div class="line"><span class="comment">            }*/</span></div>
+<div class="line"></div>
+<div class="line">            <span class="comment">/*pDUMP = pMCA;</span></div>
+<div class="line"><span class="comment">            printf(&quot;  Printing elements of spectra data...\n&quot;);</span></div>
+<div class="line"><span class="comment">            for (energy=0; energy&lt;XSP3_MAXSPECTRA; energy++) {</span></div>
+<div class="line"><span class="comment">            printf(&quot;  energy[%d]: %f\n&quot;, energy, *(pDUMP+dump_offset_mca));</span></div>
+<div class="line"><span class="comment">            dump_offset_mca++;</span></div>
+<div class="line"><span class="comment">            }*/</span></div>
+<div class="line"></div>
+<div class="line">            last_num_frames = num_frames;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">if</span> (use_itfg &amp;&amp; nframes != 0 &amp;&amp; finished)</div>
+<div class="line">            poll++; <span class="comment">/* Count polls once teh Itfg has finished */</span></div>
+<div class="line"></div>
+<div class="line">    } <span class="comment">/*end of poll loop*/</span></div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;\nDone.\n&quot;</span>);</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
+<div class="line"></div>
+<div class="line">}</div>
+<div class="line"><span class="comment"></span></div>
+<div class="line"><span class="comment">/**</span></div>
+</div><!-- fragment --><p> <br/>
+ </p>
+<h2><a class="anchor" id="circ_buff_example"></a>
+Circular Buffer Example Program</h2>
+<p>An extensive test and demonstration program has been provided for circular buffer readout mode. </p>
+<div class="fragment"><div class="line"> * Program to demonstrate how to setup and readout MCA and scalar data <span class="keywordflow">for</span> Xspress3 when running with the circular buffer enabled</div>
+<div class="line"> *</div>
+<div class="line"> * Derived from test_check_desc by  Matthew Pearson, Nov 2012.</div>
+<div class="line"> *                                  William Helsby   Nov 2016.</div>
+<div class="line"> */</div>
+<div class="line"></div>
+<div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;math.h&gt;</span></div>
+<div class="line"></div>
+<div class="line"><span class="preprocessor">#include &quot;<a class="code" href="xspress3_8h.html">xspress3.h</a>&quot;</span></div>
+<div class="line"></div>
+<div class="line"><span class="preprocessor">#define XSP3_MAXFRAMES 16384</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_MAXSPECTRA 4096</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define XSP3_CONFIGPATH &quot;/home/xspress3/xspress3.4chan/settings/&quot;</span></div>
+<div class="line"><span class="preprocessor"></span><span class="comment">//#define XSP3_CONFIGPATH &quot;/home/xspress3/xspress3.gen_rate/settings/&quot;</span></div>
+<div class="line"><span class="comment">// #define XSP3_CONFIGPATH &quot;./settings/&quot;</span></div>
+<div class="line"><span class="preprocessor">#define MAX_CHECKDESC_POLLS 1000</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define MAX_EXT_FRAMES  (16*1024*1024*4)</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define RES_MOD_X 32768</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define MAX_NUM_CHAN 12</span></div>
+<div class="line"><span class="preprocessor"></span></div>
+<div class="line"><span class="keywordtype">int</span> print_errors=1;</div>
+<div class="line"><span class="keywordtype">int</span> max_prints = 20;</div>
+<div class="line"><span class="keywordtype">int</span> check_ave=1;        <span class="comment">// For fixed rate playbackl data, check counts against the avergae. However for varying rate data, just check for agreement between scalars and MCA</span></div>
+<div class="line"></div>
+<div class="line"><span class="keywordtype">int</span> good_thres=100;</div>
+<div class="line"><span class="keywordtype">int</span> win_low=540;</div>
+<div class="line"><span class="keywordtype">int</span> win_high=700;</div>
+<div class="line"><span class="keywordtype">int</span> marker_modulus = 80;</div>
+<div class="line"><span class="keywordtype">int</span> marker_frame = 20;</div>
+<div class="line"><span class="keywordtype">int</span> fc_del_frame = 10;</div>
+<div class="line"><span class="keywordtype">int</span> fc_del_modulus= 30;</div>
+<div class="line"><span class="keywordtype">int</span> itfg_cont=0;</div>
+<div class="line"></div>
+<div class="line"><span class="keywordtype">int</span> ave_first(MOD_IMAGE3D *mod, <span class="keywordtype">int</span> num_t, <span class="keywordtype">int</span> chan, <span class="keywordtype">int</span> *min, <span class="keywordtype">int</span> *max)</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">int</span> sum = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> i;</div>
+<div class="line">    u_int32_t *p;</div>
+<div class="line">    <span class="keywordtype">double</span> ave, sd;</div>
+<div class="line"></div>
+<div class="line">    p = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(mod, 0, 0, chan);</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">for</span> (i=0; i&lt;num_t; i++)</div>
+<div class="line">        sum += *p++;</div>
+<div class="line">    ave = (double) sum/ (<span class="keywordtype">double</span>)num_t;</div>
+<div class="line">    sd = sqrt(ave);</div>
+<div class="line">    <span class="keywordflow">if</span> (min != NULL)</div>
+<div class="line">        *min= (int)(ave-4*sd-0.06*ave);</div>
+<div class="line">    <span class="keywordflow">if</span> (max != NULL)</div>
+<div class="line">        *max = (int)(ave+4*sd+0.06*ave);</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">return</span> (<span class="keywordtype">int</span>) ave;</div>
+<div class="line">}</div>
+<div class="line"></div>
+<div class="line"><span class="preprocessor">#define USE_ITFG_OFF            0</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define USE_ITFG_BURST          1</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define USE_ITFG_CONTINUOUS     2</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define USE_ITFG_SW_PAUSE       3</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define USE_ITFG_SW_FRAME_CAP   4</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define USE_ITFG_FW_MARKER      5</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define USE_ITFG_FW_FRAME_CAP   6</span></div>
+<div class="line"><span class="preprocessor"></span></div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> poll = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> chan = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> sca = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> energy = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> frame = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> xsp3_handle = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> xsp3_status = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> num_frames = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> num_frames_to_read = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> last_num_frames = 0;</div>
+<div class="line">    <a class="code" href="xspress3_8h.html#a658af7e4f97507135cf5a100008d1569">Xsp3ErrFlag</a> prev_error_flags=0, error_flags;</div>
+<div class="line"></div>
+<div class="line">    u_int32_t *pRAW = NULL;</div>
+<div class="line">    u_int32_t *pRAW_OFFSET = NULL;</div>
+<div class="line">    int64_t cur_frame, prev_cur_frame=-1, furthest_frame;</div>
+<div class="line">    int64_t checked_frames = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> check_itfg_frame = 0;</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordtype">double</span> *pSCA = NULL;</div>
+<div class="line">    <span class="keywordtype">double</span> *pSCA_OFFSET = NULL;</div>
+<div class="line">    <span class="keywordtype">double</span> *pDUMP = NULL;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dump_offset = 0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dump_offset_mca = 0;</div>
+<div class="line">    <span class="keywordtype">double</span> *pMCA = NULL, *pMCA_OFFSET;</div>
+<div class="line">    u_int32_t *pMCA_RAW = NULL;</div>
+<div class="line">    u_int32_t *pMCA_RAW_OFFSET;</div>
+<div class="line">    <span class="keywordtype">int</span> i;</div>
+<div class="line">    <span class="keywordtype">int</span> first_card=0, num_cards=1;</div>
+<div class="line">    <span class="keywordtype">int</span> debug=1;</div>
+<div class="line">    <span class="keywordtype">int</span> num_chan;</div>
+<div class="line">    <span class="keywordtype">int</span> use_dtc = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> use_itfg=0;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nframes = 0, itfg_nframes;</div>
+<div class="line">    <span class="keywordtype">double</span> frame_len = 1.0;</div>
+<div class="line">    u_int32_t tstat;</div>
+<div class="line">    <span class="keywordtype">int</span> running, counting, paused, finished=0;</div>
+<div class="line">    <span class="keywordtype">int</span> prev_frame = -1;</div>
+<div class="line">    <span class="keywordtype">int</span> prev_paused = -1;</div>
+<div class="line">    <span class="keywordtype">int</span> prev_finished = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> show_progress=0;</div>
+<div class="line">    MOD_IMAGE3D *mca_all_mod, *mca_good_mod, *scal_all_mod, *scal_good_mod, *mca_win_mod, *scal_win_mod, *time_sum_mod, *time_save_mod, *marker_mod;</div>
+<div class="line">    mh_com *mca_all_head, *mca_good_head, *scal_all_head, *scal_good_head, *mca_win_head, *scal_win_head, *time_sum_head, *time_save_head, *marker_head;</div>
+<div class="line">    u_int32_t *scalar, *mca;</div>
+<div class="line">    u_int64_t errors = 0, total_errors = 0;</div>
+<div class="line">    <span class="keywordtype">int</span> mca_all_ave[MAX_NUM_CHAN], good_ave[MAX_NUM_CHAN], scal_all_ave[MAX_NUM_CHAN], win_ave[MAX_NUM_CHAN], time_ave[MAX_NUM_CHAN];</div>
+<div class="line">    <span class="keywordtype">int</span> mca_all_min[MAX_NUM_CHAN], good_min[MAX_NUM_CHAN], scal_all_min[MAX_NUM_CHAN], win_min[MAX_NUM_CHAN], time_min[MAX_NUM_CHAN];</div>
+<div class="line">    <span class="keywordtype">int</span> mca_all_max[MAX_NUM_CHAN], good_max[MAX_NUM_CHAN], scal_all_max[MAX_NUM_CHAN], win_max[MAX_NUM_CHAN], time_max[MAX_NUM_CHAN];</div>
+<div class="line">    <span class="keywordtype">int</span> msg_level=1;</div>
+<div class="line">    int64_t num_overrun, first_overrun;</div>
+<div class="line">    <span class="keywordtype">int</span> first_to_process;</div>
+<div class="line">    <span class="keywordtype">int</span> num_prints;</div>
+<div class="line">    <span class="keywordtype">int</span> pass, num_pass=1;</div>
+<div class="line">    FILE *ofp=NULL;</div>
+<div class="line">    <span class="keywordtype">int</span> scan_rate=0;</div>
+<div class="line">    int64_t first_error_frame, last_error_frame;</div>
+<div class="line">    <span class="keywordtype">int</span> skipped_read;</div>
+<div class="line">    u_int32_t time_a, time_b;</div>
+<div class="line">    <span class="keywordtype">int</span> itfg_frame;</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">for</span> (i=1; i&lt;argc; i++)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-card=&quot;</span>, 6) == 0)</div>
+<div class="line">            first_card = strtol(argv[i]+6, NULL, 0);</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-num-cards=&quot;</span>, 11) == 0)</div>
+<div class="line">            num_cards = strtol(argv[i]+11, NULL, 0);</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-quiet&quot;</span>) == 0)</div>
+<div class="line">            debug = 0;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-debug&quot;</span>) == 0)</div>
+<div class="line">            debug = 1;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-verbose&quot;</span>) == 0)</div>
+<div class="line">            debug = 2;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-dtc&quot;</span>) == 0)</div>
+<div class="line">            use_dtc = 1;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i],<span class="stringliteral">&quot;-progress&quot;</span>) == 0)</div>
+<div class="line">            show_progress = 1;</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-nframes=&quot;</span>, 9) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = 1;</div>
+<div class="line">            nframes = strtol(argv[i]+9, NULL, 0);</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-len=&quot;</span>, 5) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = 1;</div>
+<div class="line">            frame_len = strtod(argv[i]+5, NULL);</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strncmp(argv[i],<span class="stringliteral">&quot;-msg=&quot;</span>, 5) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            msg_level = strtol(argv[i]+5, NULL, 0);</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i], <span class="stringliteral">&quot;-scan-rate&quot;</span>) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = 1;</div>
+<div class="line">            scan_rate = 1;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i], <span class="stringliteral">&quot;-pause&quot;</span>) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = USE_ITFG_SW_PAUSE;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i], <span class="stringliteral">&quot;-sw-fc&quot;</span>) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = USE_ITFG_SW_FRAME_CAP;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i], <span class="stringliteral">&quot;-mark&quot;</span>) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = USE_ITFG_FW_MARKER;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(argv[i], <span class="stringliteral">&quot;-fc&quot;</span>) == 0)</div>
+<div class="line">        {</div>
+<div class="line">            use_itfg = USE_ITFG_FW_FRAME_CAP;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span></div>
+<div class="line">        {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;Unknown option %s\n&quot;</span>, argv[i]);</div>
+<div class="line">            printf(<span class="stringliteral">&quot;USAGE: %s [-card=&lt;first_card&gt; -num-cards=&lt;num cards&gt; -quiet -debug -verbose -nframes=&lt;nn&gt; -len=&lt;seconds&gt; -progress -msg=&lt;message level&gt;] -sw-fc -fc -mark\n&quot;</span>);</div>
+<div class="line">            exit(1);</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Connect to the Xspress3...\n&quot;</span>);</div>
+<div class="line"></div>
+<div class="line">    xsp3_handle = <a class="code" href="group__toplevel.html#gabbdb522cdcc0230ab9d2e06c63c4cf03" title="Configure and initialise the complete xspress3 system.">xsp3_config</a>(num_cards, XSP3_MAXFRAMES, NULL, -1, NULL, -1, 1, NULL, 1, first_card);</div>
+<div class="line">    <span class="keywordflow">if</span> (xsp3_handle &lt; 0) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;ERROR calling xsp3_config. Return code: %d\n&quot;</span>, xsp3_handle);</div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
+<div class="line">    num_chan = <a class="code" href="group__toplevel.html#ga8d0027b9ea7ab15bfe691face4bd45c5" title="Get the number of channels currently configured in the system.">xsp3_get_num_chan</a>(xsp3_handle);</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">/* These buffers are used to read up to the XSP3_MAXFRAMES from the circular buffer */</span></div>
+<div class="line">    pRAW = (u_int32_t*)(calloc(<a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a>*XSP3_MAXFRAMES*num_chan, <span class="keyword">sizeof</span>(u_int32_t)));</div>
+<div class="line">    pSCA = (<span class="keywordtype">double</span>*)(calloc(<a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a>*XSP3_MAXFRAMES*num_chan, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)));</div>
+<div class="line">    pMCA = (<span class="keywordtype">double</span>*)(calloc(XSP3_MAXFRAMES*num_chan*XSP3_MAXSPECTRA, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)));</div>
+<div class="line">    pMCA_RAW = (u_int32_t*)(calloc(XSP3_MAXFRAMES*num_chan*XSP3_MAXSPECTRA, <span class="keyword">sizeof</span>(u_int32_t)));</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">/* The data is reduced and stored in a much longer data module to check for dropped frames */</span></div>
+<div class="line"></div>
+<div class="line">    mca_all_mod   = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;mca_all&quot;</span>,   RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;mca_all_head);</div>
+<div class="line">    mca_good_mod  = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;mca_good&quot;</span>,  RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;mca_good_head);</div>
+<div class="line">    scal_all_mod  = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;scal_all&quot;</span>,  RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;scal_all_head);</div>
+<div class="line">    scal_good_mod = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;scal_good&quot;</span>, RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;scal_good_head);</div>
+<div class="line">    mca_win_mod   = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;mca_win&quot;</span>,   RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;mca_win_head);</div>
+<div class="line">    scal_win_mod  = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;scal_win&quot;</span>,  RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;scal_win_head);</div>
+<div class="line">    time_sum_mod  = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;time_sum&quot;</span>,  RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;time_sum_head);</div>
+<div class="line">    time_save_mod = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;time_save&quot;</span>, RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;time_save_head);</div>
+<div class="line">    marker_mod = <a class="code" href="group__internal.html#gadda9c41297f1390207a32821956cf70a" title="Make a 3-d shared data module.">xsp3_mkmod3d</a> (<span class="stringliteral">&quot;markers&quot;</span>, RES_MOD_X, MAX_EXT_FRAMES/RES_MOD_X, num_chan, <span class="stringliteral">&quot;TF Ext (low)&quot;</span>, <span class="stringliteral">&quot;TF Ext (high)&quot;</span>, <span class="stringliteral">&quot;Chan&quot;</span>, NULL, DATA_LONG, &amp;marker_head);</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">if</span> (mca_all_mod == NULL || mca_good_mod == NULL || scal_all_mod == NULL || scal_good_mod == NULL ||  mca_win_mod== NULL || scal_win_mod == NULL || </div>
+<div class="line">        time_sum_mod == NULL || time_save_mod == NULL || marker_mod == NULL)</div>
+<div class="line">    {</div>
+<div class="line">        fprintf(stderr, <span class="stringliteral">&quot;ERROR creating modules\n&quot;</span>);</div>
+<div class="line">        exit(1);</div>
+<div class="line">    }</div>
+<div class="line">    </div>
+<div class="line">        </div>
+<div class="line">    printf(<span class="stringliteral">&quot;Restoring the settings from the configuration files...\n&quot;</span>);</div>
+<div class="line">    xsp3_status = <a class="code" href="group__toplevel.html#ga4e73347344d1491aed50a90d40489a7c" title="Restore all xspress3 settings from series of files including configuring the clocks.">xsp3_restore_settings_and_clock</a>(xsp3_handle, XSP3_CONFIGPATH, 0);</div>
+<div class="line">    <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>)</div>
+<div class="line">    {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;ERROR calling xsp3_restore_settings. Return &#39;%s, code: %d\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Calling xsp3_format_run...\n&quot;</span>);</div>
+<div class="line">    <span class="keywordflow">for</span> (chan=0; chan&lt;num_chan; ++chan)</div>
+<div class="line">    {</div>
+<div class="line">        xsp3_status = <a class="code" href="group__toplevel.html#gaf0857c343325d92e949074f510511544" title="Set format of the data to be histogrammed.">xsp3_format_run</a>(xsp3_handle, chan, 0, 0, 0, 0, 0, 12);</div>
+<div class="line">        <span class="keywordflow">if</span> (xsp3_status &lt; <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;ERROR calling xsp3_restore_settings. channel: %d, Return code: %d\n&quot;</span>, chan, xsp3_status);</div>
+<div class="line">            <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span> {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;  Channel: %d, Number of time frames configured: %d\n&quot;</span>, chan, xsp3_status);</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">    <a class="code" href="group__toplevel.html#ga9ed40f17d2ad96d291e60a6b6b47d860" title="Set the threshold for the good event scaler.">xsp3_set_good_thres</a>(xsp3_handle, -1, good_thres);</div>
+<div class="line">    <a class="code" href="group__toplevel.html#ga370b5f701a5ee1825f83968f4304719f" title="Set the scalar windows.">xsp3_set_window</a>(xsp3_handle, -1, 0, win_low, win_high);</div>
+<div class="line"></div>
+<div class="line">    printf(<span class="stringliteral">&quot;Set up playback data output...\n&quot;</span>);</div>
+<div class="line">    xsp3_status = <a class="code" href="group__toplevel.html#ga678235d44f81d7cf0bcbc24e2d3a0d5a" title="Set the run mode flags.">xsp3_set_run_flags</a>(xsp3_handle, <a class="code" href="xspress3_8h.html#af70edf2ffb8b05d87153abf538cc1201" title="[XSP3_RUN_FLAGS]">XSP3_RUN_FLAGS_PLAYBACK</a> | <a class="code" href="xspress3_8h.html#a7d765164fcd2cbe5ecd1e1cf8658acad">XSP3_RUN_FLAGS_SCALERS</a> | <a class="code" href="xspress3_8h.html#a61cdd3e28d864eac5c5483257af5bf0c">XSP3_RUN_FLAGS_HIST</a> | <a class="code" href="xspress3_8h.html#a467ada53a212a2a72a4025b28a8e8ae9" title="Enable recircualting buffer mode.">XSP3_RUN_FLAGS_CIRCULAR_BUFFER</a>);</div>
+<div class="line">    <span class="keywordflow">if</span> (xsp3_status &lt; <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;ERROR calling xsp3_set_run_flags. Return code: %d\n&quot;</span>, xsp3_status);</div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">if</span> (scan_rate)</div>
+<div class="line">    {</div>
+<div class="line">        num_pass = 11;</div>
+<div class="line">        print_errors = 0;</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">if</span> (num_pass &gt; 1)</div>
+<div class="line">    {</div>
+<div class="line">        ofp = fopen(<span class="stringliteral">&quot;results.txt&quot;</span>, <span class="stringliteral">&quot;w&quot;</span>);</div>
+<div class="line">        <span class="keywordflow">if</span> (ofp == NULL)</div>
+<div class="line">        {</div>
+<div class="line">            fprintf(stderr, <span class="stringliteral">&quot;Cannot open output file results.txt\n&quot;</span>);</div>
+<div class="line">            exit(1);</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">for</span> (pass=0; pass&lt;num_pass; pass++)</div>
+<div class="line">    {</div>
+<div class="line">        errors = 0;</div>
+<div class="line">        last_num_frames = 0;</div>
+<div class="line">        prev_error_flags=0;</div>
+<div class="line">        prev_cur_frame=-1;</div>
+<div class="line">        checked_frames = 0;</div>
+<div class="line">        prev_frame = -1;</div>
+<div class="line">        prev_paused = -1;</div>
+<div class="line">        prev_finished = 0;</div>
+<div class="line">        itfg_frame = 0;</div>
+<div class="line">        check_itfg_frame = 0;</div>
+<div class="line"></div>
+<div class="line">        id_clear_mod(mca_all_mod);</div>
+<div class="line">        id_clear_mod(mca_good_mod);</div>
+<div class="line">        id_clear_mod(scal_all_mod);</div>
+<div class="line">        id_clear_mod(scal_good_mod);</div>
+<div class="line">        id_clear_mod(mca_win_mod);</div>
+<div class="line">        id_clear_mod(scal_win_mod);</div>
+<div class="line">        id_clear_mod(time_sum_mod);</div>
+<div class="line">        id_clear_mod(time_save_mod);</div>
+<div class="line">        id_clear_mod(marker_mod);</div>
+<div class="line">        <span class="keywordflow">if</span> (scan_rate)</div>
+<div class="line">            frame_len = (250-pass*10)*1E-6;</div>
+<div class="line">        <span class="keywordflow">if</span> (use_itfg == 0)  </div>
+<div class="line">        {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;Set up trigger source to use external veto input...\n&quot;</span>);</div>
+<div class="line">            xsp3_status = <a class="code" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25" title="Set-up the triggering or time framing control register.">xsp3_set_glob_timeA</a>(xsp3_handle, 0, <a class="code" href="xspress3_8h.html#acf372b91c4daa58365450f98013e6e5a" title="[XSP3_GLOBAL_TIMEA_BITS 0..2]">XSP3_GLOB_TIMA_TF_SRC</a>(<a class="code" href="xspress3_8h.html#a5ceba49498824982538d4172f6b099fa" title="Time frame incremented by TTL Input 1.">XSP3_GTIMA_SRC_TTL_VETO_ONLY</a>));</div>
+<div class="line">            <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">                printf(<span class="stringliteral">&quot;ERROR calling xsp3_set_glob_timeA. Return code: %d\n&quot;</span>, xsp3_status);</div>
+<div class="line">                <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span></div>
+<div class="line">        {</div>
+<div class="line">            <span class="keywordtype">int</span> trig_mode = <a class="code" href="group___x_s_p3___i_t_f_g___t_r_i_g___m_o_d_e.html#ga90687bb2ea048071813f8fb5b609b76b" title="Run burst of back to back frames.">XSP3_ITFG_TRIG_MODE_BURST</a>;</div>
+<div class="line">            <span class="keywordtype">int</span> m_period=0, m_frame=0;</div>
+<div class="line">            printf(<span class="stringliteral">&quot;Set up trigger source to use Internal TFG for %d frames of %g s...\n&quot;</span>, nframes, frame_len);</div>
+<div class="line">            time_a = <a class="code" href="xspress3_8h.html#acf372b91c4daa58365450f98013e6e5a" title="[XSP3_GLOBAL_TIMEA_BITS 0..2]">XSP3_GLOB_TIMA_TF_SRC</a>(<a class="code" href="xspress3_8h.html#a0ea97ed44f245fc59ff8fab110a352c1" title="Time frame from internal timing generator (for future expansion).">XSP3_GTIMA_SRC_INTERNAL</a>);</div>
+<div class="line">            time_b = 0;</div>
+<div class="line">            <span class="keywordflow">if</span> (use_itfg == USE_ITFG_SW_PAUSE)</div>
+<div class="line">            {</div>
+<div class="line">                time_b |= <a class="code" href="xspress3_8h.html#aab8bc53fe27d142a0ce53a697c1491fc" title="Set Marker mode when using Internal TFG.">XSP3_GLOB_TIMB_ITFG_MARK</a>(<a class="code" href="xspress3_8h.html#a1c9574f6299bf47a4722eab066f02609" title="Use Software Markers XSP3_GLOB_TIMA_SW_MARKERS SW Bit 0 =&gt; Capture, SW Bit 1 =&gt; Marker(1).">XSP3_GTIMB_IMRK_SW</a>);</div>
+<div class="line">                trig_mode = <a class="code" href="group___x_s_p3___i_t_f_g___t_r_i_g___m_o_d_e.html#ga67b0f5a39e9edc36ce1636bc0f6b3423" title="Pause before every frame and wait for rising edge on CountEnb bit.">XSP3_ITFG_TRIG_MODE_SOFTWARE</a>;</div>
+<div class="line">            } </div>
+<div class="line">            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (use_itfg == USE_ITFG_FW_MARKER)</div>
+<div class="line">            {</div>
+<div class="line">                time_b |= <a class="code" href="xspress3_8h.html#aab8bc53fe27d142a0ce53a697c1491fc" title="Set Marker mode when using Internal TFG.">XSP3_GLOB_TIMB_ITFG_MARK</a>(<a class="code" href="xspress3_8h.html#ad6d54aeef4da99d6919274b207031c10" title="Use ITFG generated marked (when coded).">XSP3_GTIMB_IMRK_ITFG</a>);</div>
+<div class="line">            } </div>
+<div class="line">            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (use_itfg == USE_ITFG_SW_FRAME_CAP)</div>
+<div class="line">            {</div>
+<div class="line">                time_a |= <a class="code" href="xspress3_8h.html#ab069848e60bed907f3b9cef892fe4c7d" title="Enable Frame Capture mode in circular buffer mode.">XSP3_GLOB_TIMA_FRAME_CAPTURE</a>;</div>
+<div class="line">                time_b |= <a class="code" href="xspress3_8h.html#aab8bc53fe27d142a0ce53a697c1491fc" title="Set Marker mode when using Internal TFG.">XSP3_GLOB_TIMB_ITFG_MARK</a>(<a class="code" href="xspress3_8h.html#a1c9574f6299bf47a4722eab066f02609" title="Use Software Markers XSP3_GLOB_TIMA_SW_MARKERS SW Bit 0 =&gt; Capture, SW Bit 1 =&gt; Marker(1).">XSP3_GTIMB_IMRK_SW</a>);</div>
+<div class="line">                trig_mode = <a class="code" href="group___x_s_p3___i_t_f_g___t_r_i_g___m_o_d_e.html#ga67b0f5a39e9edc36ce1636bc0f6b3423" title="Pause before every frame and wait for rising edge on CountEnb bit.">XSP3_ITFG_TRIG_MODE_SOFTWARE</a>;</div>
+<div class="line">                <span class="keywordflow">if</span> (fc_del_frame != 0)</div>
+<div class="line">                    time_a |= <a class="code" href="xspress3_8h.html#a1c9e401910f3ff45166ab33811ce9c8c" title="Set Software markers for use (testing) in circular buffer mode.">XSP3_GLOB_TIMA_SW_MARKERS</a>(1); <span class="comment">// Exercise Software bit 0 as Capture Bit</span></div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (use_itfg == USE_ITFG_FW_FRAME_CAP)</div>
+<div class="line">            {</div>
+<div class="line">                time_a |= <a class="code" href="xspress3_8h.html#ab069848e60bed907f3b9cef892fe4c7d" title="Enable Frame Capture mode in circular buffer mode.">XSP3_GLOB_TIMA_FRAME_CAPTURE</a>;</div>
+<div class="line">                time_b |= <a class="code" href="xspress3_8h.html#aab8bc53fe27d142a0ce53a697c1491fc" title="Set Marker mode when using Internal TFG.">XSP3_GLOB_TIMB_ITFG_MARK</a>(<a class="code" href="xspress3_8h.html#ad6d54aeef4da99d6919274b207031c10" title="Use ITFG generated marked (when coded).">XSP3_GTIMB_IMRK_ITFG</a>);</div>
+<div class="line">            }</div>
+<div class="line"></div>
+<div class="line">            xsp3_status = <a class="code" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25" title="Set-up the triggering or time framing control register.">xsp3_set_glob_timeA</a>(xsp3_handle, 0, time_a);</div>
+<div class="line">            <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">                printf(<span class="stringliteral">&quot;ERROR calling xsp3_set_glob_timeA. Return error %s: code: %d\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">                <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">            }</div>
+<div class="line">            xsp3_status = <a class="code" href="group__toplevel.html#ga6efddbcfd9d2ae04b68c6237f60ff7f4" title="Set the fixed time frame register - starting time frame.">xsp3_set_glob_timeFixed</a>(xsp3_handle, 0, time_b);</div>
+<div class="line">            <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">                printf(<span class="stringliteral">&quot;ERROR calling xsp3_set_glob_timeFixed. Return error %s: code: %d\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">                <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">            }</div>
+<div class="line"></div>
+<div class="line">            <span class="keywordflow">if</span> (use_itfg == USE_ITFG_FW_MARKER)</div>
+<div class="line">            {</div>
+<div class="line">                m_period = marker_modulus;</div>
+<div class="line">                m_frame = marker_frame;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (use_itfg == USE_ITFG_FW_FRAME_CAP)</div>
+<div class="line">            {</div>
+<div class="line">                m_period = fc_del_modulus;</div>
+<div class="line">                m_frame = fc_del_frame;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">if</span> (nframes &gt;= 16*1014*1024-1)</div>
+<div class="line">            {</div>
+<div class="line">                itfg_cont = 1;</div>
+<div class="line">                itfg_nframes = 0;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">else</span></div>
+<div class="line">            {</div>
+<div class="line">                itfg_nframes = nframes;</div>
+<div class="line">                itfg_cont = 0;</div>
+<div class="line">            }</div>
+<div class="line">            printf(<span class="stringliteral">&quot;Marker period=%d, marker_frame=%d\n&quot;</span>, m_period, m_frame);</div>
+<div class="line">            xsp3_status = <a class="code" href="group__toplevel.html#ga5908e7acec2e56f1bbdc468a6ea6bc4b" title="Setup Internal time frame generator (TFG) for a series of equal length frames, with access to generat...">xsp3_itfg_setup2</a>(xsp3_handle, 0, itfg_nframes, (u_int32_t)(80000000*frame_len), trig_mode, <a class="code" href="group___x_s_p3___i_t_f_g___g_a_p___m_o_d_e.html#ga6ed65b1fb8ad7f20bef2d134b7c3e630" title="Minimal gap between frames. Care when using multiple boxes. Short cables and/or termination. 0 debounce time.">XSP3_ITFG_GAP_MODE_25NS</a>, 0, m_period, m_frame);</div>
+<div class="line">            <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>)</div>
+<div class="line">            {</div>
+<div class="line">                printf(<span class="stringliteral">&quot;ERROR calling xsp3_itfg_setup. Return error %s: code: %d\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">                <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">            }</div>
+<div class="line"></div>
+<div class="line">        }</div>
+<div class="line"></div>
+<div class="line">        printf(<span class="stringliteral">&quot;Starting histogramming...\n&quot;</span>);</div>
+<div class="line">        xsp3_status = <a class="code" href="group__toplevel.html#gaf3b1a4949881a95c76bad27b1b3f5783" title="Start system and enable counting.">xsp3_histogram_start</a>(xsp3_handle, -1);        <span class="comment">// Start all cards.</span></div>
+<div class="line">        <span class="keywordflow">if</span> (xsp3_status != <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;ERROR calling xsp3_histogram_start. Return code: %d\n&quot;</span>, xsp3_status);</div>
+<div class="line">            <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">        }</div>
+<div class="line">        itfg_frame = 1;</div>
+<div class="line">        printf(<span class="stringliteral">&quot;Now polling xsp3_scaler_check_progress_details and printing out any scaler data...\n&quot;</span>);</div>
+<div class="line"></div>
+<div class="line">        <span class="keywordflow">if</span> (msg_level &gt;= 1)</div>
+<div class="line">            show_progress = 1;</div>
+<div class="line"></div>
+<div class="line">        <span class="keywordflow">for</span> (poll=0; poll&lt;MAX_CHECKDESC_POLLS ; )</div>
+<div class="line">        {</div>
+<div class="line">            <span class="keywordtype">int</span> itfg_print=0, check_prog_print = 0;</div>
+<div class="line">            <span class="keywordflow">if</span> ((use_itfg &amp;&amp; nframes != 0) || show_progress)</div>
+<div class="line">            {</div>
+<div class="line">                <span class="keywordflow">if</span> ((xsp3_status = <a class="code" href="group__toplevel.html#gafe1ccb6540d1e49d920d8b97d241f57e" title="Get the timing status register A.">xsp3_get_glob_time_statA</a>(xsp3_handle, 0, &amp;tstat)) &lt; 0)</div>
+<div class="line">                {</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;ERROR: Cannot read timing status: %s\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>());</div>
+<div class="line">                    <span class="keywordflow">return</span> xsp3_status;</div>
+<div class="line">                }</div>
+<div class="line"></div>
+<div class="line">                frame = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#ga6f327b3d5e262a29d1f52ede2520ab9d" title="[XSP3_GLOBAL_TIME_STATUS_A_CODE]">XSP3_GLOB_TSTAT_A_FRAME</a>(tstat);</div>
+<div class="line">                running = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#gac35d693a247da3c96f4ecbc54af28357" title="Read whether the ITFG is currently running.">XSP3_GLOB_TSTAT_A_ITFG_RUNNING</a>(tstat);</div>
+<div class="line">                counting = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#ga53fc2a4ad67b4b0b62e77ac6106eb2d5" title="Read whether the ITFG is currently enabling counting.">XSP3_GLOB_TSTAT_A_ITFG_COUNTING</a>(tstat);</div>
+<div class="line">                paused = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#ga361561e49ed4db51c89448b1df5634a7" title="Read whether the ITFG is paused wait for software or hardware trigger.">XSP3_GLOB_TSTAT_A_ITFG_PAUSED</a>(tstat);</div>
+<div class="line">                finished = <a class="code" href="group___x_s_p3___g_l_o_b_a_l___t_i_m_e___s_t_a_t_u_s___a.html#ga555e6308aeefe34b3f443b8479219de0" title="Read whether the ITFG has finished a run.">XSP3_GLOB_TSTAT_A_ITFG_FINISHED</a>(tstat);</div>
+<div class="line"></div>
+<div class="line">                <span class="keywordflow">if</span> (show_progress)</div>
+<div class="line">                {</div>
+<div class="line">                    <span class="keywordflow">if</span> (frame != prev_frame || paused != prev_paused || prev_finished != finished)</div>
+<div class="line">                        itfg_print = 1;</div>
+<div class="line">                    prev_frame  = frame;</div>
+<div class="line">                    prev_paused = paused;</div>
+<div class="line">                    prev_finished = finished;</div>
+<div class="line">                }</div>
+<div class="line">                <span class="keywordflow">if</span> (paused)</div>
+<div class="line">                {</div>
+<div class="line">                    <span class="keywordflow">if</span> (use_itfg == USE_ITFG_SW_PAUSE || use_itfg == USE_ITFG_SW_FRAME_CAP)</div>
+<div class="line">                    {</div>
+<div class="line">                        <a class="code" href="group__toplevel.html#ga20ce3c1c0a8f5d4319eb10c957d6eed5" title="Get the time framing control register.">xsp3_get_glob_timeA</a>(xsp3_handle, 0, &amp;time_a);   <span class="comment">// Exercise Software bit 1 as a staus bit</span></div>
+<div class="line">                        time_a &amp;= ~<a class="code" href="xspress3_8h.html#a20880340a8bb6b27ae9f8dba4927141c" title="In software timing (XSP3_GTIMA_SRC_FIXED) mode enable counting when high. Transfers scalers on fallin...">XSP3_GLOB_TIMA_COUNT_ENB</a>;        <span class="comment">// Negate CountEnb so Coub tinue can assert it.</span></div>
+<div class="line">                        time_a &amp;= ~<a class="code" href="xspress3_8h.html#a1c9e401910f3ff45166ab33811ce9c8c" title="Set Software markers for use (testing) in circular buffer mode.">XSP3_GLOB_TIMA_SW_MARKERS</a>(3); <span class="comment">// Negate both markers</span></div>
+<div class="line">                        <span class="keywordflow">if</span> (itfg_frame % marker_modulus == marker_frame)</div>
+<div class="line">                            time_a |= <a class="code" href="xspress3_8h.html#a1c9e401910f3ff45166ab33811ce9c8c" title="Set Software markers for use (testing) in circular buffer mode.">XSP3_GLOB_TIMA_SW_MARKERS</a>(2); <span class="comment">// Exercise Software bit 1 as a staus bit</span></div>
+<div class="line">                        <span class="keywordflow">if</span> (use_itfg == USE_ITFG_SW_FRAME_CAP &amp;&amp; itfg_frame % fc_del_modulus != fc_del_frame)</div>
+<div class="line">                            time_a |= <a class="code" href="xspress3_8h.html#a1c9e401910f3ff45166ab33811ce9c8c" title="Set Software markers for use (testing) in circular buffer mode.">XSP3_GLOB_TIMA_SW_MARKERS</a>(1); <span class="comment">// Exercise Software bit 0 as Capture Bit</span></div>
+<div class="line">                        <a class="code" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25" title="Set-up the triggering or time framing control register.">xsp3_set_glob_timeA</a>(xsp3_handle, 0, time_a );   <span class="comment">// Exercise Software bit 1 as a staus bit</span></div>
+<div class="line">                        <a class="code" href="group__toplevel.html#ga770b2fa940753aafa9ed6891d2e90f25" title="Set-up the triggering or time framing control register.">xsp3_set_glob_timeA</a>(xsp3_handle, 0, time_a | <a class="code" href="xspress3_8h.html#a20880340a8bb6b27ae9f8dba4927141c" title="In software timing (XSP3_GTIMA_SRC_FIXED) mode enable counting when high. Transfers scalers on fallin...">XSP3_GLOB_TIMA_COUNT_ENB</a> );    <span class="comment">// Set CountEnb to Continue, only OK on single card system</span></div>
+<div class="line">                        itfg_frame++;</div>
+<div class="line">                    }</div>
+<div class="line">                    <span class="keywordflow">else</span></div>
+<div class="line">                    {</div>
+<div class="line">                        printf(<span class="stringliteral">&quot;Unexpected pause state in ITFG\n&quot;</span>);</div>
+<div class="line">                        exit (1);</div>
+<div class="line">                    }</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line">            cur_frame = <a class="code" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7" title="This function checks how many time frames have been processed.">xsp3_scaler_check_progress_details</a>(xsp3_handle, &amp;error_flags, 1, NULL);</div>
+<div class="line">            <span class="keywordflow">if</span> (cur_frame &lt; 0) {</div>
+<div class="line">                printf(<span class="stringliteral">&quot;ERROR calling xsp3_scaler_check_progress_details. poll number: %d, Return Message: %s, code: %d\n&quot;</span>, poll, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">                <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">if</span> (error_flags != prev_error_flags)</div>
+<div class="line">                cur_frame = <a class="code" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7" title="This function checks how many time frames have been processed.">xsp3_scaler_check_progress_details</a>(xsp3_handle, &amp;error_flags, 0, NULL);     <span class="comment">// Print the error report once</span></div>
+<div class="line">            prev_error_flags = error_flags;</div>
+<div class="line"></div>
+<div class="line">            <span class="keywordflow">if</span> (msg_level &gt; 0 &amp;&amp; (itfg_print || prev_cur_frame != cur_frame))</div>
+<div class="line">            {</div>
+<div class="line">                printf(<span class="stringliteral">&quot;Firmware Frame = %d, running=%d, counting=%d, paused=%d, finished=%d. Hist Cur Frame=%ld, Flags=%08X&quot;</span>, frame, running, counting, paused, finished,  cur_frame, error_flags);</div>
+<div class="line">                <span class="keywordflow">if</span> (cur_frame &gt; last_num_frames)</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;.... last_num_frames: %d, reading out %d     &quot;</span>, last_num_frames, cur_frame - last_num_frames );</div>
+<div class="line">                <span class="keywordflow">else</span></div>
+<div class="line">                    printf(<span class="stringliteral">&quot;                                                   &quot;</span>);</div>
+<div class="line">                <span class="keywordflow">if</span> (msg_level &gt;= 2)</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line">                <span class="keywordflow">else</span></div>
+<div class="line">                {</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;\r&quot;</span>);</div>
+<div class="line">                    fflush(stdout);</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line">            prev_cur_frame = cur_frame;</div>
+<div class="line">            <span class="keywordflow">if</span> ((use_itfg == USE_ITFG_SW_FRAME_CAP || use_itfg ==  USE_ITFG_FW_FRAME_CAP) &amp;&amp; cur_frame &gt; 0)</div>
+<div class="line">                cur_frame-- ;   <span class="comment">// In Frame Capture mode we with SW pauses we will get an End Frame marker marking the current frame as complete before getiing the firt packet of the next frame</span></div>
+<div class="line">                                <span class="comment">// With the delete bit set which re-clears the frame and starts again.</span></div>
+<div class="line">            <span class="keywordflow">if</span> (cur_frame &gt; last_num_frames) </div>
+<div class="line">            {</div>
+<div class="line">                num_frames = cur_frame;</div>
+<div class="line">                num_frames_to_read = num_frames - last_num_frames;</div>
+<div class="line"></div>
+<div class="line">                <span class="keywordflow">if</span> (num_frames_to_read &gt; XSP3_MAXFRAMES)</div>
+<div class="line">                {</div>
+<div class="line">                    last_num_frames = num_frames-XSP3_MAXFRAMES;</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;\nERROR: Overrun as num_frames_to_read=%d &gt; %d. Skipping %d to read from %d\n&quot;</span>, num_frames_to_read, XSP3_MAXFRAMES, num_frames_to_read - XSP3_MAXFRAMES, last_num_frames);</div>
+<div class="line">                    errors++;</div>
+<div class="line">                    num_frames_to_read = XSP3_MAXFRAMES;</div>
+<div class="line">                    checked_frames = last_num_frames;</div>
+<div class="line">                    skipped_read = 1;</div>
+<div class="line">                }</div>
+<div class="line">                <span class="keywordflow">else</span></div>
+<div class="line">                    skipped_read = 0;</div>
+<div class="line">                <span class="keywordflow">if</span> (use_dtc)</div>
+<div class="line">                {</div>
+<div class="line">                    xsp3_status = <a class="code" href="group__dtc.html#gaed10703918be9fd1491bb583e361b27a" title="Read a 4 dimensional block of dead time corrected histogram data and optionally return the dead time ...">xsp3_hist_dtc_read4d</a>(xsp3_handle, pMCA, NULL, 0, 0, 0, last_num_frames, XSP3_MAXSPECTRA, 1, num_chan, num_frames_to_read);</div>
+<div class="line">    <span class="comment">//              xsp3_status = xsp3_scaler_dtc_read(xsp3_handle, pSCA_OFFSET, 0, 0, last_num_frames, XSP3_SW_NUM_SCALERS, num_chan, num_frames_to_read);</span></div>
+<div class="line">                }</div>
+<div class="line">                <span class="keywordflow">else</span></div>
+<div class="line">                {</div>
+<div class="line">                    xsp3_status = <a class="code" href="group__toplevel.html#ga6e31a5956682ff9886ed317965c512a3" title="Read a block of scaler data.">xsp3_scaler_read</a>(xsp3_handle, pRAW, 0, 0, last_num_frames, <a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a>, num_chan, num_frames_to_read);</div>
+<div class="line">                    xsp3_status = <a class="code" href="group__toplevel.html#ga48dac2327cda3dd127ff6f36d177a403" title="Read a 4 dimensional block of histogram data.">xsp3_histogram_read4d</a>(xsp3_handle, pMCA_RAW, 0, 0, 0, last_num_frames, XSP3_MAXSPECTRA, 1, num_chan, num_frames_to_read);</div>
+<div class="line">                }</div>
+<div class="line">                <span class="keywordflow">if</span> (use_itfg == USE_ITFG_SW_PAUSE || use_itfg == USE_ITFG_SW_FRAME_CAP || use_itfg == USE_ITFG_FW_MARKER || use_itfg == USE_ITFG_FW_FRAME_CAP)</div>
+<div class="line">                {</div>
+<div class="line">                    <span class="keywordflow">if</span> (0)</div>
+<div class="line">                    {</div>
+<div class="line">                        <span class="keywordflow">for</span> (frame=0; frame&lt;num_frames_to_read; frame++)</div>
+<div class="line">                        {</div>
+<div class="line">                            <span class="keywordtype">int</span> mod_x = (last_num_frames+frame) % RES_MOD_X;</div>
+<div class="line">                            <span class="keywordtype">int</span> mod_y = (last_num_frames+frame) / RES_MOD_X;</div>
+<div class="line">                            <span class="keywordflow">for</span> (chan=0; chan&lt;num_chan; chan++)</div>
+<div class="line">                            {</div>
+<div class="line">                                <a class="code" href="struct__tf__status.html">Xsp3TFStatus</a> tf_status;</div>
+<div class="line">                                u_int32_t *dp;</div>
+<div class="line">                                <a class="code" href="group__toplevel.html#gab29e2dd328d63d5316a94aedc2478cec" title="Read Time frame status struct especially in circular buffer mode.">xsp3_histogram_get_tf_status</a>(xsp3_handle, chan, last_num_frames+frame, &amp;tf_status);</div>
+<div class="line">                                dp = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(marker_mod, mod_x, mod_y, chan);</div>
+<div class="line">                                *dp = tf_status.<a class="code" href="struct__tf__status.html#a7698c9a0f5070a14e0e2810c0aa83c70">markers</a>;</div>
+<div class="line">                            }</div>
+<div class="line">                        }</div>
+<div class="line">                    }</div>
+<div class="line">                    <span class="keywordflow">else</span></div>
+<div class="line">                    {</div>
+<div class="line">                        <span class="keywordtype">int</span> mod_x = last_num_frames % RES_MOD_X;</div>
+<div class="line">                        <span class="keywordtype">int</span> mod_y = last_num_frames / RES_MOD_X;</div>
+<div class="line">                        u_int32_t *dp;</div>
+<div class="line">                        <span class="keywordflow">for</span> (chan=0; chan&lt;num_chan; chan++)</div>
+<div class="line">                        {</div>
+<div class="line">                            dp = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(marker_mod, mod_x, mod_y, chan);</div>
+<div class="line">                            <a class="code" href="group__toplevel.html#ga573418cf13a339116880110f330dba60" title="Read Time frame markers, especially in circular buffer mode.">xsp3_histogram_get_tf_markers</a>(xsp3_handle, 0, last_num_frames, num_frames_to_read, (<span class="keywordtype">int</span> *)dp);</div>
+<div class="line">                        } </div>
+<div class="line">                    }</div>
+<div class="line">                }</div>
+<div class="line">                <span class="keywordflow">if</span> (xsp3_status &lt; <a class="code" href="xspress3_8h.html#aad318e803581597725f2a5dc06f617e4" title="[XSP3_ERROR_CODES]">XSP3_OK</a>) {</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;\nERROR calling xsp3_scaler_read. Return code: %s:%d\n&quot;</span>, <a class="code" href="group__toplevel.html#gafa051c9d68a727d4a192411da8ac2ed2" title="Get the last error message that was generated by the xspress3 system.">xsp3_get_error_message</a>(), xsp3_status);</div>
+<div class="line">                    <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">                }</div>
+<div class="line">                cur_frame = <a class="code" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7" title="This function checks how many time frames have been processed.">xsp3_scaler_check_progress_details</a>(xsp3_handle, &amp;error_flags, 1, &amp;furthest_frame);</div>
+<div class="line">                <span class="keywordflow">if</span> (skipped_read)</div>
+<div class="line">                {</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;... after skipped read furthest_frame-XSP3_MAXFRAMES=%ld - last_num_frames=%d = %ld\n&quot;</span>, furthest_frame-XSP3_MAXFRAMES, last_num_frames, furthest_frame-XSP3_MAXFRAMES-last_num_frames);</div>
+<div class="line">                }</div>
+<div class="line">                first_to_process = 0;</div>
+<div class="line">                <span class="keywordflow">if</span> (furthest_frame-XSP3_MAXFRAMES &gt;= (int64_t)last_num_frames)</div>
+<div class="line">                {</div>
+<div class="line">                    first_to_process = 10+furthest_frame-XSP3_MAXFRAMES - last_num_frames;  <span class="comment">// cur_frame is the LOWEST frane, some may be further on.</span></div>
+<div class="line">                    checked_frames = last_num_frames+first_to_process;</div>
+<div class="line">                    printf(<span class="stringliteral">&quot;%s... After read current frame=%ld, further_frame=%ld has overrun buffer, last_num_frame=%d, omitting %d checking from %d&quot;</span>, msg_level==1?<span class="stringliteral">&quot;\n&quot;</span>:<span class="stringliteral">&quot;&quot;</span>, </div>
+<div class="line">                        cur_frame, furthest_frame, last_num_frames, first_to_process, checked_frames); </div>
+<div class="line">                }</div>
+<div class="line">                <a class="code" href="group__toplevel.html#gac7a59a1989371d8f2584ad858e9278d9" title="Acknowledge finished reading of MCA and scalar data for a given channel and time frame range in circu...">xsp3_histogram_circ_ack</a>(xsp3_handle, 0, last_num_frames, num_chan, num_frames_to_read);</div>
+<div class="line">                scalar = pRAW+first_to_process*num_chan*<a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a>;</div>
+<div class="line">                <span class="keywordflow">for</span> (frame=first_to_process; frame&lt;num_frames_to_read; frame++)</div>
+<div class="line">                {</div>
+<div class="line">                    <span class="keywordtype">int</span> mod_x = (last_num_frames+frame) % RES_MOD_X;</div>
+<div class="line">                    <span class="keywordtype">int</span> mod_y = (last_num_frames+frame) / RES_MOD_X;</div>
+<div class="line">                    <span class="keywordflow">for</span> (chan=0;chan&lt;num_chan; chan++)</div>
+<div class="line">                    {</div>
+<div class="line">                        u_int32_t *datap;</div>
+<div class="line">                        u_int32_t total;</div>
+<div class="line">                        <span class="keywordtype">int</span> eng;</div>
+<div class="line">                        mca = pMCA_RAW + XSP3_MAXSPECTRA*num_chan*frame + chan*XSP3_MAXSPECTRA;</div>
+<div class="line"></div>
+<div class="line">                        total = 0;</div>
+<div class="line">                        <span class="keywordflow">for</span> (eng=0; eng&lt;XSP3_MAXSPECTRA; eng++)</div>
+<div class="line">                            total += mca[eng];</div>
+<div class="line">                        datap = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(mca_all_mod, mod_x, mod_y, chan);</div>
+<div class="line">                        *datap = total;</div>
+<div class="line"></div>
+<div class="line">                        total = 0;</div>
+<div class="line">                        <span class="keywordflow">for</span> (eng=good_thres; eng&lt;XSP3_MAXSPECTRA; eng++)</div>
+<div class="line">                            total += mca[eng];</div>
+<div class="line">                        datap = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(mca_good_mod, mod_x, mod_y, chan);</div>
+<div class="line">                        *datap = total;</div>
+<div class="line"></div>
+<div class="line">                        total = 0;</div>
+<div class="line">                        <span class="keywordflow">for</span> (eng=win_low; eng&lt;=win_high; eng++)</div>
+<div class="line">                            total += mca[eng];</div>
+<div class="line">                        datap = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(mca_win_mod, mod_x, mod_y, chan);</div>
+<div class="line">                        *datap = total;</div>
+<div class="line"></div>
+<div class="line">                        datap = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(scal_all_mod, mod_x, mod_y, chan);</div>
+<div class="line">                        *datap = scalar[chan*XSP3_SW_NUM_SCALERS+<a class="code" href="xspress3_8h.html#a9f16f32ec382041475a00556776e0154" title="Number of all event triggers.">XSP_SW_SCALER_ALL_EVENT</a>];</div>
+<div class="line">                        datap = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(scal_good_mod, mod_x, mod_y, chan);</div>
+<div class="line">                        *datap = scalar[chan*XSP3_SW_NUM_SCALERS+<a class="code" href="xspress3_8h.html#a2511d2383a15e1f2f892b753a17e2fc7" title="Number of events with positivie energy &gt; Good threshold.">XSP_SW_SCALER_ALL_GOOD</a>];</div>
+<div class="line">                        datap = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(scal_win_mod, mod_x, mod_y, chan);</div>
+<div class="line">                        *datap = scalar[chan*XSP3_SW_NUM_SCALERS+<a class="code" href="xspress3_8h.html#a04bce896901292fc124c9bc0e2abb1db" title="Number of events in window 0.">XSP_SW_SCALER_IN_WINDOW0</a>];</div>
+<div class="line">                        datap = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(time_sum_mod, mod_x, mod_y, chan);</div>
+<div class="line">                        *datap = scalar[chan*XSP3_SW_NUM_SCALERS+<a class="code" href="xspress3_8h.html#a950cb71db682bdd91383e567fb646d90" title="Total exposure time, may show lower than programmed time if data packets are dropped. Can be used to scale for dropped packets.">XSP_SW_SCALER_LIVE_TICKS</a>];</div>
+<div class="line">                        datap = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(time_save_mod, mod_x, mod_y, chan);</div>
+<div class="line">                        *datap = scalar[chan*XSP3_SW_NUM_SCALERS+<a class="code" href="xspress3_8h.html#a3f294fce92a2b35b16dd3958fa64e9be" title="Total time in 80MHz ticks of exposure, even if some packets are dropped.">XSP_SW_SCALER_TOTAL_TICKS</a>];</div>
+<div class="line">                    }</div>
+<div class="line">                    scalar += num_chan*<a class="code" href="xspress3_8h.html#af0b7cb1f43621e482614fb45aa72f69d">XSP3_SW_NUM_SCALERS</a>;</div>
+<div class="line">                }</div>
+<div class="line">                <span class="keywordflow">if</span> (num_frames &gt; 20)</div>
+<div class="line">                {</div>
+<div class="line">                    <span class="keywordflow">if</span> (checked_frames == 0)</div>
+<div class="line">                    {</div>
+<div class="line">                        <span class="keywordflow">for</span> (chan=0; chan&lt;num_chan; chan++)</div>
+<div class="line">                        {</div>
+<div class="line">                            mca_all_ave[chan]  = ave_first(mca_all_mod, num_frames, chan, mca_all_min+chan, mca_all_max+chan);</div>
+<div class="line">                            scal_all_ave[chan] = ave_first(scal_all_mod, num_frames, chan, scal_all_min+chan, scal_all_max+chan);</div>
+<div class="line">                            good_ave[chan]     = ave_first(mca_good_mod, num_frames, chan, good_min+chan, good_max+chan);</div>
+<div class="line">                            win_ave[chan]      = ave_first(mca_win_mod, num_frames, chan, win_min+chan, win_max+chan);</div>
+<div class="line">                            time_ave[chan]     = ave_first(time_save_mod, num_frames, chan, NULL, NULL);</div>
+<div class="line">                            time_min[chan] = time_ave[chan]-1;</div>
+<div class="line">                            time_max[chan] = time_ave[chan]+1;</div>
+<div class="line">                        }</div>
+<div class="line">                    }</div>
+<div class="line"><span class="preprocessor">#define FIRST_ERROR_A if (first_error) {first_error = 0; printf(&quot;%sT=%d=(%d,%d), Ch=%d: &quot;, (msg_level==1&amp;&amp;first_error_this_block)?&quot;\n&quot;:&quot;&quot;, frame, frame%RES_MOD_X, frame/RES_MOD_X, chan); first_error_this_block=0;}</span></div>
+<div class="line"><span class="preprocessor"></span><span class="preprocessor">#define FIRST_ERROR_B if (first_error) {first_error = 0; printf(&quot;T=%d=(%d,%d), Ch=%d: &quot;, frame, frame%RES_MOD_X, frame/RES_MOD_X, chan);}</span></div>
+<div class="line"><span class="preprocessor"></span>                    num_prints = 0;</div>
+<div class="line">                    first_error_frame = -1;</div>
+<div class="line">                    <span class="keywordflow">for</span> (frame=checked_frames; frame&lt;num_frames; frame++)</div>
+<div class="line">                    {</div>
+<div class="line">                        <span class="keywordtype">int</span> first_error_this_block = 1;</div>
+<div class="line">                        <span class="keywordtype">int</span> mod_x = frame % RES_MOD_X;</div>
+<div class="line">                        <span class="keywordtype">int</span> mod_y = frame / RES_MOD_X;</div>
+<div class="line">                        <span class="keywordtype">int</span> error_this_frame=0;</div>
+<div class="line">                        <span class="keywordflow">if</span> ((use_itfg == USE_ITFG_SW_FRAME_CAP || use_itfg == USE_ITFG_FW_FRAME_CAP) &amp;&amp; check_itfg_frame % fc_del_modulus == fc_del_frame)</div>
+<div class="line">                            check_itfg_frame++;     <span class="comment">// If ITFG frame was marekd as Delete, this should be from the next frame</span></div>
+<div class="line">                        <span class="keywordflow">for</span> (chan=0; chan&lt;num_chan; chan++)</div>
+<div class="line">                        {</div>
+<div class="line">                            <span class="keywordtype">int</span> first_error=1;</div>
+<div class="line">                            <span class="keywordtype">int</span> *mca_all, *mca_good, *scal_all, *scal_good;</div>
+<div class="line">                            <span class="keywordtype">int</span> *mca_win, *scal_win;</div>
+<div class="line">                            <span class="keywordtype">int</span> *time_sum, *time_save;</div>
+<div class="line">                            <span class="keywordtype">int</span> *markerP;</div>
+<div class="line">                            mca_all = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(mca_all_mod, mod_x, mod_y, chan);</div>
+<div class="line">                            mca_good = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(mca_good_mod, mod_x, mod_y, chan);</div>
+<div class="line">                            scal_all = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(scal_all_mod, mod_x, mod_y, chan);</div>
+<div class="line">                            scal_good = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(scal_good_mod, mod_x, mod_y, chan);</div>
+<div class="line">                            mca_win = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(mca_win_mod, mod_x, mod_y, chan);</div>
+<div class="line">                            scal_win = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(scal_win_mod, mod_x, mod_y, chan);</div>
+<div class="line">                            time_sum  = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(time_sum_mod, mod_x, mod_y, chan);</div>
+<div class="line">                            time_save = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(time_save_mod, mod_x, mod_y, chan);</div>
+<div class="line"></div>
+<div class="line">                            <span class="keywordflow">if</span> (check_ave &amp;&amp; (*mca_all &lt; mca_all_min[chan] || *mca_all &gt; mca_all_max[chan] || *scal_all &lt; scal_all_min[chan] || *scal_all &gt; scal_all_max[chan]) || *mca_all &lt; 0.98* *scal_all || *mca_all &gt; *scal_all+2)</div>
+<div class="line">                            {</div>
+<div class="line">                                <span class="keywordflow">if</span> (++num_prints &lt; max_prints &amp;&amp; print_errors)</div>
+<div class="line">                                {</div>
+<div class="line">                                    FIRST_ERROR_A</div>
+<div class="line">                                    printf(<span class="stringliteral">&quot;mca_all=%d, scal_all=%d, mca_min=%d, mca_max=%d&quot;</span>, *mca_all, *scal_all, mca_all_min[chan], mca_all_max[chan]);</div>
+<div class="line">                                }</div>
+<div class="line">                                errors++;</div>
+<div class="line">                                error_this_frame++;</div>
+<div class="line">                            }</div>
+<div class="line">                            <span class="keywordflow">if</span> (check_ave &amp;&amp; (*mca_good &lt; good_min[chan] || *mca_good &gt; good_max[chan] || *scal_good &lt; good_min[chan] || *scal_good &gt; good_max[chan] ) || *mca_good &lt; *scal_good || *mca_good &gt; *scal_good)</div>
+<div class="line">                            {</div>
+<div class="line">                                <span class="keywordflow">if</span> (++num_prints &lt; max_prints &amp;&amp; print_errors)</div>
+<div class="line">                                {</div>
+<div class="line">                                    FIRST_ERROR_A</div>
+<div class="line">                                    printf(<span class="stringliteral">&quot;mca_good=%d, scal_good=%d, good_min=%d, good_max=%d&quot;</span>, *mca_good, *scal_good, good_min[chan], good_max[chan]);</div>
+<div class="line">                                }</div>
+<div class="line">                                errors++;</div>
+<div class="line">                                error_this_frame++;</div>
+<div class="line">                            }</div>
+<div class="line">                            <span class="keywordflow">if</span> (check_ave &amp;&amp; (*mca_win &lt; win_min[chan] || *mca_win &gt; win_max[chan] || *scal_win &lt; win_min[chan] || *scal_win &gt; good_max[chan]) || *mca_win &lt; *scal_win || *mca_win &gt; *scal_win)</div>
+<div class="line">                            {</div>
+<div class="line">                                <span class="keywordflow">if</span> (++num_prints &lt; max_prints &amp;&amp; print_errors)</div>
+<div class="line">                                {</div>
+<div class="line">                                    FIRST_ERROR_A</div>
+<div class="line">                                    printf(<span class="stringliteral">&quot;mca_win=%d, scal_win=%d, win_min=%d, win_max=%d&quot;</span>, *mca_win, *scal_win, win_min[chan], win_max[chan]);</div>
+<div class="line">                                }</div>
+<div class="line">                                errors++;</div>
+<div class="line">                                error_this_frame++;</div>
+<div class="line">                            }</div>
+<div class="line">                            <span class="keywordflow">if</span> (first_error == 0)</div>
+<div class="line">                                printf(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line">                            first_error = 1;</div>
+<div class="line">                            <span class="keywordflow">if</span> (*time_sum &lt; time_min[chan] || *time_sum &gt; time_max[chan] || *time_save &lt; time_min[chan] || *time_save &gt; time_max[chan] || *time_save &lt; *time_sum || *time_sum &gt; *time_save)</div>
+<div class="line">                            {</div>
+<div class="line">                                <span class="keywordflow">if</span> (++num_prints &lt; max_prints &amp;&amp; print_errors)</div>
+<div class="line">                                {</div>
+<div class="line">                                    FIRST_ERROR_B</div>
+<div class="line">                                    printf(<span class="stringliteral">&quot;time_sum=%d, time_save=%d, time_min=%d, time_max=%d&quot;</span>, *time_sum, *time_save, time_min[chan], time_max[chan]);</div>
+<div class="line">                                }</div>
+<div class="line">                                errors++;</div>
+<div class="line">                                error_this_frame++;</div>
+<div class="line">                            }</div>
+<div class="line">                            <span class="keywordflow">if</span> (first_error == 0)</div>
+<div class="line">                                printf(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line">                            <span class="keywordflow">if</span> (use_itfg == USE_ITFG_SW_PAUSE || use_itfg == USE_ITFG_SW_FRAME_CAP || use_itfg == USE_ITFG_FW_MARKER)</div>
+<div class="line">                            {</div>
+<div class="line">                                <span class="keywordtype">int</span> expected_marker = (check_itfg_frame % marker_modulus) == marker_frame;</div>
+<div class="line">                                markerP = <a class="code" href="group__internal.html#ga3739a09ce0e10a6a8e105be79640c438" title="Calculate the pointer to a given element of a 2-d or 3-d shared data module.">xsp3_mod_get_ptr</a>(marker_mod, mod_x, mod_y, chan); </div>
+<div class="line">                                <span class="keywordflow">if</span> (*markerP != expected_marker)</div>
+<div class="line">                                {</div>
+<div class="line">                                    <span class="keywordflow">if</span> (++num_prints &lt; max_prints &amp;&amp; print_errors)</div>
+<div class="line">                                    {</div>
+<div class="line">                                        FIRST_ERROR_B</div>
+<div class="line">                                        printf(<span class="stringliteral">&quot;Marker %d, Expected=%d&quot;</span>, *markerP, expected_marker);</div>
+<div class="line">                                    }</div>
+<div class="line">                                    errors++;</div>
+<div class="line">                                    error_this_frame++;</div>
+<div class="line">                                }</div>
+<div class="line">                            }</div>
+<div class="line"></div>
+<div class="line">                        }</div>
+<div class="line">                        <span class="keywordflow">if</span> (error_this_frame)</div>
+<div class="line">                        {</div>
+<div class="line">                            <span class="keywordflow">if</span> (first_error_frame == -1) </div>
+<div class="line">                                last_error_frame = first_error_frame = frame;</div>
+<div class="line">                            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (last_error_frame == frame-1)</div>
+<div class="line">                                last_error_frame++;</div>
+<div class="line">                            <span class="keywordflow">else</span></div>
+<div class="line">                            {</div>
+<div class="line">                                printf(<span class="stringliteral">&quot;\n Errors in Frame %ld to %ld\n&quot;</span>, first_error_frame, last_error_frame);</div>
+<div class="line">                                first_error_frame = -1;</div>
+<div class="line">                            }</div>
+<div class="line">                        }</div>
+<div class="line">                        check_itfg_frame++;</div>
+<div class="line">                    }</div>
+<div class="line">                    <span class="keywordflow">if</span> (first_error_frame != -1) </div>
+<div class="line">                        printf(<span class="stringliteral">&quot;\n Errors in Frame %ld to %ld\n&quot;</span>, first_error_frame, last_error_frame);</div>
+<div class="line">                    checked_frames = num_frames;</div>
+<div class="line">                }</div>
+<div class="line">                last_num_frames = num_frames;</div>
+<div class="line">                <span class="keywordflow">if</span> (itfg_cont &amp;&amp; num_frames &gt;= nframes)</div>
+<div class="line">                {</div>
+<div class="line">                    <a class="code" href="group__toplevel.html#ga6611bffd6c764d6dc971ac0f3c13cf75" title="Stop histogramming.">xsp3_histogram_stop</a>(xsp3_handle, -1);</div>
+<div class="line">                    <span class="keywordflow">break</span>;</div>
+<div class="line">                }</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">if</span> (use_itfg &amp;&amp; nframes != 0 &amp;&amp; finished)</div>
+<div class="line">                poll++; <span class="comment">/* Count polls once the Itfg has finished */</span></div>
+<div class="line"></div>
+<div class="line">        } <span class="comment">/*end of poll loop*/</span></div>
+<div class="line">        num_overrun = <a class="code" href="group__toplevel.html#ga111758513b31e1c5b91c81e03ca483d5" title="Read how many overrun frames have been detected in circular buffer mode.">xsp3_histogram_get_circ_overrun</a>(xsp3_handle, -1, &amp;first_overrun); </div>
+<div class="line">        <span class="keywordflow">if</span> (num_overrun &gt; 0)</div>
+<div class="line">        {</div>
+<div class="line">            printf(<span class="stringliteral">&quot;\nDetected %ld over runs, first frame=%ld\n&quot;</span>, num_overrun, first_overrun);</div>
+<div class="line">            errors += num_overrun;</div>
+<div class="line">        }</div>
+<div class="line">        printf(<span class="stringliteral">&quot;\nPass %d Done. with %ld errors\n&quot;</span>, pass+1, errors);</div>
+<div class="line">        <span class="keywordflow">if</span> (ofp)</div>
+<div class="line">            fprintf(ofp, <span class="stringliteral">&quot;%g\t%ld\t%ld\n&quot;</span>, frame_len, num_overrun, errors);</div>
+<div class="line">        total_errors+= errors;</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">if</span> (ofp)</div>
+<div class="line">        fclose(ofp);</div>
+<div class="line">    <span class="keywordflow">if</span> (num_pass &gt; 1)</div>
+<div class="line">        printf(<span class="stringliteral">&quot;All Done. with %ld errors\n&quot;</span>, total_errors);</div>
+<div class="line">    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
+<div class="line"></div>
+<div class="line">}</div>
+<div class="line"><span class="comment"></span></div>
+<div class="line"><span class="comment">/**</span></div>
 </div><!-- fragment --> <h1><a class="anchor" id="revisions"></a>
-"Revison History"</h1>
-<p>1.0.0 Original Release. 2.0.0 8/5/2014 API supporting event assembly processing in software and scalers in software. Note: User code should now check for histogramming threads busy using <a class="el" href="group__toplevel.html#gac86da3c2d625a6a872847d2b6edca84a">xsp3_histogram_is_any_busy</a> rather than <a class="el" href="group__internal.html#gab4379e74d2774df62d86f22328049ed9">xsp3_histogram_is_busy</a> as new function check all cards and all channels as necessary. User code should use <a class="el" href="group__toplevel.html#gac087294ee7be16def702c5e44b901f41">xsp3_scaler_check_progress</a> to check progress through time frames. </p>
+"Revision History"</h1>
+<p>1.0.0 Original Release. 2.0.0 8/5/2014 API supporting event assembly processing in software and scalers in software. Note: User code should now check for histogramming threads busy using <a class="el" href="group__toplevel.html#gac86da3c2d625a6a872847d2b6edca84a">xsp3_histogram_is_any_busy</a> rather than <a class="el" href="group__internal.html#gab4379e74d2774df62d86f22328049ed9">xsp3_histogram_is_busy</a> as new function check all cards and all channels as necessary. User code should use <a class="el" href="group__toplevel.html#gac087294ee7be16def702c5e44b901f41">xsp3_scaler_check_progress</a> to check progress through time frames. 2.1.0 17/1/2017 API adding supporting for XSPRESS3Mini and XSPRESS4. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 11 2015 15:30:19 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jan 25 2017 17:59:29 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

@@ -72,6 +72,7 @@ Data Fields</h2></td></tr>
 <tr class="memitem:adf6fb432fa6ee4761913fe62192879c2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#adf6fb432fa6ee4761913fe62192879c2">nbins_aux2</a></td></tr>
 <tr class="memitem:aa4310b4671265310fbba48046fd47752"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#aa4310b4671265310fbba48046fd47752">aux1_mode</a></td></tr>
 <tr class="memitem:a4953bbc1b110ddad5426c49e9b59f78b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a4953bbc1b110ddad5426c49e9b59f78b">aux2_mode</a></td></tr>
+<tr class="memitem:a728c8f0c9e39d9254ecbe6e5fb21b8f5"><td class="memItemLeft" align="right" valign="top">u_int16_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a728c8f0c9e39d9254ecbe6e5fb21b8f5">roi_lut</a></td></tr>
 <tr class="memitem:a960d3ae62bfaac853cc943297b3c13b7"><td class="memItemLeft" align="right" valign="top">u_int8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a960d3ae62bfaac853cc943297b3c13b7">pileup_time_lut</a></td></tr>
 <tr class="memitem:a5a4f4a1efb7b38ee84890f1b42cb7601"><td class="memItemLeft" align="right" valign="top">u_int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a5a4f4a1efb7b38ee84890f1b42cb7601">expected_frame</a></td></tr>
 <tr class="memitem:a7a0ce65688f1c849402f9b4bccc5a3be"><td class="memItemLeft" align="right" valign="top">u_int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a7a0ce65688f1c849402f9b4bccc5a3be">expected_packet</a></td></tr>
@@ -83,10 +84,21 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a75a0f5d3faf9c52fe0d802d759bfe4e9"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="struct___histogram_1_1window__limits.html">_Histogram::window_limits</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a75a0f5d3faf9c52fe0d802d759bfe4e9">window</a> [<a class="el" href="xspress3_8h.html#a155c157ddcc803e68ffb4651f18b4107">XSP3_SOFT_SCALER_NUM_WINDOWS</a>]</td></tr>
 <tr class="memitem:a7731a9c0051c071720d6a85e586f45b5"><td class="memItemLeft" align="right" valign="top">u_int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a7731a9c0051c071720d6a85e586f45b5">format_reg</a></td></tr>
 <tr class="memitem:a5efd85e8c4cf7b434c1c54d10876e897"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a5efd85e8c4cf7b434c1c54d10876e897">cur_tf</a></td></tr>
+<tr class="memitem:a0480663069506f38c72dbfcea312c1a2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a0480663069506f38c72dbfcea312c1a2">prev_hw_time_frame</a></td></tr>
+<tr class="memdesc:a0480663069506f38c72dbfcea312c1a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to kepp track of hardware time frame and detect wrap rounf at 24 bits.  <a href="#a0480663069506f38c72dbfcea312c1a2"></a><br/></td></tr>
+<tr class="memitem:a14e29546cb8116c30360e1aadb8b0ad5"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a14e29546cb8116c30360e1aadb8b0ad5">cur_tf_ext</a></td></tr>
+<tr class="memdesc:a14e29546cb8116c30360e1aadb8b0ad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extended current time from when using the recirulating buffer.  <a href="#a14e29546cb8116c30360e1aadb8b0ad5"></a><br/></td></tr>
+<tr class="memitem:a716e326b5bb37b8aa0d32e664fe970dd"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a716e326b5bb37b8aa0d32e664fe970dd">first_circ_overrun</a></td></tr>
+<tr class="memdesc:a716e326b5bb37b8aa0d32e664fe970dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">First frame to suffer overrun in circular buffer mode.  <a href="#a716e326b5bb37b8aa0d32e664fe970dd"></a><br/></td></tr>
+<tr class="memitem:a0dd0e780841501991ae04bc3b385204c"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a0dd0e780841501991ae04bc3b385204c">num_circ_overrun</a></td></tr>
+<tr class="memdesc:a0dd0e780841501991ae04bc3b385204c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of over run frames in circular buffer mode.  <a href="#a0dd0e780841501991ae04bc3b385204c"></a><br/></td></tr>
+<tr class="memitem:ac2d8cc6ec84c65fe69c8f036bb181573"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#ac2d8cc6ec84c65fe69c8f036bb181573">tf_top</a></td></tr>
+<tr class="memdesc:ac2d8cc6ec84c65fe69c8f036bb181573"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts number of wrap rounds of firmware Time Frame.  <a href="#ac2d8cc6ec84c65fe69c8f036bb181573"></a><br/></td></tr>
 <tr class="memitem:a1f2b330196d6c1eb382d87aebdd12f20"><td class="memItemLeft" align="right" valign="top">u_int16_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a1f2b330196d6c1eb382d87aebdd12f20">diffs_ptr</a></td></tr>
 <tr class="memitem:a731397c62ec3b057c61357b281fec598"><td class="memItemLeft" align="right" valign="top">u_int16_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a731397c62ec3b057c61357b281fec598">tf_ptr</a></td></tr>
 <tr class="memitem:af3475526f4721667858070c269474c6b"><td class="memItemLeft" align="right" valign="top">u_int16_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#af3475526f4721667858070c269474c6b">dig_ptr</a></td></tr>
 <tr class="memitem:a5d619fa25e87b77d759efcc5e7a082b7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#a5d619fa25e87b77d759efcc5e7a082b7">debug_burst</a></td></tr>
+<tr class="memitem:ad38f7bd462fcbca632457dfd81bb09e3"><td class="memItemLeft" align="right" valign="top">pthread_mutex_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___histogram.html#ad38f7bd462fcbca632457dfd81bb09e3">mutex</a></td></tr>
 </table>
 <h2>Field Documentation</h2>
 <a class="anchor" id="aa4310b4671265310fbba48046fd47752"></a>
@@ -197,6 +209,20 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a14e29546cb8116c30360e1aadb8b0ad5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t _Histogram::cur_tf_ext</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extended current time from when using the recirulating buffer. </p>
+
+</div>
+</div>
 <a class="anchor" id="a5d619fa25e87b77d759efcc5e7a082b7"></a>
 <div class="memitem">
 <div class="memproto">
@@ -269,6 +295,20 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a716e326b5bb37b8aa0d32e664fe970dd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t _Histogram::first_circ_overrun</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>First frame to suffer overrun in circular buffer mode. </p>
+
+</div>
+</div>
 <a class="anchor" id="a7731a9c0051c071720d6a85e586f45b5"></a>
 <div class="memitem">
 <div class="memproto">
@@ -311,6 +351,18 @@ Data Fields</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">MOD_IMAGE* _Histogram::module</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ad38f7bd462fcbca632457dfd81bb09e3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pthread_mutex_t _Histogram::mutex</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -389,6 +441,20 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0dd0e780841501991ae04bc3b385204c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t _Histogram::num_circ_overrun</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of over run frames in circular buffer mode. </p>
+
+</div>
+</div>
 <a class="anchor" id="a29592908e85cc9ea62f8750548cb273b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -413,12 +479,38 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0480663069506f38c72dbfcea312c1a2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int _Histogram::prev_hw_time_frame</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Used to kepp track of hardware time frame and detect wrap rounf at 24 bits. </p>
+
+</div>
+</div>
 <a class="anchor" id="ae8b672656b2310272b8a1bc8279932cb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">char _Histogram::reset_frame</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a728c8f0c9e39d9254ecbe6e5fb21b8f5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u_int16_t* _Histogram::roi_lut</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -434,6 +526,20 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac2d8cc6ec84c65fe69c8f036bb181573"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t _Histogram::tf_top</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Counts number of wrap rounds of firmware Time Frame. </p>
 
 </div>
 </div>
@@ -467,7 +573,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 11 2015 15:30:19 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jan 25 2017 17:59:29 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

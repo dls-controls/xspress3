@@ -58,7 +58,7 @@
 <tr class="heading"><td colspan="2"><h2><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct__dma__desc.html">_dma_desc</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_DESCRIPTOR]  <a href="struct__dma__desc.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_LAYOUT_CODE]  <a href="struct__dma__desc.html#details">More...</a><br/></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct__axidma__desc.html">_axidma_desc</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_DESCRIPTOR]  <a href="struct__axidma__desc.html#details">More...</a><br/></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_m_a_stream.html">DMAStream</a></td></tr>
@@ -80,6 +80,7 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_s_p3___d_m_a___msg_check_desc.html">XSP3_DMA_MsgCheckDesc</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_MSG_PRINT_DESC]  <a href="struct_x_s_p3___d_m_a___msg_check_desc.html#details">More...</a><br/></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_s_p3___d_m_a___status_block.html">XSP3_DMA_StatusBlock</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_s_p4___d_m_a___status_block.html">XSP4_DMA_StatusBlock</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="define-members"></a>
 Macros</h2></td></tr>
@@ -116,6 +117,7 @@ Macros</h2></td></tr>
 <tr class="memitem:a4872ab1aa9ebb67cd8cb04165a230f13"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a4872ab1aa9ebb67cd8cb04165a230f13">XSP3_DMA_ERROR_DATA_RANGE</a>&#160;&#160;&#160;10</td></tr>
 <tr class="memitem:a2cc34be9330d71c4b769e07bc0630ecd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a2cc34be9330d71c4b769e07bc0630ecd">XSP3_DMA_ERROR_MSG_LEVEL</a>&#160;&#160;&#160;11</td></tr>
 <tr class="memitem:a18ed2edc0b5363923c2f10102e61dd29"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a18ed2edc0b5363923c2f10102e61dd29">XSP3_DMA_ERROR_OUTSIDE_VA</a>&#160;&#160;&#160;12</td></tr>
+<tr class="memitem:a319ec54590df01064f652321c8956080"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a319ec54590df01064f652321c8956080">XSP3_DMA_INSUFFICIENT_MEM</a>&#160;&#160;&#160;13</td></tr>
 <tr class="memitem:ga22c5770edc2b4c220b35c0b535801aa1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga22c5770edc2b4c220b35c0b535801aa1">XSP3_DMA_STREAM_BNUM_DIRECT</a>&#160;&#160;&#160;0</td></tr>
 <tr class="memdesc:ga22c5770edc2b4c220b35c0b535801aa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">No DMA stream specified, use absolute addresses.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga22c5770edc2b4c220b35c0b535801aa1"></a><br/></td></tr>
 <tr class="memitem:ga51fb1cc5443bb62199857830e72fe4fa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga51fb1cc5443bb62199857830e72fe4fa">XSP3_DMA_STREAM_BNUM_PLAYBACK</a>&#160;&#160;&#160;1</td></tr>
@@ -132,7 +134,29 @@ Macros</h2></td></tr>
 <tr class="memdesc:gaece0e59ce176408096c6a2c6f78b5489"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use DMA Output FEM DRAM over 10 G Ethernet.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gaece0e59ce176408096c6a2c6f78b5489"></a><br/></td></tr>
 <tr class="memitem:gae195b01168009f373b1ffbc90525ebf2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gae195b01168009f373b1ffbc90525ebf2">XSP3_DMA_STREAM_BNUM_10G_TO_DRAM</a>&#160;&#160;&#160;7</td></tr>
 <tr class="memdesc:gae195b01168009f373b1ffbc90525ebf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use DMA filling FEM DRAM from 10 G Ethernet.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gae195b01168009f373b1ffbc90525ebf2"></a><br/></td></tr>
+<tr class="memitem:ga6f127aa199eec4b475caed69030ee845"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga6f127aa199eec4b475caed69030ee845">XSP3M_DMA_STREAM_BNUM_HIST_FRAMES</a>&#160;&#160;&#160;5</td></tr>
+<tr class="memdesc:ga6f127aa199eec4b475caed69030ee845"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completed histogrammed frames in Xspress3 mini. Re use HIST to DRAM number as this is not used in any current builds.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga6f127aa199eec4b475caed69030ee845"></a><br/></td></tr>
+<tr class="memitem:ga5d0926cd2cb9d60936aeab4a46896057"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga5d0926cd2cb9d60936aeab4a46896057">XSP3M_DMA_STREAM_BNUM_HIST_LIST</a>&#160;&#160;&#160;8</td></tr>
+<tr class="memdesc:ga5d0926cd2cb9d60936aeab4a46896057"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of events for software histogramming Xspress3 mini.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga5d0926cd2cb9d60936aeab4a46896057"></a><br/></td></tr>
+<tr class="memitem:gab6a90e9614245cf16c0b237e4ac4e23c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>&#160;&#160;&#160;9</td></tr>
+<tr class="memdesc:gab6a90e9614245cf16c0b237e4ac4e23c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Special BNUM used to identify the soft histogram buffer (rather than the event list) associated with XSP3M_DMA_STREAM_BNUM_HIST_LIST.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c"></a><br/></td></tr>
+<tr class="memitem:gacc3f702ce053951bcf6fdc5136a178c2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gacc3f702ce053951bcf6fdc5136a178c2">XSP3M_DMA_STREAM_BNUM_SOFT_HIST1</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+1)</td></tr>
+<tr class="memitem:ga0a6d1cc92d4c829d2513a55a962f170c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga0a6d1cc92d4c829d2513a55a962f170c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST2</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+2)</td></tr>
+<tr class="memitem:ga95505bc1f1aaa1723125ec51e093b3d8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga95505bc1f1aaa1723125ec51e093b3d8">XSP3M_DMA_STREAM_BNUM_SOFT_HIST3</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+3)</td></tr>
+<tr class="memitem:gadb7561f6196cfc341e81d80b48a1053a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gadb7561f6196cfc341e81d80b48a1053a">XSP3M_DMA_STREAM_BNUM_SOFT_HIST4</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+4)</td></tr>
+<tr class="memitem:ga542152b1cd9e1c0de5afeda69b923105"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga542152b1cd9e1c0de5afeda69b923105">XSP3M_DMA_STREAM_BNUM_SOFT_HIST5</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+5)</td></tr>
+<tr class="memitem:ga5af80e14007c5b730f0b4b3bb4a60698"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga5af80e14007c5b730f0b4b3bb4a60698">XSP3M_DMA_STREAM_BNUM_SOFT_HIST6</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+6)</td></tr>
+<tr class="memitem:gaab0e4cec3007d7634e244511a67a77ca"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gaab0e4cec3007d7634e244511a67a77ca">XSP3M_DMA_STREAM_BNUM_SOFT_HIST7</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+7)</td></tr>
+<tr class="memitem:ga45f502037ee3b2e31d14833c453e2f1d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga45f502037ee3b2e31d14833c453e2f1d">XSP3M_DMA_STREAM_BNUM_SOFT_HIST8</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+8)</td></tr>
+<tr class="memitem:ga85b287ea75ce76e5a57a0efe72c72716"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga85b287ea75ce76e5a57a0efe72c72716">XSP3M_DMA_STREAM_BNUM_SOFT_HIST9</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+9)</td></tr>
+<tr class="memitem:ga6f7fb28c9503d2bbe1d088ddb0948184"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga6f7fb28c9503d2bbe1d088ddb0948184">XSP3M_DMA_STREAM_BNUM_SOFT_HIST10</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+10)</td></tr>
+<tr class="memitem:ga18a91cca87fc3d69fd711e3198ad922d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga18a91cca87fc3d69fd711e3198ad922d">XSP3M_DMA_STREAM_BNUM_SOFT_HIST11</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+11)</td></tr>
+<tr class="memitem:ga2f3f09ddb1969c9b3f86f8280ab7bfb2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga2f3f09ddb1969c9b3f86f8280ab7bfb2">XSP3M_DMA_STREAM_BNUM_SOFT_HIST12</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+12)</td></tr>
+<tr class="memitem:ga17fd95383e18cecdbe437d23876ce2f3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga17fd95383e18cecdbe437d23876ce2f3">XSP3M_DMA_STREAM_BNUM_SOFT_HIST13</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+13)</td></tr>
+<tr class="memitem:ga37f21f8866615cfa680cfb8b69a5ffb9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga37f21f8866615cfa680cfb8b69a5ffb9">XSP3M_DMA_STREAM_BNUM_SOFT_HIST14</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+14)</td></tr>
+<tr class="memitem:ga51f7950a76293a0c58c6af60aa5ee196"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga51f7950a76293a0c58c6af60aa5ee196">XSP3M_DMA_STREAM_BNUM_SOFT_HIST15</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gab6a90e9614245cf16c0b237e4ac4e23c">XSP3M_DMA_STREAM_BNUM_SOFT_HIST0</a>+15)</td></tr>
 <tr class="memitem:af4d3a6ac63726d40b178c0ba15db3fb4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#af4d3a6ac63726d40b178c0ba15db3fb4">XSP3_DMA_STREAM_NUM</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gae195b01168009f373b1ffbc90525ebf2">XSP3_DMA_STREAM_BNUM_10G_TO_DRAM</a>+1)</td></tr>
+<tr class="memitem:a803e07087cda1c81c1a8c3daf905749c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a803e07087cda1c81c1a8c3daf905749c">XSP4_DMA_STREAM_NUM</a>&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga51f7950a76293a0c58c6af60aa5ee196">XSP3M_DMA_STREAM_BNUM_SOFT_HIST15</a>+1)</td></tr>
 <tr class="memitem:ga2637641873ead36f6f5782e60387375d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#ga2637641873ead36f6f5782e60387375d">XSP3_DMA_STREAM_MASK_DIRECT</a>&#160;&#160;&#160;(1&lt;&lt;<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga22c5770edc2b4c220b35c0b535801aa1">XSP3_DMA_STREAM_BNUM_DIRECT</a>)</td></tr>
 <tr class="memdesc:ga2637641873ead36f6f5782e60387375d"><td class="mdescLeft">&#160;</td><td class="mdescRight">No DMA stream specified, use absolute addresses.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#ga2637641873ead36f6f5782e60387375d"></a><br/></td></tr>
 <tr class="memitem:gaddd087dd2196dded3e95f4e166db6efb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#gaddd087dd2196dded3e95f4e166db6efb">XSP3_DMA_STREAM_MASK_PLAYBACK</a>&#160;&#160;&#160;(1&lt;&lt;<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga51fb1cc5443bb62199857830e72fe4fa">XSP3_DMA_STREAM_BNUM_PLAYBACK</a>)</td></tr>
@@ -149,6 +173,10 @@ Macros</h2></td></tr>
 <tr class="memdesc:gae6f7130091bd1b347a6e9e7a089387d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use DMA Output FEM DRAM over 10 G Ethernet.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#gae6f7130091bd1b347a6e9e7a089387d8"></a><br/></td></tr>
 <tr class="memitem:ga74b3ae873bee1724cddde89e79248901"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#ga74b3ae873bee1724cddde89e79248901">XSP3_DMA_STREAM_MASK_10G_TO_DRAM</a>&#160;&#160;&#160;(1&lt;&lt;<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#gae195b01168009f373b1ffbc90525ebf2">XSP3_DMA_STREAM_BNUM_10G_TO_DRAM</a>)</td></tr>
 <tr class="memdesc:ga74b3ae873bee1724cddde89e79248901"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use DMA filling FEM DRAM from 10 G Ethernet.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#ga74b3ae873bee1724cddde89e79248901"></a><br/></td></tr>
+<tr class="memitem:ga0f783c12ae003de5ccfe4ea1196eeebc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#ga0f783c12ae003de5ccfe4ea1196eeebc">XSP3M_DMA_STREAM_MASK_HIST_FRAMES</a>&#160;&#160;&#160;(1&lt;&lt;<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga6f127aa199eec4b475caed69030ee845">XSP3M_DMA_STREAM_BNUM_HIST_FRAMES</a>)</td></tr>
+<tr class="memdesc:ga0f783c12ae003de5ccfe4ea1196eeebc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completed histogrammed frames in Xspress3 mini. Re used SCOPE1 number in Xspress3 mini to allow backwards compatibility of status block size.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#ga0f783c12ae003de5ccfe4ea1196eeebc"></a><br/></td></tr>
+<tr class="memitem:gab61fb77efb18e6c87383d78bfa0dc103"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#gab61fb77efb18e6c87383d78bfa0dc103">XSP3M_DMA_STREAM_MASK_HIST_LIST</a>&#160;&#160;&#160;(1&lt;&lt;<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga5d0926cd2cb9d60936aeab4a46896057">XSP3M_DMA_STREAM_BNUM_HIST_LIST</a>)</td></tr>
+<tr class="memdesc:gab61fb77efb18e6c87383d78bfa0dc103"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of events for software histogramming Xspress3 mini.  <a href="group___x_s_p3___d_m_a___s_t_r_e_a_m___m_a_s_k.html#gab61fb77efb18e6c87383d78bfa0dc103"></a><br/></td></tr>
 <tr class="memitem:ab04d580eb1843562d2ec941ffab16bfd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#ab04d580eb1843562d2ec941ffab16bfd">XSP3_DMA_STATE_DESC_CONF</a>&#160;&#160;&#160;(1&lt;&lt;0)</td></tr>
 <tr class="memitem:abc87432bd1c5582a3c336f9f130fbe18"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#abc87432bd1c5582a3c336f9f130fbe18">XSP3_DMA_STATE_BUFFER_CONF</a>&#160;&#160;&#160;(1&lt;&lt;1)</td></tr>
 <tr class="memitem:a2732aa69653dc8a8593f52c655a0ce3a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a2732aa69653dc8a8593f52c655a0ce3a">XSP3_DMA_STATE_DESC_BUILT</a>&#160;&#160;&#160;(1&lt;&lt;2)</td></tr>
@@ -158,12 +186,28 @@ Macros</h2></td></tr>
 <tr class="memitem:a745e84afd3bde6398caa56a174b4f981"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a745e84afd3bde6398caa56a174b4f981">XSP3_DMA_DEBUG_DESC_INC_FRAME</a>&#160;&#160;&#160;4</td></tr>
 <tr class="memitem:a640ddb89c026343b149268bbf97dc1c5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a640ddb89c026343b149268bbf97dc1c5">XSP3_DMA_DEBUG_DESC_ALL_SMALL</a>&#160;&#160;&#160;0x10000</td></tr>
 <tr class="memitem:a6b2c67791dcd4d3d63645cf1633c2ade"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a6b2c67791dcd4d3d63645cf1633c2ade">XSP3_DMA_DEBUG_DESC_SHORT_BURSTS</a>&#160;&#160;&#160;0x20000</td></tr>
+<tr class="memitem:ga80e691288ada6da5b28c5aa21cc41731"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga80e691288ada6da5b28c5aa21cc41731">XSP3_CONF_MEM_OVERALL</a>(x)&#160;&#160;&#160;((x)&amp;0xFF)</td></tr>
+<tr class="memdesc:ga80e691288ada6da5b28c5aa21cc41731"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_LAYOUT_CODE]  <a href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga80e691288ada6da5b28c5aa21cc41731"></a><br/></td></tr>
+<tr class="memitem:ga92a8f1b466c5a2f24b44eb5a24657d85"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga92a8f1b466c5a2f24b44eb5a24657d85">XSP3_CONF_MEM_GET_OVERALL</a>(x)&#160;&#160;&#160;((x)&amp;0xFF)</td></tr>
+<tr class="memitem:ga9612b41dc28ca53f6e6ed439a62807c6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga9612b41dc28ca53f6e6ed439a62807c6">XSP3_CONF_MEM_PLAYBACK_SCOPE</a>(x)&#160;&#160;&#160;(((x)&amp;0x3F)&lt;&lt;8)</td></tr>
+<tr class="memitem:ga7ae36071be7a09838bf4c79a68bb965b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga7ae36071be7a09838bf4c79a68bb965b">XSP3_CONF_MEM_GET_PLAYBACK_SCOPE</a>(x)&#160;&#160;&#160;(((x)&gt;&gt;8)&amp;0x3F)</td></tr>
+<tr class="memitem:gadf80379914e8fc0ebb1272fc20ec1302"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#gadf80379914e8fc0ebb1272fc20ec1302">XSP3_CONF_MEM_HIST_OPTIONS</a>(x)&#160;&#160;&#160;(((x)&amp;0x3F)&lt;&lt;14)</td></tr>
+<tr class="memitem:ga6606c5cbe9f9bd8673278a087bb3c78d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga6606c5cbe9f9bd8673278a087bb3c78d">XSP3_CONF_MEM_GET_HIST_OPTIONS</a>(x)&#160;&#160;&#160;(((x)&gt;&gt;14)&amp;0x3F)</td></tr>
+<tr class="memitem:ga643b127d04832c939f6cea3970a02b10"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga643b127d04832c939f6cea3970a02b10">XSP3_CONF_MEM_HIST_FRAME_SCALARS</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memitem:gab73e02944ba52d7d64b7c4e734e1a8e9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#gab73e02944ba52d7d64b7c4e734e1a8e9">XSP3_CONF_MEM_HIST_ALL_SCALARS</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:ga1e9c01d7b53d2a5719a8297190aa0704"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga1e9c01d7b53d2a5719a8297190aa0704">XSP3_CONF_MEM_HIST_10FRAME_DIAG</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memitem:gab5a06f2c5b1b40f602c925de57922174"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#gab5a06f2c5b1b40f602c925de57922174">XSP3_CONF_MEM_HIST_ALL_DIAG</a>&#160;&#160;&#160;5</td></tr>
+<tr class="memitem:ga0cc75ed23d15cc339116e98fc5381e20"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga0cc75ed23d15cc339116e98fc5381e20">XSP3_CONF_MEM_NBITS_ENG</a>(x)&#160;&#160;&#160;(((x)&amp;0xF)&lt;&lt;20)</td></tr>
+<tr class="memitem:ga9245cef2c9cd770290852f5fd699208a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga9245cef2c9cd770290852f5fd699208a">XSP3_CONF_MEM_GET_NBITS_ENG</a>(x)&#160;&#160;&#160;(((x)&gt;&gt;20)&amp;0xF)</td></tr>
+<tr class="memitem:gaee2c999ee8720c50d28b1515da6c7961"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#gaee2c999ee8720c50d28b1515da6c7961">XSP3_CONF_MEM_NUM_CHAN</a>(x)&#160;&#160;&#160;(((x)&amp;0x3F)&lt;&lt;24)</td></tr>
+<tr class="memitem:ga40346e445f40f892941e6e91f8719e8a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p3___d_m_a___l_a_y_o_u_t.html#ga40346e445f40f892941e6e91f8719e8a">XSP3_CONF_MEM_GET_NUM_CHAN</a>(x)&#160;&#160;&#160;(((x)&gt;&gt;24)&amp;0x3F)</td></tr>
 <tr class="memitem:a5984e9e653a52a9525a6dff4033d935f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a5984e9e653a52a9525a6dff4033d935f">XSP3_DMA_MSG_CHECK_NONE</a>&#160;&#160;&#160;1</td></tr>
 <tr class="memdesc:a5984e9e653a52a9525a6dff4033d935f"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_MSG_CHECK_DESC]  <a href="#a5984e9e653a52a9525a6dff4033d935f"></a><br/></td></tr>
 <tr class="memitem:adc1806141e9709627cd83d0fa6a372a7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#adc1806141e9709627cd83d0fa6a372a7">XSP3_DMA_MSG_CHECK_LENGTH</a>&#160;&#160;&#160;2</td></tr>
 <tr class="memitem:ab38e40a0bb936b95438d9d91bfd70a68"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#ab38e40a0bb936b95438d9d91bfd70a68">XSP3_DMA_MSG_CHECK_10GRX</a>&#160;&#160;&#160;4</td></tr>
 <tr class="memitem:a58b3f5da323dc8459c73d15bc951075c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a58b3f5da323dc8459c73d15bc951075c">XSP3_DMA_MSG_CHECK_FRAME_PER_DESC</a>&#160;&#160;&#160;8</td></tr>
 <tr class="memitem:a9b90c10c69efa422deae9ef5134530f2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a9b90c10c69efa422deae9ef5134530f2">XSP3_DMA_MSG_CHECK_1_FRAME</a>&#160;&#160;&#160;0x10</td></tr>
+<tr class="memitem:a32769201e4cdc9b7e1d7ed6f2669cc3b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a32769201e4cdc9b7e1d7ed6f2669cc3b">XSP3_DMA_MSG_CHECK_TIMEFRAME</a>&#160;&#160;&#160;0x20</td></tr>
 <tr class="memitem:a91f1a292c0548289d0c3b4d0a7b188cf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a91f1a292c0548289d0c3b4d0a7b188cf">XSP3_DMA_MSG_TP_INC32</a>&#160;&#160;&#160;0</td></tr>
 <tr class="memdesc:a91f1a292c0548289d0c3b4d0a7b188cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_MSG_CHECK]  <a href="#a91f1a292c0548289d0c3b4d0a7b188cf"></a><br/></td></tr>
 <tr class="memitem:a48db617a94ffaaf287dd140bf3c84ecd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a48db617a94ffaaf287dd140bf3c84ecd">XSP3_DMA_MSG_TP_INC8</a>&#160;&#160;&#160;1</td></tr>
@@ -176,7 +220,7 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:abd16b413c9fcfd83bb52226f7135cff9"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="struct__dma__desc.html">_dma_desc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#abd16b413c9fcfd83bb52226f7135cff9">DMADesc</a></td></tr>
-<tr class="memdesc:abd16b413c9fcfd83bb52226f7135cff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_DESCRIPTOR]  <a href="#abd16b413c9fcfd83bb52226f7135cff9"></a><br/></td></tr>
+<tr class="memdesc:abd16b413c9fcfd83bb52226f7135cff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_LAYOUT_CODE]  <a href="#abd16b413c9fcfd83bb52226f7135cff9"></a><br/></td></tr>
 <tr class="memitem:a9a8a0cea6103a22c10e439a692ed9c3e"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="struct__axidma__desc.html">_axidma_desc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__dma__protocol_8h.html#a9a8a0cea6103a22c10e439a692ed9c3e">AXIDMADesc</a></td></tr>
 <tr class="memdesc:a9a8a0cea6103a22c10e439a692ed9c3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">[XSP3_DMA_DESCRIPTOR]  <a href="#a9a8a0cea6103a22c10e439a692ed9c3e"></a><br/></td></tr>
 </table>
@@ -579,6 +623,18 @@ Typedefs</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a319ec54590df01064f652321c8956080"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XSP3_DMA_INSUFFICIENT_MEM&#160;&#160;&#160;13</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a02cab9f99059a6e4d1ac7f9442372ff8"></a>
 <div class="memitem">
 <div class="memproto">
@@ -651,6 +707,18 @@ Typedefs</h2></td></tr>
 
 <p>[XSP3_DMA_MSG_CHECK_DESC] </p>
 <p>[XSP3_DMA_MSG_CHECK] </p>
+
+</div>
+</div>
+<a class="anchor" id="a32769201e4cdc9b7e1d7ed6f2669cc3b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XSP3_DMA_MSG_CHECK_TIMEFRAME&#160;&#160;&#160;0x20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -826,6 +894,18 @@ Typedefs</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a803e07087cda1c81c1a8c3daf905749c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XSP4_DMA_STREAM_NUM&#160;&#160;&#160;(<a class="el" href="group___x_s_p3___d_m_a___s_t_r_e_a_m___n_u_m_b_e_r.html#ga51f7950a76293a0c58c6af60aa5ee196">XSP3M_DMA_STREAM_BNUM_SOFT_HIST15</a>+1)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2>Typedef Documentation</h2>
 <a class="anchor" id="a9a8a0cea6103a22c10e439a692ed9c3e"></a>
 <div class="memitem">
@@ -852,6 +932,7 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>[XSP3_DMA_LAYOUT_CODE] </p>
 <p>[XSP3_DMA_DESCRIPTOR] </p>
 
 </div>
@@ -859,7 +940,7 @@ Typedefs</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 11 2015 15:30:17 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jan 25 2017 17:59:27 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

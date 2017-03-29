@@ -62,6 +62,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a57fcb230648226b2123977305d9906d4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__i2c_8c.html#a57fcb230648226b2123977305d9906d4">LM75_REG_T_HYST</a>&#160;&#160;&#160;0x02</td></tr>
 <tr class="memitem:a0d4c7763dd7a047e640bcb70f184a126"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__i2c_8c.html#a0d4c7763dd7a047e640bcb70f184a126">LM75_REG_T_OS</a>&#160;&#160;&#160;0x03</td></tr>
 <tr class="memitem:ad2a5273863cd1024abc6137cbd9294d6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__i2c_8c.html#ad2a5273863cd1024abc6137cbd9294d6">LM75_REG_ID</a>&#160;&#160;&#160;0x07</td></tr>
+<tr class="memitem:a5bd5b2d507cb44d9460d82aa1429824a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__i2c_8c.html#a5bd5b2d507cb44d9460d82aa1429824a">MAX_REGS</a>&#160;&#160;&#160;60</td></tr>
+<tr class="memitem:ga4787290d84cc34192287471f69fe3890"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__debug.html#ga4787290d84cc34192287471f69fe3890">LM82_NUM_READ_REGS</a>&#160;&#160;&#160;8</td></tr>
+<tr class="memdesc:ga4787290d84cc34192287471f69fe3890"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read and print all the registers in the LM82 monitoring the temperature of FEM PCB and Virtex-5 FPGA using LM82s on 1 or all boards.  <a href="group__debug.html#ga4787290d84cc34192287471f69fe3890"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -69,6 +72,21 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga0ba0e14d4063ad966a4385750697da14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read Temperature from all 4 LM75s on 1 or all ADC boards.  <a href="group__toplevel.html#ga0ba0e14d4063ad966a4385750697da14"></a><br/></td></tr>
 <tr class="memitem:ga757ccf26dff09b316e07af665388734c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__toplevel.html#ga757ccf26dff09b316e07af665388734c">xsp3_i2c_set_adc_temp_limit</a> (int path, int card, int critTemp)</td></tr>
 <tr class="memdesc:ga757ccf26dff09b316e07af665388734c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set over Temperature threshold for all 4 LM75s on 1 or all ADC boards.  <a href="group__toplevel.html#ga757ccf26dff09b316e07af665388734c"></a><br/></td></tr>
+<tr class="memitem:ga6229a462e5375654e23fd6c1280e5650"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__debug.html#ga6229a462e5375654e23fd6c1280e5650">xsp3_lmk61e2_write_from_file</a> (int path, int card, int mid_plane, char *fname)</td></tr>
+<tr class="memdesc:ga6229a462e5375654e23fd6c1280e5650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure a the LMK61E2 clock generator chip on an XSPRESS3Min or XSPRESS4 from file.  <a href="group__debug.html#ga6229a462e5375654e23fd6c1280e5650"></a><br/></td></tr>
+<tr class="memitem:ga366e46ab9e51256f41251b1c8f88869b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__debug.html#ga366e46ab9e51256f41251b1c8f88869b">xsp3_lmk61e2_write</a> (int path, int card, int mid_plane, int num, <a class="el" href="struct_xsp3_i2_c_addr_data.html">Xsp3I2CAddrData</a> *reg)</td></tr>
+<tr class="memdesc:ga366e46ab9e51256f41251b1c8f88869b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write registers of the LMK61E2 clock generator chip on an XSPRESS3Min or XSPRESS4.  <a href="group__debug.html#ga366e46ab9e51256f41251b1c8f88869b"></a><br/></td></tr>
+<tr class="memitem:ga6f622ad7f970ae710e50b6752eafc5e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__debug.html#ga6f622ad7f970ae710e50b6752eafc5e8">xsp3_lmk61e2_save_to_eeprom</a> (int path, int card, int mid_plane)</td></tr>
+<tr class="memdesc:ga6f622ad7f970ae710e50b6752eafc5e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save current register setup of the LMK61E2 clock generator chip on an XSPRESS3Min or XSPRESS4.  <a href="group__debug.html#ga6f622ad7f970ae710e50b6752eafc5e8"></a><br/></td></tr>
+<tr class="memitem:ga32cf72a31b43e30e90850b943c7c9a1b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__debug.html#ga32cf72a31b43e30e90850b943c7c9a1b">xsp3_lmk61e2_read</a> (int path, int card, int mid_plane, int reg_addr, int num, u_int8_t *reg)</td></tr>
+<tr class="memdesc:ga32cf72a31b43e30e90850b943c7c9a1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read registers from the LMK61E2 clock generator chip on an XSPRESS3Min or XSPRESS4.  <a href="group__debug.html#ga32cf72a31b43e30e90850b943c7c9a1b"></a><br/></td></tr>
+<tr class="memitem:ga4d2fcee85b6b08d61bc369e2c8e6b141"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__debug.html#ga4d2fcee85b6b08d61bc369e2c8e6b141">xsp3m_write_fan_speed</a> (int path, int card, int speed)</td></tr>
+<tr class="memdesc:ga4d2fcee85b6b08d61bc369e2c8e6b141"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directly write the fan speed control programmable resistor on XSPRESS3Mini.  <a href="group__debug.html#ga4d2fcee85b6b08d61bc369e2c8e6b141"></a><br/></td></tr>
+<tr class="memitem:gad3e1d2f693b842d5d193e186a232b47b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__debug.html#gad3e1d2f693b842d5d193e186a232b47b">xsp3m_read_fan_speed</a> (int path, int card, int *speed)</td></tr>
+<tr class="memdesc:gad3e1d2f693b842d5d193e186a232b47b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directly read the fan speed control programmable resistor on XSPRESS3Mini.  <a href="group__debug.html#gad3e1d2f693b842d5d193e186a232b47b"></a><br/></td></tr>
+<tr class="memitem:gae9e7697f98e0b72e4b49fed588ee1c4b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__toplevel.html#gae9e7697f98e0b72e4b49fed588ee1c4b">xsp3_i2c_read_fem_temp</a> (int path, int card, float *temp)</td></tr>
+<tr class="memdesc:gae9e7697f98e0b72e4b49fed588ee1c4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read Temperature of FEM PCB and Virtex-5 FPGA using LM82s on 1 or all boards.  <a href="group__toplevel.html#gae9e7697f98e0b72e4b49fed588ee1c4b"></a><br/></td></tr>
+<tr class="memitem:af4d9330a2dc09bf62efcf15faf891beb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xspress3__i2c_8c.html#af4d9330a2dc09bf62efcf15faf891beb">xsp3_i2c_print_lm82_regs</a> (int path, int card)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -136,6 +154,45 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a5bd5b2d507cb44d9460d82aa1429824a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_REGS&#160;&#160;&#160;60</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2>Function Documentation</h2>
+<a class="anchor" id="af4d9330a2dc09bf62efcf15faf891beb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xsp3_i2c_print_lm82_regs </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>card</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2>Variable Documentation</h2>
 <a class="anchor" id="acc17640d251abf40921ef449251e240c"></a>
 <div class="memitem">
@@ -164,7 +221,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 11 2015 15:30:17 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jan 25 2017 17:59:27 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

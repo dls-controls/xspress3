@@ -62,10 +62,14 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga1010d016188cbc54ebace82c81412480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the maximum number of time frames of scaler data that can be stored with the current memory allocation within the FEM.  <a href="group__toplevel.html#ga1010d016188cbc54ebace82c81412480"></a><br/></td></tr>
 <tr class="memitem:ga6e31a5956682ff9886ed317965c512a3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__toplevel.html#ga6e31a5956682ff9886ed317965c512a3">xsp3_scaler_read</a> (int path, u_int32_t *dest, unsigned scaler, unsigned chan, unsigned t, unsigned n_scalers, unsigned n_chan, unsigned dt)</td></tr>
 <tr class="memdesc:ga6e31a5956682ff9886ed317965c512a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a block of scaler data.  <a href="group__toplevel.html#ga6e31a5956682ff9886ed317965c512a3"></a><br/></td></tr>
+<tr class="memitem:ga073d1cec1a2b79fe993871243ce8f0d6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__internal.html#ga073d1cec1a2b79fe993871243ce8f0d6">xsp3m_scaler_read</a> (int path, u_int32_t *dest, unsigned scaler, unsigned chan, unsigned t, unsigned n_scalers, unsigned n_chan, unsigned dt)</td></tr>
+<tr class="memdesc:ga073d1cec1a2b79fe993871243ce8f0d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a block of scaler data for Xspress3 mini, Called via xsp3_scaler_read.  <a href="group__internal.html#ga073d1cec1a2b79fe993871243ce8f0d6"></a><br/></td></tr>
 <tr class="memitem:gac087294ee7be16def702c5e44b901f41"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__toplevel.html#gac087294ee7be16def702c5e44b901f41">xsp3_scaler_check_progress</a> (int path)</td></tr>
 <tr class="memdesc:gac087294ee7be16def702c5e44b901f41"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks how many time frames have been processed.  <a href="group__toplevel.html#gac087294ee7be16def702c5e44b901f41"></a><br/></td></tr>
+<tr class="memitem:ga1c54db0e8d9e4dab02da69b56b7670a7"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7">xsp3_scaler_check_progress_details</a> (int path, <a class="el" href="xspress3_8h.html#a658af7e4f97507135cf5a100008d1569">Xsp3ErrFlag</a> *flagsP, int quiet, int64_t *furthest_frame)</td></tr>
+<tr class="memdesc:ga1c54db0e8d9e4dab02da69b56b7670a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks how many time frames have been processed.  <a href="group__toplevel.html#ga1c54db0e8d9e4dab02da69b56b7670a7"></a><br/></td></tr>
 <tr class="memitem:ga6c0fd494d40067bebf2a8cf6cbf640b1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__toplevel.html#ga6c0fd494d40067bebf2a8cf6cbf640b1">xsp3_scaler_check_desc</a> (int path, int card)</td></tr>
-<tr class="memdesc:ga6c0fd494d40067bebf2a8cf6cbf640b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks the DMA descriptors for the Scaler stream to check how many time frames of scalers have been successfuly transfered to memeory.  <a href="group__toplevel.html#ga6c0fd494d40067bebf2a8cf6cbf640b1"></a><br/></td></tr>
+<tr class="memdesc:ga6c0fd494d40067bebf2a8cf6cbf640b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks the DMA descriptors for the Scaler stream to check how many time frames of scalers have been successfully transferred to memory.  <a href="group__toplevel.html#ga6c0fd494d40067bebf2a8cf6cbf640b1"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -100,7 +104,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 11 2015 15:30:17 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jan 25 2017 17:59:27 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

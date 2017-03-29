@@ -56,10 +56,20 @@
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga50a47701301c7eb5d2e439da921b1099"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__internal.html#ga50a47701301c7eb5d2e439da921b1099">xsp3m_clocks_setup_int</a> (int path, int card, int clk_src, int flags, int tp_type, int adc_clk_delay, int fpga_clk_delay)</td></tr>
+<tr class="memdesc:ga50a47701301c7eb5d2e439da921b1099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up ADC and data processing clock source for Xspress3 Mini The clock source can come from various places.  <a href="group__internal.html#ga50a47701301c7eb5d2e439da921b1099"></a><br/></td></tr>
+<tr class="memitem:ga4a7a49bd5aea6430368c61f022049370"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__internal.html#ga4a7a49bd5aea6430368c61f022049370">xsp4_clocks_setup_int</a> (int path, int card, int clk_src, int flags, int tp_type, int adc_clk_delay, int fpga_clk_delay)</td></tr>
+<tr class="memdesc:ga4a7a49bd5aea6430368c61f022049370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up ADC and data processing clock source for XSPRESS4 The clock source can come from various places.  <a href="group__internal.html#ga4a7a49bd5aea6430368c61f022049370"></a><br/></td></tr>
 <tr class="memitem:ga025c83ac0730f5860d3257cbf1263957"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__toplevel.html#ga025c83ac0730f5860d3257cbf1263957">xsp3_clocks_setup</a> (int path, int card, int clk_src, int flags, int tp_type)</td></tr>
-<tr class="memdesc:ga025c83ac0730f5860d3257cbf1263957"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up ADC data processing clocks source.  <a href="group__toplevel.html#ga025c83ac0730f5860d3257cbf1263957"></a><br/></td></tr>
+<tr class="memdesc:ga025c83ac0730f5860d3257cbf1263957"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up ADC and data processing clock source.  <a href="group__toplevel.html#ga025c83ac0730f5860d3257cbf1263957"></a><br/></td></tr>
 <tr class="memitem:gafa2deb6776f2cfbb44b306b2f44897a5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fullcontrol.html#gafa2deb6776f2cfbb44b306b2f44897a5">xsp3_clocks_setup_int</a> (int path, int card, int clk_src, int flags, int tp_type, int adc_clk_delay, int fpga_clk_delay)</td></tr>
-<tr class="memdesc:gafa2deb6776f2cfbb44b306b2f44897a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up ADC data processing clocks source with full control over delays.  <a href="group__fullcontrol.html#gafa2deb6776f2cfbb44b306b2f44897a5"></a><br/></td></tr>
+<tr class="memdesc:gafa2deb6776f2cfbb44b306b2f44897a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up ADC and data processing clock source with full control over delays.  <a href="group__fullcontrol.html#gafa2deb6776f2cfbb44b306b2f44897a5"></a><br/></td></tr>
+<tr class="memitem:ga51103e99f14e34c2aae9588a8e9b47af"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__debug.html#ga51103e99f14e34c2aae9588a8e9b47af">xsp3_adc_mmcm_setup</a> (int path, int card, int divide, double phase, double phase_del, double phase_radial)</td></tr>
+<tr class="memdesc:ga51103e99f14e34c2aae9588a8e9b47af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up ADC Clock MMCM in XSPRESS3-Mini and XSPRESS4.  <a href="group__debug.html#ga51103e99f14e34c2aae9588a8e9b47af"></a><br/></td></tr>
+<tr class="memitem:ga59def55800998f511e8febff0c1f5911"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fullcontrol.html#ga59def55800998f511e8febff0c1f5911">xsp3_measure_clock_frequency</a> (int path, int card)</td></tr>
+<tr class="memdesc:ga59def55800998f511e8febff0c1f5911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Measure the ADC clock frequency against the internal bus clock and store the clock period Clock frequencies other than 80 MHz are only support on XSPRESS3Mini and XSPRESS4.  <a href="group__fullcontrol.html#ga59def55800998f511e8febff0c1f5911"></a><br/></td></tr>
+<tr class="memitem:ga9e420d53fe3fbff1ec4f038b5bcb4e62"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fullcontrol.html#ga9e420d53fe3fbff1ec4f038b5bcb4e62">xsp3_get_clock_period</a> (int path, int card)</td></tr>
+<tr class="memdesc:ga9e420d53fe3fbff1ec4f038b5bcb4e62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the clock period from the Xsp3Sys, as measured by <a class="el" href="group__fullcontrol.html#ga59def55800998f511e8febff0c1f5911">xsp3_measure_clock_frequency()</a>.  <a href="group__fullcontrol.html#ga9e420d53fe3fbff1ec4f038b5bcb4e62"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -94,7 +104,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 11 2015 15:30:17 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jan 25 2017 17:59:27 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

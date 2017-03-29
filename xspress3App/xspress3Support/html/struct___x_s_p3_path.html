@@ -52,39 +52,71 @@
 <tr class="heading"><td colspan="2"><h2><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
 <tr class="memitem:acc6d9e144315cde0d4a446bc006130fc"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#acc6d9e144315cde0d4a446bc006130fc">femHandle</a></td></tr>
+<tr class="memdesc:acc6d9e144315cde0d4a446bc006130fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to data structure managing TCP communication with the FEM/ZYNQ.  <a href="#acc6d9e144315cde0d4a446bc006130fc"></a><br/></td></tr>
 <tr class="memitem:aea54c708dee757740f0ac9f4a80ea1c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#aea54c708dee757740f0ac9f4a80ea1c1">type</a></td></tr>
+<tr class="memdesc:aea54c708dee757740f0ac9f4a80ea1c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">FEM_COMPOSITE =&gt; Parent node of multi-card system. FEM_SINGLE =&gt; leaf node of multi card system or singe node for 1 card system.  <a href="#aea54c708dee757740f0ac9f4a80ea1c1"></a><br/></td></tr>
 <tr class="memitem:a61ce4a9a3d17edda9de445f3e3276c9c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a61ce4a9a3d17edda9de445f3e3276c9c">valid</a></td></tr>
 <tr class="memitem:a4ed49feefa680f413eb6bf9f44611eee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a4ed49feefa680f413eb6bf9f44611eee">debug</a></td></tr>
+<tr class="memdesc:a4ed49feefa680f413eb6bf9f44611eee"><td class="mdescLeft">&#160;</td><td class="mdescRight">print out debug information  <a href="#a4ed49feefa680f413eb6bf9f44611eee"></a><br/></td></tr>
 <tr class="memitem:a8840524943b5a661145758b391eb0d29"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a8840524943b5a661145758b391eb0d29">sub_path</a> [<a class="el" href="xspress3__data__mod_8h.html#ae448980f7ec689ad9e0a9ead8f722197">XSP3_MAX_CARDS</a>+1]</td></tr>
 <tr class="memitem:afa29186e8fb8140d41cbb75ecde108d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#afa29186e8fb8140d41cbb75ecde108d8">chans_per_card</a></td></tr>
+<tr class="memdesc:afa29186e8fb8140d41cbb75ecde108d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of channels per card = max_num_chans, from leaves in multi card system.  <a href="#afa29186e8fb8140d41cbb75ecde108d8"></a><br/></td></tr>
 <tr class="memitem:a98d2aaf73755bb5809f0b9c3e3f53d8b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a98d2aaf73755bb5809f0b9c3e3f53d8b">num_cards</a></td></tr>
+<tr class="memdesc:a98d2aaf73755bb5809f0b9c3e3f53d8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cards in the system.  <a href="#a98d2aaf73755bb5809f0b9c3e3f53d8b"></a><br/></td></tr>
 <tr class="memitem:a4558f3e79c323a9688da452f3a47192a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a4558f3e79c323a9688da452f3a47192a">num_chan</a></td></tr>
+<tr class="memdesc:a4558f3e79c323a9688da452f3a47192a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of channels requested on the system (top) or card (leaf)  <a href="#a4558f3e79c323a9688da452f3a47192a"></a><br/></td></tr>
 <tr class="memitem:a657f8dc8dbbf4ab46a19c1423e0c6387"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a657f8dc8dbbf4ab46a19c1423e0c6387">max_num_chans</a></td></tr>
+<tr class="memdesc:a657f8dc8dbbf4ab46a19c1423e0c6387"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum total number of channels available in system (on top) or on card for leaf.  <a href="#a657f8dc8dbbf4ab46a19c1423e0c6387"></a><br/></td></tr>
 <tr class="memitem:a6e97b2c2985dfe88d1e11d6cf14a927b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a6e97b2c2985dfe88d1e11d6cf14a927b">revision</a></td></tr>
+<tr class="memdesc:a6e97b2c2985dfe88d1e11d6cf14a927b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Card Revision.  <a href="#a6e97b2c2985dfe88d1e11d6cf14a927b"></a><br/></td></tr>
 <tr class="memitem:a52417bd2faf1d9d02f6daf14c3daf4e3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a52417bd2faf1d9d02f6daf14c3daf4e3">total_lwords_per_card</a></td></tr>
 <tr class="memitem:a6caaadc6f856c04a959478aedabc9a80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="xspress3_8h.html#af82d9fcce53929e840e53a4780c6138e">UDPconnection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a6caaadc6f856c04a959478aedabc9a80">udpsock</a></td></tr>
 <tr class="memitem:aab7429079f66e57432f887d6d8f9745b"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structxsp3__scope__data__module.html">xsp3_scope_data_module</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#aab7429079f66e57432f887d6d8f9745b">scope_mod</a></td></tr>
+<tr class="memdesc:aab7429079f66e57432f887d6d8f9745b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to scope mode data module.  <a href="#aab7429079f66e57432f887d6d8f9745b"></a><br/></td></tr>
 <tr class="memitem:a367d6d6ac26fdaa561676818af316279"><td class="memItemLeft" align="right" valign="top">pthread_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a367d6d6ac26fdaa561676818af316279">thread</a> [<a class="el" href="xspress3_8h.html#aeb8bab497465c4641c11dd55a8af51b3">XSP3_MAX_CHANS_PER_CARD</a>]</td></tr>
+<tr class="memdesc:a367d6d6ac26fdaa561676818af316279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread numbers for the UDP data RX threads.  <a href="#a367d6d6ac26fdaa561676818af316279"></a><br/></td></tr>
 <tr class="memitem:ae63eac8054f1c6d5adda65b5691f33c2"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#ae63eac8054f1c6d5adda65b5691f33c2">thread_created</a> [<a class="el" href="xspress3_8h.html#aeb8bab497465c4641c11dd55a8af51b3">XSP3_MAX_CHANS_PER_CARD</a>]</td></tr>
 <tr class="memitem:aaf4bae42f41a3e873a1a96c57a9dfd64"><td class="memItemLeft" align="right" valign="top">volatile <a class="el" href="xspress3_8h.html#a1b0377402852515386d44e8865676b7f">Histogram</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#aaf4bae42f41a3e873a1a96c57a9dfd64">histogram</a> [<a class="el" href="xspress3_8h.html#aeb8bab497465c4641c11dd55a8af51b3">XSP3_MAX_CHANS_PER_CARD</a>]</td></tr>
+<tr class="memdesc:aaf4bae42f41a3e873a1a96c57a9dfd64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per channel histogamming data for communication with histogramming threads.  <a href="#aaf4bae42f41a3e873a1a96c57a9dfd64"></a><br/></td></tr>
 <tr class="memitem:a27f2d04ba013ee0f6bdbafc329530404"><td class="memItemLeft" align="right" valign="top"><a class="el" href="xspress3_8h.html#ae2b826dca2f3f4ff1d6835099b2fc94f">ChannelDTC</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a27f2d04ba013ee0f6bdbafc329530404">dtc</a> [<a class="el" href="xspress3_8h.html#aeb8bab497465c4641c11dd55a8af51b3">XSP3_MAX_CHANS_PER_CARD</a>]</td></tr>
+<tr class="memdesc:a27f2d04ba013ee0f6bdbafc329530404"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dead time correction parameters per channel for this card.  <a href="#a27f2d04ba013ee0f6bdbafc329530404"></a><br/></td></tr>
 <tr class="memitem:aee23497f7b2a9bdc497477b532bfc8f9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#aee23497f7b2a9bdc497477b532bfc8f9">deadtimeEnergy</a></td></tr>
+<tr class="memdesc:aee23497f7b2a9bdc497477b532bfc8f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current nominal beamline energy in keV NOT eV!  <a href="#aee23497f7b2a9bdc497477b532bfc8f9"></a><br/></td></tr>
 <tr class="memitem:a3e7ea61ddb21e42a85827c9aa58556e9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a3e7ea61ddb21e42a85827c9aa58556e9">run_flags</a></td></tr>
+<tr class="memdesc:a3e7ea61ddb21e42a85827c9aa58556e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overall system run flags.  <a href="#a3e7ea61ddb21e42a85827c9aa58556e9"></a><br/></td></tr>
+<tr class="memitem:a34df52d0d1afae44f3025f584a864036"><td class="memItemLeft" align="right" valign="top">u_int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a34df52d0d1afae44f3025f584a864036">hist_frames_num_tf</a></td></tr>
+<tr class="memdesc:a34df52d0d1afae44f3025f584a864036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Xspress3 MINI BRAM histogrammed frames must be the same across all channel on a box, practicualy across the system.  <a href="#a34df52d0d1afae44f3025f584a864036"></a><br/></td></tr>
 <tr class="memitem:add3e071fa28efac56c1f4fec640d85de"><td class="memItemLeft" align="right" valign="top">u_int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#add3e071fa28efac56c1f4fec640d85de">scaler_start</a></td></tr>
+<tr class="memdesc:add3e071fa28efac56c1f4fec640d85de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start address offset of Scaler data within DRAM on FEM (FEM-1 Addr32 version), per card.  <a href="#add3e071fa28efac56c1f4fec640d85de"></a><br/></td></tr>
 <tr class="memitem:aa88d111d9f8f560f1e98372b6fb68c39"><td class="memItemLeft" align="right" valign="top">u_int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#aa88d111d9f8f560f1e98372b6fb68c39">scaler_size</a></td></tr>
+<tr class="memdesc:aa88d111d9f8f560f1e98372b6fb68c39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size in bytes of Scaler data with DRAM on FEM, per card.  <a href="#aa88d111d9f8f560f1e98372b6fb68c39"></a><br/></td></tr>
 <tr class="memitem:ae8c05e0d07eea46db6a76b3ace23df03"><td class="memItemLeft" align="right" valign="top">u_int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#ae8c05e0d07eea46db6a76b3ace23df03">scaler_num_tf</a></td></tr>
+<tr class="memdesc:ae8c05e0d07eea46db6a76b3ace23df03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of time frames of scaler data that will fit with channels set to num_chan.  <a href="#ae8c05e0d07eea46db6a76b3ace23df03"></a><br/></td></tr>
 <tr class="memitem:ae402e36605a82550f412e1c3d2f1a86b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#ae402e36605a82550f412e1c3d2f1a86b">mdio_flags</a></td></tr>
+<tr class="memdesc:ae402e36605a82550f412e1c3d2f1a86b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Various options for MDIO access.  <a href="#ae402e36605a82550f412e1c3d2f1a86b"></a><br/></td></tr>
 <tr class="memitem:ab961ca1dbde4a9d1931478346839bc9b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#ab961ca1dbde4a9d1931478346839bc9b">startingCard</a></td></tr>
+<tr class="memdesc:ab961ca1dbde4a9d1931478346839bc9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Card index of first card, remembered to enable us to make default module names correctly.  <a href="#ab961ca1dbde4a9d1931478346839bc9b"></a><br/></td></tr>
 <tr class="memitem:aaa34b9ec8c3b4aa2f450d23a79e0b194"><td class="memItemLeft" align="right" valign="top"><a class="el" href="xspress3_8h.html#a47c38a95249440ae35eeaf4fea93e923">Xspress3_features</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#aaa34b9ec8c3b4aa2f450d23a79e0b194">features</a></td></tr>
+<tr class="memdesc:aaa34b9ec8c3b4aa2f450d23a79e0b194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Features register set read and unpacked for this card.  <a href="#aaa34b9ec8c3b4aa2f450d23a79e0b194"></a><br/></td></tr>
 <tr class="memitem:aa98808e743b10379da8a77199bd09c3d"><td class="memItemLeft" align="right" valign="top">MOD_IMAGE3D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#aa98808e743b10379da8a77199bd09c3d">scalers_mod</a></td></tr>
+<tr class="memdesc:aa98808e743b10379da8a77199bd09c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to /dev/shm data module for software scalars, used when features.soft_scalers != 0.  <a href="#aa98808e743b10379da8a77199bd09c3d"></a><br/></td></tr>
 <tr class="memitem:a37e1b691f943c3ab2cffb52d7dec9c8a"><td class="memItemLeft" align="right" valign="top">mh_com *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a37e1b691f943c3ab2cffb52d7dec9c8a">scalers_mod_head</a></td></tr>
+<tr class="memdesc:a37e1b691f943c3ab2cffb52d7dec9c8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to module header for software scalars.  <a href="#a37e1b691f943c3ab2cffb52d7dec9c8a"></a><br/></td></tr>
+<tr class="memitem:a07c3ca1488aa27924165e269fb4894b6"><td class="memItemLeft" align="right" valign="top">MOD_IMAGE3D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a07c3ca1488aa27924165e269fb4894b6">tf_status_mod</a></td></tr>
+<tr class="memitem:a90f7a1523cc3fcac1d4f5e99af6cf2e6"><td class="memItemLeft" align="right" valign="top">mh_com *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a90f7a1523cc3fcac1d4f5e99af6cf2e6">tf_status_head</a></td></tr>
 <tr class="memitem:ad6923f6d7001bb6a9e697dc13a5dce30"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#ad6923f6d7001bb6a9e697dc13a5dce30">disable_multi_thread</a></td></tr>
 <tr class="memdesc:ad6923f6d7001bb6a9e697dc13a5dce30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable Thread per card activity speed ups on scope mode, start etc. See <a class="el" href="group___x_s_p3___m_t___f_l_a_g_s.html">XSP3_MT_FLAGS</a>.  <a href="#ad6923f6d7001bb6a9e697dc13a5dce30"></a><br/></td></tr>
 <tr class="memitem:ac7337dc065081d1c628527d385c563f3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#ac7337dc065081d1c628527d385c563f3">chan_of_system</a></td></tr>
-<tr class="memdesc:ac7337dc065081d1c628527d385c563f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to initial chan of system in histogram (only)  <a href="#ac7337dc065081d1c628527d385c563f3"></a><br/></td></tr>
+<tr class="memdesc:ac7337dc065081d1c628527d385c563f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to initialise chan_of_system in histogram (only)  <a href="#ac7337dc065081d1c628527d385c563f3"></a><br/></td></tr>
 <tr class="memitem:ac4adadcf70c6abbff68cfe17fa88acf3"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#ac4adadcf70c6abbff68cfe17fa88acf3">soft_lead_tail</a></td></tr>
 <tr class="memdesc:ac4adadcf70c6abbff68cfe17fa88acf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable alternate event list processing for SGX detector.  <a href="#ac4adadcf70c6abbff68cfe17fa88acf3"></a><br/></td></tr>
 <tr class="memitem:af58345637aa6cedfd24b611597e6ddd5"><td class="memItemLeft" align="right" valign="top">u_int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#af58345637aa6cedfd24b611597e6ddd5">explicit_chan_cont</a> [<a class="el" href="xspress3_8h.html#aeb8bab497465c4641c11dd55a8af51b3">XSP3_MAX_CHANS_PER_CARD</a>]</td></tr>
+<tr class="memdesc:af58345637aa6cedfd24b611597e6ddd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Channel Control register value as set by xsp3_set_chan_cont.  <a href="#af58345637aa6cedfd24b611597e6ddd5"></a><br/></td></tr>
+<tr class="memitem:aac9b02508e39a32c5d028b41e7ad1a21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#aac9b02508e39a32c5d028b41e7ad1a21">mem_layout</a></td></tr>
+<tr class="memitem:abacc628be92c6f4c5de473c3a71d7cdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="xspress3_8h.html#a8f9b869d202645853f2e87df467e9e19">ClockSetup</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#abacc628be92c6f4c5de473c3a71d7cdd">clock_setup</a></td></tr>
+<tr class="memdesc:abacc628be92c6f4c5de473c3a71d7cdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clock setup information to allow xsp3_save_settings to save clock setup.  <a href="#abacc628be92c6f4c5de473c3a71d7cdd"></a><br/></td></tr>
+<tr class="memitem:a726584254273739c614a75f634eceeb4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct___x_s_p3_path.html#a726584254273739c614a75f634eceeb4">clock_period</a></td></tr>
+<tr class="memdesc:a726584254273739c614a75f634eceeb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clock period in seconds, 12.5E-9 for xspress3, but can be checked by <a class="el" href="group__fullcontrol.html#ga59def55800998f511e8febff0c1f5911">xsp3_measure_clock_frequency()</a> in XSPRESS3Mini and XSPRESS4.  <a href="#a726584254273739c614a75f634eceeb4"></a><br/></td></tr>
 </table>
 <h2>Field Documentation</h2>
 <a class="anchor" id="ac7337dc065081d1c628527d385c563f3"></a>
@@ -97,7 +129,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Used to initial chan of system in histogram (only) </p>
+<p>Used to initialise chan_of_system in histogram (only) </p>
 
 </div>
 </div>
@@ -111,6 +143,36 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Number of channels per card = max_num_chans, from leaves in multi card system. </p>
+
+</div>
+</div>
+<a class="anchor" id="a726584254273739c614a75f634eceeb4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double _XSP3Path::clock_period</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clock period in seconds, 12.5E-9 for xspress3, but can be checked by <a class="el" href="group__fullcontrol.html#ga59def55800998f511e8febff0c1f5911">xsp3_measure_clock_frequency()</a> in XSPRESS3Mini and XSPRESS4. </p>
+
+</div>
+</div>
+<a class="anchor" id="abacc628be92c6f4c5de473c3a71d7cdd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="xspress3_8h.html#a8f9b869d202645853f2e87df467e9e19">ClockSetup</a> _XSP3Path::clock_setup</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clock setup information to allow xsp3_save_settings to save clock setup. </p>
+
 </div>
 </div>
 <a class="anchor" id="aee23497f7b2a9bdc497477b532bfc8f9"></a>
@@ -123,6 +185,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Current nominal beamline energy in keV NOT eV! </p>
+
 </div>
 </div>
 <a class="anchor" id="a4ed49feefa680f413eb6bf9f44611eee"></a>
@@ -134,6 +198,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>print out debug information </p>
 
 </div>
 </div>
@@ -161,6 +227,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Dead time correction parameters per channel for this card. </p>
+
 </div>
 </div>
 <a class="anchor" id="af58345637aa6cedfd24b611597e6ddd5"></a>
@@ -172,6 +240,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Channel Control register value as set by xsp3_set_chan_cont. </p>
 
 </div>
 </div>
@@ -185,6 +255,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Features register set read and unpacked for this card. </p>
+
 </div>
 </div>
 <a class="anchor" id="acc6d9e144315cde0d4a446bc006130fc"></a>
@@ -196,6 +268,22 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Pointer to data structure managing TCP communication with the FEM/ZYNQ. </p>
+
+</div>
+</div>
+<a class="anchor" id="a34df52d0d1afae44f3025f584a864036"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u_int32_t _XSP3Path::hist_frames_num_tf</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Xspress3 MINI BRAM histogrammed frames must be the same across all channel on a box, practicualy across the system. </p>
 
 </div>
 </div>
@@ -209,6 +297,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Per channel histogamming data for communication with histogramming threads. </p>
+
 </div>
 </div>
 <a class="anchor" id="a657f8dc8dbbf4ab46a19c1423e0c6387"></a>
@@ -221,6 +311,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Maximum total number of channels available in system (on top) or on card for leaf. </p>
+
 </div>
 </div>
 <a class="anchor" id="ae402e36605a82550f412e1c3d2f1a86b"></a>
@@ -229,6 +321,20 @@ Data Fields</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">int _XSP3Path::mdio_flags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Various options for MDIO access. </p>
+
+</div>
+</div>
+<a class="anchor" id="aac9b02508e39a32c5d028b41e7ad1a21"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int _XSP3Path::mem_layout</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -245,6 +351,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Number of cards in the system. </p>
+
 </div>
 </div>
 <a class="anchor" id="a4558f3e79c323a9688da452f3a47192a"></a>
@@ -256,6 +364,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Number of channels requested on the system (top) or card (leaf) </p>
 
 </div>
 </div>
@@ -269,6 +379,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Card Revision. </p>
+
 </div>
 </div>
 <a class="anchor" id="a3e7ea61ddb21e42a85827c9aa58556e9"></a>
@@ -280,6 +392,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Overall system run flags. </p>
 
 </div>
 </div>
@@ -293,6 +407,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Number of time frames of scaler data that will fit with channels set to num_chan. </p>
+
 </div>
 </div>
 <a class="anchor" id="aa88d111d9f8f560f1e98372b6fb68c39"></a>
@@ -304,6 +420,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Size in bytes of Scaler data with DRAM on FEM, per card. </p>
 
 </div>
 </div>
@@ -317,6 +435,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Start address offset of Scaler data within DRAM on FEM (FEM-1 Addr32 version), per card. </p>
+
 </div>
 </div>
 <a class="anchor" id="aa98808e743b10379da8a77199bd09c3d"></a>
@@ -328,6 +448,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Pointer to /dev/shm data module for software scalars, used when features.soft_scalers != 0. </p>
 
 </div>
 </div>
@@ -341,6 +463,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Pointer to module header for software scalars. </p>
+
 </div>
 </div>
 <a class="anchor" id="aab7429079f66e57432f887d6d8f9745b"></a>
@@ -352,6 +476,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Pointer to scope mode data module. </p>
 
 </div>
 </div>
@@ -379,6 +505,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Card index of first card, remembered to enable us to make default module names correctly. </p>
+
 </div>
 </div>
 <a class="anchor" id="a8840524943b5a661145758b391eb0d29"></a>
@@ -387,6 +515,30 @@ Data Fields</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">int _XSP3Path::sub_path[<a class="el" href="xspress3__data__mod_8h.html#ae448980f7ec689ad9e0a9ead8f722197">XSP3_MAX_CARDS</a>+1]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a90f7a1523cc3fcac1d4f5e99af6cf2e6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mh_com* _XSP3Path::tf_status_head</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a07c3ca1488aa27924165e269fb4894b6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MOD_IMAGE3D* _XSP3Path::tf_status_mod</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -402,6 +554,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Thread numbers for the UDP data RX threads. </p>
 
 </div>
 </div>
@@ -439,6 +593,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>FEM_COMPOSITE =&gt; Parent node of multi-card system. FEM_SINGLE =&gt; leaf node of multi card system or singe node for 1 card system. </p>
+
 </div>
 </div>
 <a class="anchor" id="a6caaadc6f856c04a959478aedabc9a80"></a>
@@ -471,7 +627,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 11 2015 15:30:19 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jan 25 2017 17:59:29 for xspress3api by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>
