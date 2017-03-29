@@ -288,16 +288,6 @@ asynStatus Xspress3::connect(void)
   } else {
     setIntegerParam(xsp3ConnectedParam, 1);
 
-    //Set up clocks on each card
-    for (int i=0; i<xsp3_num_cards && status == asynSuccess; i++) {
-      xsp3_status = xsp3_clocks_setup(xsp3_handle_, i, XSP3_CLK_SRC_XTAL,
-                                      XSP3_CLK_FLAGS_MASTER | XSP3_CLK_FLAGS_NO_DITHER, 0);
-      if (xsp3_status != XSP3_OK) {
-	checkStatus(xsp3_status, "xsp3_clocks_setup", functionName);
-	status = asynError;
-      }
-    }
-    
     //Restore settings from a file
     if (status == asynSuccess)
         status = restoreSettings();
@@ -507,7 +497,7 @@ asynStatus Xspress3::saveSettings(void)
 
 /**
  * Restore the system settings for the xspress3 system. 
- * This simply calls xsp3_restore_settings().
+ * This simply calls xsp3_restore_settings_and_clock().
  */
 asynStatus Xspress3::restoreSettings(void)
 {
@@ -517,7 +507,7 @@ asynStatus Xspress3::restoreSettings(void)
   int connected = 0;
   const char *functionName = "Xspress3::restoreSettings";
 
-  asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Restoring Xspress3 settings. This calls xsp3_restore_settings().\n", functionName);
+  asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Restoring Xspress3 settings. This calls xsp3_restore_settings_and_clock().\n", functionName);
 
   getIntegerParam(xsp3ConnectedParam, &connected);
   getStringParam(xsp3ConfigPathParam, maxStringSize_, configPath);
@@ -527,9 +517,9 @@ asynStatus Xspress3::restoreSettings(void)
     setIntegerParam(ADStatus, ADStatusError);
     status = asynError;
   } else {
-    xsp3_status = xsp3_restore_settings(xsp3_handle_, configPath, 0);
+    xsp3_status = xsp3_restore_settings_and_clock(xsp3_handle_, configPath, 0);
     if (xsp3_status != XSP3_OK) {
-      checkStatus(xsp3_status, "xsp3_restore_settings", functionName);
+      checkStatus(xsp3_status, "xsp3_restore_settings_and_clock", functionName);
       setStringParam(ADStatusMessage, "Error Restoring Configuration.");
       setIntegerParam(ADStatus, ADStatusError);
       status = asynError;
