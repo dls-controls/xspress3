@@ -1,4 +1,4 @@
 <?xml version="1.0" ?>
 <components arch="linux-x86_64">
-	<Xspress3.Xspress3 ADDR="0" MAX_FRAMES="16384" MAX_SPECTRA="4096" P="TEST-EA-XSP3-01" PORT="XSP3" R=":" TIMEOUT="5" debug="1" settings_directory="/tmp/settings"/>
+	<Xspress3.Xspress3 ADDR="0" MAX_FRAMES="16384" MAX_SPECTRA="4096" P="TEST-EA-XSP3-01" PORT="XSP3" R=":" TIMEOUT="5" debug="1" num_channels="6" settings_directory="/dls/detectors/Vortex/xspress3.1chan/settings"/>
 </components>
