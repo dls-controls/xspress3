@@ -146,8 +146,8 @@ class Xspress3 : public ADDriver {
   asynStatus readSCAParams(void);
   asynStatus readDTCParams(void);
   asynStatus setupITFG(void); 
-  asynStatus mapTimeFrameSource(int mode, int invert_f0, int invert_veto, int debounce, int *apiMode);
-  asynStatus setTriggerMode(int mode, int itfg_trig_mode, int num_frames, double exposure_time, int invert_f0, int invert_veto, int debounce );
+  asynStatus mapTimeFrameSource(int mode, int invert_f0, int invert_veto, int debounce, int *apiMode, int* apiItfgMode);
+  asynStatus setTriggerMode(int mode, int num_frames, double exposure_time, int invert_f0, int invert_veto, int debounce );
   asynStatus collectParamsAndSetTriggerMode();
   void createInitialParameters();
   bool setInitialParameters(int maxFrames, int numCards, int maxSpectra);
@@ -183,13 +183,6 @@ class Xspress3 : public ADDriver {
   static const epicsInt32 maxNumRoi_;
   static const epicsInt32 maxStringSize_;
   static const epicsInt32 maxCheckHistPolls_;
-  static const epicsInt32 mbboTimeFrameSourceFIXED_;
-  static const epicsInt32 mbboTimeFrameSourceINTERNAL_;
-  static const epicsInt32 mbboTimeFrameSourceIDC_;
-  static const epicsInt32 mbboTimeFrameSourceTTLVETO_;
-  static const epicsInt32 mbboTimeFrameSourceTTLBOTH_;
-  static const epicsInt32 mbboTimeFrameSourceLVDSVETO_;
-  static const epicsInt32 mbboTimeFrameSourceLVDSBOTH_;
   static const epicsInt32 ADAcquireFalse_;
   static const epicsInt32 ADAcquireTrue_;
   static const epicsUInt8 startEvent;

@@ -3,8 +3,8 @@ beginScreenProperties
 major 4
 minor 0
 release 1
-x 794
-y 231
+x 443
+y 1373
 w 770
 h 690
 font "arial-medium-r-12.0"
@@ -311,7 +311,7 @@ fgColor index 14
 bgColor index 10
 useDisplayBg
 value {
-  "Time frame source"
+  "Trigger Mode"
 }
 endObjectProperties
 
@@ -321,11 +321,11 @@ beginObjectProperties
 major 4
 minor 6
 release 0
-x 375
+x 285
 y 225
-w 195
+w 125
 h 35
-controlPv "$(P):TimeFrameSource_RBV"
+controlPv "$(P):TriggerMode_RBV"
 font "arial-bold-r-16.0"
 fontAlign "center"
 fgColor index 16
@@ -344,17 +344,17 @@ beginObjectProperties
 major 4
 minor 0
 release 0
-x 170
+x 130
 y 225
-w 195
+w 145
 h 35
 fgColor index 14
 bgColor index 3
 inconsistentColor index 14
 topShadowColor index 1
 botShadowColor index 11
-controlPv "$(P):TimeFrameSource"
-indicatorPv "$(P):TimeFrameSource"
+controlPv "$(P):TriggerMode"
+indicatorPv "$(P):TriggerMode_RBV"
 font "arial-bold-r-14.0"
 endObjectProperties
 
@@ -1539,7 +1539,7 @@ beginObjectProperties
 major 4
 minor 1
 release 1
-x 170
+x 55
 y 275
 w 65
 h 20
@@ -1558,9 +1558,9 @@ beginObjectProperties
 major 4
 minor 6
 release 0
-x 400
+x 285
 y 265
-w 135
+w 125
 h 35
 controlPv "$(P):AcquireTime_RBV"
 font "arial-bold-r-16.0"
@@ -1581,7 +1581,7 @@ beginObjectProperties
 major 10
 minor 0
 release 0
-x 245
+x 130
 y 265
 w 145
 h 35
@@ -1600,113 +1600,16 @@ beginObjectProperties
 major 4
 minor 1
 release 1
-x 130
-y 315
-w 120
-h 20
-font "arial-bold-r-14.0"
-fgColor index 14
-bgColor index 10
-useDisplayBg
-value {
-  "Trigger source"
-}
-endObjectProperties
-
-# (Menu Button)
-object activeMenuButtonClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 245
-y 305
-w 145
-h 35
-fgColor index 14
-bgColor index 3
-inconsistentColor index 14
-topShadowColor index 1
-botShadowColor index 11
-controlPv "$(P):TriggerMode"
-indicatorPv "$(P):TriggerMode_RBV"
-font "arial-bold-r-14.0"
-endObjectProperties
-
-# (Text Monitor)
-object activeXTextDspClass:noedit
-beginObjectProperties
-major 4
-minor 6
-release 0
-x 400
-y 305
-w 135
-h 35
-controlPv "$(P):TriggerMode_RBV"
-font "arial-bold-r-16.0"
-fontAlign "center"
-fgColor index 16
-bgColor index 10
-limitsFromDb
-nullColor index 30
-fastUpdate
-useHexPrefix
-newPos
-objType "monitors"
-endObjectProperties
-
-# (Lines)
-object activeLineClass
-beginObjectProperties
-major 4
-minor 0
-release 1
-x 105
-y 275
-w 25
-h 60
-lineColor index 14
-fillColor index 10
-numPoints 7
-xPoints {
-  0 130
-  1 120
-  2 110
-  3 105
-  4 110
-  5 115
-  6 130
-}
-yPoints {
-  0 275
-  1 280
-  2 303
-  3 307
-  4 312
-  5 330
-  6 335
-}
-endObjectProperties
-
-# (Static Text)
-object activeXTextClass
-beginObjectProperties
-major 4
-minor 1
-release 1
-x 20
-y 275
-w 95
+x 30
+y 295
+w 450
 h 60
 font "arial-medium-r-14.0"
 fgColor index 14
 bgColor index 10
 useDisplayBg
 value {
-  "Settings for"
-  "internal time"
-  "frames only"
+  "Exposure time applies only to Software, Hardware and Burst modes"
 }
 endObjectProperties
 
