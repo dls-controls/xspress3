@@ -976,6 +976,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
             getIntegerParam(xsp3NumCardsParam, &n_cards);
             for (int card_n = 1; card_n < n_cards; card_n++) {
               xsp3_status |= xsp3_histogram_start(xsp3_handle_, card_n);
+              printf("Called histogram_start on card %d\n", card_n);
             }
 
             if (triggerMode == TM_SOFTWARE) {
@@ -985,12 +986,15 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
 
             } else if (triggerMode == TM_TTL_RISING_EDGE) {
                 xsp3_status |= xsp3_histogram_start(xsp3_handle_, 0);
+                printf("Called histogram_start on card 0\n");
 
             } else if (triggerMode == TM_BURST) {
                 xsp3_status |= xsp3_histogram_start(xsp3_handle_, 0);
+                printf("Called histogram_start on card 0\n");
 
             } else {
                 xsp3_status |= xsp3_histogram_start(xsp3_handle_, 0);
+                printf("Called histogram_start on card 0\n");
 
             }
 
@@ -1009,6 +1013,7 @@ asynStatus Xspress3::writeInt32(asynUser *pasynUser, epicsInt32 value)
 	  if ((status = checkConnected()) == asynSuccess) {
 	    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s Stop Data Collection.\n", functionName);
 	    xsp3_status = xsp3_histogram_stop(xsp3_handle_, -1);
+            printf("Called histogram_stop on all cards\n");
 	    if (xsp3_status != XSP3_OK) {
 		checkStatus(xsp3_status, "xsp3_histogram_stop", functionName);
 		status = asynError;
@@ -1539,7 +1544,6 @@ void Xspress3::doNDCallbacksIfRequired(NDArray *pMCA)
     this->getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
     if (arrayCallbacks) {
         this->unlock();
-        asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "doNDCallbacksIfRequired: Calling NDArray callback\n");
         this->doCallbacksGenericPointer(pMCA, NDArrayData, 0);
         this->lock();
     }
@@ -1658,9 +1662,6 @@ int Xspress3::acquireNFrames(int numToAcquire)
         // Wait for libxspress3 to tell us that we can read more frames.
         do {
 
-            // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "iteration of 'do' clause\n");
-            printf("iteration of 'do' clause\n"); fflush;
-
             if (this->checkQueue(this->stopEvent, false)) {
                 asynPrint(this->pasynUserSelf, ASYN_TRACE_WARNING,
                           "Stop event so throw\n");
@@ -1672,30 +1673,34 @@ int Xspress3::acquireNFrames(int numToAcquire)
             }
             nFramesReadByXsp3 = this->getNumFramesRead();
 
-            // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "nFramesReadByXsp3 = %d\n", nFramesReadByXsp3);
-            printf("nFramesReadByXsp3 = %d\n", nFramesReadByXsp3); fflush;
-
         } while (nFramesReadByXsp3 < i+1);
-
-        // asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "exited do..while loop\n");
-        printf("exited do..while loop\n"); fflush;
 
         if (nFramesReadByXsp3 > i + bufferSize) return 1;
 
+        printf("Before %dth frame read out, furthest_frame is %d\n", i, this->getNumFramesRead());
         this->grabFrame(i);
 
         this->lock();
-        this->setIntegerParam(this->NDArrayCounter, i+1);
         this->setIntegerParam(this->xsp3FrameCountParam, i+1);
         this->callParamCallbacks();
         this->unlock();
     }
 
     xsp3_histogram_stop(xsp3_handle_, -1);
-    this->lock();
+    printf("Called histogram_stop on all cards\n");
+    printf("furthest_frame is %d\n", this->getNumFramesRead());
+
+    printf("Before histogram_clear, furthest_frame is %d\n", this->getNumFramesRead());
+
+    xsp3_histogram_clear(this->xsp3_handle_, 0,
+                         this->numChannels_, 0, bufferSize);
+    printf("Called histogram_clear\n");
+    xsp3_histogram_stop(xsp3_handle_, -1);
+    printf("Called histogram_stop on all cards a second time\n");
+    printf("furthest_frame is %d\n", this->getNumFramesRead());
+
     this->setAcqStopParameters(false);
-    this->callParamCallbacks();
-    this->unlock();
+
     return 0;
 
 }
