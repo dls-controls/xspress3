@@ -265,8 +265,8 @@ typedef struct _XSP3Path {
 	int revision;					//!< Card Revision
 	int total_lwords_per_card;
 	UDPconnection udpsock;
-	struct xsp3_scope_data_module *scope_mod;	//!< Pointer to scope mode data module.
-	pthread_t thread[XSP3_MAX_CHANS_PER_CARD];	//!< Thread numbers for the UDP data RX threads.
+	struct xsp3_scope_data_module *scope_mod;				//!< Pointer to scope mode data module.
+	pthread_t thread[XSP3_MAX_CHANS_PER_CARD];				//!< Thread numbers for the UDP data RX threads.
 	char thread_created[XSP3_MAX_CHANS_PER_CARD];	
 	volatile Histogram histogram[XSP3_MAX_CHANS_PER_CARD];	//!< Per channel histogamming data for communication with histogramming threads.
 	ChannelDTC dtc[XSP3_MAX_CHANS_PER_CARD];				//!< Dead time correction parameters per channel for this card.
@@ -667,6 +667,9 @@ int 	xsp3_measure_clock_frequency(int path, int card);
 double 	xsp3_get_clock_period(int path, int card);
 int 	xsp3_get_first_card(int path);
 int 	xsp3_scope_cpu_set(int path, int card, cpu_set_t *cpu_set);
+int 	xsp3_hist_cpu_set(int path, int chan, cpu_set_t *cpu_set);
+int 	xsp3_hist_cpu_set_update(int path, int chan);
+int 	xsp3_adc_mmcm_reset(int path, int card);
 
 #ifdef __cplusplus
 }
