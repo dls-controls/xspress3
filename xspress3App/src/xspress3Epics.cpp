@@ -1573,7 +1573,7 @@ int Xspress3::getNumFramesRead()
     } else {
         numFrames = xsp3Status;
     }
-    return furthest_frame;
+    return numFrames;
 }
 
 /** 
